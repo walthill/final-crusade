@@ -104,7 +104,7 @@ void SceneManager::clearManager()
 }
 
 
-void SceneManager::update(double timeElapsed, int score, int level, int playerLevel, int expToNextLevel, int scoreToReach, int blockSpeedMultiplier, int audioCounter, int highestLevel, int lifetimeScore, int lifetimeClears, double fps)
+void SceneManager::update(double timeElapsed, double fps)
 {
 	map<SceneID, Scene*>::iterator iter;
 
@@ -116,85 +116,41 @@ void SceneManager::update(double timeElapsed, int score, int level, int playerLe
 			//Updating UI - allows for language change, scoring, frame data
 			if (iter->second->getSceneType() == SC_MAIN)
 			{
-				iter->second->getGuiManager()->getGuiElement("playerlevel")->updateText(timeElapsed, mLocalization->getTranslation("YOUR LEVEL") + ": " + to_string(playerLevel));
-				iter->second->getGuiManager()->getGuiElement("tonextlevel")->updateText(timeElapsed, mLocalization->getTranslation("EXP TO NEXT LEVEL") + ": " + to_string(expToNextLevel));
-
-				iter->second->getGuiManager()->getGuiElement("mainmenu2")->updateText(timeElapsed, mLocalization->getTranslation("PRESS ENTER TO SELECT"));
-
-				iter->second->getGuiManager()->getGuiElement("0")->updateText(timeElapsed, mLocalization->getTranslation("NEW GAME"));
-				iter->second->getGuiManager()->getGuiElement("1")->updateText(timeElapsed, mLocalization->getTranslation("LOAD GAME"));
-				iter->second->getGuiManager()->getGuiElement("2")->updateText(timeElapsed, mLocalization->getTranslation("OPTIONS"));
-				iter->second->getGuiManager()->getGuiElement("4")->updateText(timeElapsed, mLocalization->getTranslation("QUIT"));
-				iter->second->getGuiManager()->getGuiElement("3")->updateText(timeElapsed, mLocalization->getTranslation("CREDITS"));
+			
 
 				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_GAME)
 			{
-				iter->second->getGuiManager()->getGuiElement("reach")->updateText(timeElapsed, mLocalization->getTranslation("SCORE TO WIN") + ": " + to_string(scoreToReach));
-				iter->second->getGuiManager()->getGuiElement("score")->updateText(timeElapsed, mLocalization->getTranslation("SCORE") + ": " + to_string(score));
-				iter->second->getGuiManager()->getGuiElement("level")->updateText(timeElapsed, mLocalization->getTranslation("LEVEL") + ": " + to_string(level));
-				iter->second->getGuiManager()->getGuiElement("next")->updateText(timeElapsed, mLocalization->getTranslation("NEXT"));
+				
 				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_OPTIONS)
 			{
-				iter->second->getGuiManager()->getGuiElement("0")->updateText(timeElapsed, mLocalization->getTranslation("OPTIONS"));
-				iter->second->getGuiManager()->getGuiElement("1")->updateText(timeElapsed, mLocalization->getTranslation("LANGUAGE"));
-				iter->second->getGuiManager()->getGuiElement("2")->updateText(timeElapsed, mLocalization->getTranslation("GAME SPEED") + ": " + to_string(blockSpeedMultiplier));
-				iter->second->getGuiManager()->getGuiElement("3")->updateText(timeElapsed, mLocalization->getTranslation("AUDIO") + ": " + to_string(audioCounter));
-				iter->second->getGuiManager()->getGuiElement("4")->updateText(timeElapsed, mLocalization->getTranslation("STATS"));
-				iter->second->getGuiManager()->getGuiElement("5")->updateText(timeElapsed, mLocalization->getTranslation("RETURN"));
-
+				
 				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_PAUSE)
 			{
-				iter->second->getGuiManager()->getGuiElement("0")->updateText(timeElapsed, mLocalization->getTranslation("PLAY GAME"));
-				iter->second->getGuiManager()->getGuiElement("1")->updateText(timeElapsed, mLocalization->getTranslation("SAVE AND QUIT"));
-
-				iter->second->getGuiManager()->getGuiElement("pause")->updateText(timeElapsed, mLocalization->getTranslation("PAUSED GAME"));
-				iter->second->getGuiManager()->getGuiElement("reach")->updateText(timeElapsed, mLocalization->getTranslation("SCORE TO WIN") + ": " + to_string(scoreToReach));
-				iter->second->getGuiManager()->getGuiElement("score")->updateText(timeElapsed, mLocalization->getTranslation("SCORE") + ": " + to_string(score));
-				iter->second->getGuiManager()->getGuiElement("level")->updateText(timeElapsed, mLocalization->getTranslation("LEVEL") + ": " + to_string(level));
-				iter->second->getGuiManager()->getGuiElement("next")->updateText(timeElapsed, mLocalization->getTranslation("NEXT"));
+				
 
 				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_LOSE)
 			{
-				iter->second->getGuiManager()->getGuiElement("lost")->updateText(timeElapsed, mLocalization->getTranslation("YOU LOST"));
-				iter->second->getGuiManager()->getGuiElement("0")->updateText(timeElapsed, mLocalization->getTranslation("NEW GAME"));
-				iter->second->getGuiManager()->getGuiElement("1")->updateText(timeElapsed, mLocalization->getTranslation("RETURN"));
-
+				
 				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_CREDITS)
 			{
-				iter->second->getGuiManager()->getGuiElement("0")->updateText(timeElapsed, mLocalization->getTranslation("RETURN"));
-
-				//TODO: add ui text to this section
-				//---------------
-				iter->second->getGuiManager()->getGuiElement("devs")->updateText(timeElapsed, mLocalization->getTranslation("DEVELOPERS"));
-				iter->second->getGuiManager()->getGuiElement("tetrisArtist")->updateText(timeElapsed, mLocalization->getTranslation("TETRIS SONGWRITER"));
-				iter->second->getGuiManager()->getGuiElement("tetrisTrapArtist")->updateText(timeElapsed, mLocalization->getTranslation("TETRIS TRAP WRITER"));
-				iter->second->getGuiManager()->getGuiElement("raspArtist")->updateText(timeElapsed, mLocalization->getTranslation("RASPUTIN SONGWRITER"));
-				iter->second->getGuiManager()->getGuiElement("tetrisImageArtist")->updateText(timeElapsed, mLocalization->getTranslation("TETRIS IMAGE ARTIST"));
-				iter->second->getGuiManager()->getGuiElement("wiiThemeArtist")->updateText(timeElapsed, mLocalization->getTranslation("WII THEME ARTIST"));
-
-				//---------------
+				
 
 				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
 
 			}
 			else if (iter->second->getSceneType() == SC_STATS)
 			{
-				iter->second->getGuiManager()->getGuiElement("0")->updateText(timeElapsed, mLocalization->getTranslation("RETURN"));
-				iter->second->getGuiManager()->getGuiElement("a")->updateText(timeElapsed, mLocalization->getTranslation("HIGHEST LEVEL REACHED") + ": " + to_string(highestLevel));
-				iter->second->getGuiManager()->getGuiElement("b")->updateText(timeElapsed, mLocalization->getTranslation("LIFETIME CLEARS") + ": " + to_string(lifetimeClears));
-				iter->second->getGuiManager()->getGuiElement("c")->updateText(timeElapsed, mLocalization->getTranslation("LIFETIME SCORE") + ": " + to_string(lifetimeScore));
-
-
+			
 				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
 
 			}

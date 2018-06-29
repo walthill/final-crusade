@@ -22,12 +22,6 @@
     <ClCompile Include="GUIManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="BlockObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BlockPile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Language.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -56,12 +50,6 @@
     </ClInclude>
     <ClInclude Include="InputTranslator.h">
       <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="BlockObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BlockPile.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Language.h">
       <Filter>Header Files</Filter>

@@ -38,10 +38,7 @@ class SceneManager
 		void clearManager();
 
 		
-		void update(double timeElapsed, int score, int level, int playerLevel, 
-					int expToNextLevel, int scoreToReach, int blockSpeedMultiplier, 
-					int audioCounter, int highestLevel, int lifetimeScore, 
-					int lifetimeClears, double fps);
+		void update(double timeElapsed, double fps);
 
 		void draw(GraphicsSystem *graphicsSystem);
 

@@ -12,8 +12,6 @@
 #include "GraphicsBufferManager.h"
 #include "SceneManager.h"
 
-#include "BlockObject.h"
-
 
 /*
 File I/O performed using brofield's SimpleIni
@@ -31,6 +29,8 @@ class Game : EventListener
 	private:
 		static Game* mGameInstance; 
 		
+		unsigned int mEventType;
+
 		System mSystem; //Gives access to window and graphics
 		GraphicsBufferManager mBufferManager; 
 		InputTranslator mInputTranslator;
@@ -38,33 +38,13 @@ class Game : EventListener
 		//each scene has a manager
 		GUIManager mGuiManagerMain, mGuiManagerGame, mGuiManagerOptions, mGuiManagerStats,
 				   mGuiManagerPause, mGuiManagerLose, mGuiManagerCredits;
-		
-		vector<BlockObject> mBlockObjectVector;
-		vector<Vector2D> mBlockBitPositions;
-		BlockPile mBlockPile;
 
 		Scene mMainMenu, mGame, mOptions, mPauseScene, mLoseScene, mStatsScene, mCreditScene;
 		SceneManager mSceneManager;
 
+		Gui mFpscounter;
+
 		Language mLocalization;
-
-		Sound mTest, mButtonMove, mButtonSelect, mTetrisTheme, 
-			  mTetrisThemeDub, mLineClearSound, mRasputinTheme,
-				mBlockDropSound;
-
-		Gui mMainTitle, mStart, mQuit, mPause, mLost,
-			mScoreTxt, mLevel, mNext, mPauseNext, mFpscounter, mScoreToWin,
-			mPauseScore, mPauseLevel, mPauseScoreToWin,
-			mPlayerLevel, mExpToNextLevelTxt, mQuitLoseButton,
-			mButton, mButton2, mButton3, mButton4, mCreditsButton,
-			mLanguageButton, mOptionsTitle, mRetryButton, mStatsButton,
-			mReturnToMain, mAudio, mDifficulty, mReturnFromCreditsButton,
-			mResumeButton, mReturnButton, mOptionsGame, mReturnFromStatsButton,
-			mTotalScoreTxt, mTotalClearsTxt, mHighestLevelTxt, mDevelopersTxt,
-			mRasputinArtistTxt, mTetrisArtistTxt, mTetrisTrapArtistTxt, mTetrisImageTxt, mWiiThemeTxt;
-
-		int mPlayerLevelNum = 1, mExpToNextLevel = 100, mClearPoints;
-		int mLifetimeClears, mLifetimeScore, mHighestLevel;
 
 		GraphicsBuffer mMenuBuffer;
 		GraphicsBuffer mSpaceBlue, mLoadingScreen;
@@ -79,13 +59,7 @@ class Game : EventListener
 		Sprite mLoadBlock;
 
 		//External assets
-		
-	//	#ifdef _DEBUG
 		const string mLOCAL_ASSET_PATH = "assets\\";
-	//	#else
-		//const string mLOCAL_ASSET_PATH = "..\\assets\\";
-	//	#endif
-
 
 		const string mCOUR_FONT = "cour.ttf";
 		const string mINI_FILE = "data.ini";
@@ -93,35 +67,14 @@ class Game : EventListener
 		const string mSPACE_BLUE = "tetrisBG6.bmp";
 		const string mCREDIT_BG = "tetrisBG7.bmp";
 		const string mSPACE_PURPLE = "spacepurple.bmp";
-		
-		const string mWALLBLOCK = "wallBlock.bmp";		
-		const string mL_BLOCK = "lBlock.bmp";
-		const string mI_BLOCK = "iBlock.bmp";
-		const string mZ_BLOCK = "zBlock.bmp";
-		const string mS_BLOCK = "sBlock.bmp";
-		const string mO_BLOCK = "oBlock.bmp";
-		const string mT_BLOCK = "tBlock.bmp";
-		const string mJ_BLOCK = "jBlock.bmp";
-		
-		const string mBUTTON = "button.bmp";
-		const string mMUSIC_WII = "miimusic.wav";
-		const string mMUSIC_TETRIS = "tetristheme.wav";
-		const string mMUSIC_TETRISDUB = "tetrisdub.wav";
-		const string mMUSIC_RASPUTIN = "rasputinMusic.wav";
-		const string mFX_MOVE = "sof.wav";
-		const string mFX_SELECT = "close.wav";
-		const string mFX_LOCK = "blockLock.wav";
-		const string mFX_CLEAR = "lineComplete.wav";
 
 		//Buffer tags
 		const string mMENU_ID = "spacebase";
 		const string mSPACE_ID = "spaceblue";
 		const string mCREDIT_ID, mLOAD_ID = "loading";
-		const string mBLOCK_STR = "block";
-		vector<string> mBlock_ID;
 
 		//UI tags
-		const string mSTD_UI_TAG = "general";
+		const string mGEN_TAG = "general";
 		const string mMAINMENU_TAG = "mainmenu";
 		const string mOPTIONS_TAG = "options";
 		const string mPAUSE_TAG = "pause";
@@ -131,18 +84,12 @@ class Game : EventListener
 
 		bool mStartGame;
 		bool mIsRunning;
-		bool mCanMoveBlockY = true;
+		
 		int mAudioCounter = 1;
 	
-		int mScore = 0; 
-		string mScoreStr, mLevelStr;
-		int mLevelNum = 1;
-		int mCurrBlock = 2;
-		int mNextBlock = 1;
+		
 		int mSpriteSize;
-
-		int mNumBlocks;
-		int mOffset, mGridW, mGridH;
+		int mGridW, mGridH;
 
 		int mDisplayWidth, mDisplayHeight;
 
@@ -151,13 +98,6 @@ class Game : EventListener
 		const int mUI_SIZE = 20;
 		Color mWhiteText;
 
-		const int mCLEAR_PTS = 1100;
-		int mScoreToReach = 1000;
-			
-		float mBlockSpeedMultiplier = 1.0f;
-		int mSpeed1, mSpeed2, mSpeed3, mBlockSpeed;
-
-		unsigned int mEventType;
 		
 		Game();
 		~Game();
@@ -204,9 +144,6 @@ class Game : EventListener
 		void initUI();
 		void loadScenes();
 
-		void loadBlockImages();
-		void initBlockTypes();
-
 		//Explicit destructor
 		void cleanupGame();
 
@@ -215,8 +152,6 @@ class Game : EventListener
 
 		//Update game objects
 		void update(double timeElapsed);
-		void updateTetris();
-		void updateScore();
 
 		//Draw to the screen
 		void render();

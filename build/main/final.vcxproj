@@ -168,8 +168,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BlockObject.cpp" />
-    <ClCompile Include="BlockPile.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GraphicsBufferManager.cpp" />
@@ -182,8 +180,6 @@
     <ClCompile Include="SceneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BlockObject.h" />
-    <ClInclude Include="BlockPile.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GraphicsBufferManager.h" />
