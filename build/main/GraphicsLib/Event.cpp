@@ -31,7 +31,7 @@ const string& Event::getEventName() const
 		return nullString;
 	}
 }
-
+/*
 void Event::setX(int xPos)
 {
 	x = xPos;
@@ -50,4 +50,4 @@ int Event::getX() const
 int Event::getY() const
 {
 	return y;
-}
+}*/

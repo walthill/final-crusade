@@ -5,6 +5,7 @@
 #include <cassert>
 #include <Trackable.h>
 
+class MouseEvent;
 class Event;
 class EventListener;
 enum EventType;

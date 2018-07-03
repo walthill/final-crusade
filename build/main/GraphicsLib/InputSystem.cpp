@@ -2,7 +2,6 @@
 
 InputSystem::InputSystem()
 {
-	//mInputQueue = NULL;
 	mIsKeyDown = false;
 }
 
@@ -26,30 +25,6 @@ void InputSystem::cleanupInputSystem()
 
 bool InputSystem::initInputSystem()
 {
-	/*if (!al_install_keyboard())
-	{
-		cout << "error - Keyboard Add-on not initted\n";
-		return false;
-	}
-
-	if (!al_install_mouse())
-	{
-		cout << "error - Mouse Add-on not initted\n";
-		return false;
-	}
-
-	mInputQueue = al_create_event_queue();
-	assert(mInputQueue);
-
-	if (!mInputQueue)
-	{
-		cout << "failed to create event_queue!\n";
-		return false;
-	}
-
-	al_register_event_source(mInputQueue, al_get_keyboard_event_source());
-	al_register_event_source(mInputQueue, al_get_mouse_event_source());
-	*/
 	cout << "Initialized InputSystem" << endl;
 
 	return true;
@@ -57,26 +32,20 @@ bool InputSystem::initInputSystem()
 
 
 void InputSystem::update(double elapsedTime)
-{
-		getKeyEvents();
-		getMouseEvents();
+{	
+	getInputEvents();
 }
 
 
-void InputSystem::getKeyEvents()
+void InputSystem::getInputEvents()
 {
 
 	while (SDL_PollEvent(&mEvent))
 	{
 		switch (mEvent.type)
 		{
-		case SDL_MOUSEMOTION: //TODO(low): test for performance
-			cout << "InputSystem: ROTATION" << endl;
-			mKeyEvent.setType(MOUSE_MOTION);
-			mKeyEvent.setX( mEvent.motion.x);
-			mKeyEvent.setY( mEvent.motion.y);
-
-			EventSystem::getInstance()->fireEvent(mKeyEvent);
+		case SDL_MOUSEMOTION:
+			EventSystem::getInstance()->fireEvent(MouseEvent(MOUSE_MOTION, mEvent.motion.x, mEvent.motion.y));
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			if (mEvent.button.button == SDL_BUTTON_LEFT)
@@ -126,42 +95,3 @@ void InputSystem::getKeyEvents()
 		}
 	};
 }
-
-
-void InputSystem::getMouseEvents()
-{
-	/*al_get_mouse_state(&mMouseState); //Used to track mouse position
-
-	al_get_next_event(mInputQueue, &mEvents);
-	
-	if(mEvents.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !mIsKeyDown)
-	{
-		mIsKeyDown = true;
-		switch (mEvents.mouse.button)
-		{
-			case 1:
-				cout << "InputSystem: LMB" << endl;
-				//mMouseEvent.setType(LMB);
-				EventSystem::getInstance()->fireEvent(mMouseEvent);
-
-				break;
-			case 2:
-				cout << "InputSystem: RMB" << endl;
-				//mMouseEvent.setType(RMB);
-				EventSystem::getInstance()->fireEvent(mMouseEvent);
-
-				break;
-		}
-	}
-	else if (mEvents.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP && mIsKeyDown)
-	{
-		mIsKeyDown = false;
-	}*/
-}
-
-
-
-/*ALLEGRO_MOUSE_STATE InputSystem::getMouse()
-{
-	return mMouseState;
-}*/

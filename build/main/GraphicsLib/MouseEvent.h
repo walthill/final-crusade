@@ -11,21 +11,15 @@ class MouseEvent: public Event
 {
 public:
 	MouseEvent();
-	MouseEvent(EventType type );
 	MouseEvent(EventType type, int mouseX, int mouseY);
 	virtual ~MouseEvent();
 
-//	void setType(MouseEventType type, int mouseX, int);
-	EventType getType() const { return mType; };
-	const string& getEventName() const;
-	
 	void setEvent(EventType type, int mouseX, int mouseY);
 	
-	int getX();
-	int getY();
+	int getX() const { return mX; };
+	int getY() const { return mY; }
 
 private:
-	EventType mType;
 	int mX, mY;
 
 };

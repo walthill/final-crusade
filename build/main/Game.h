@@ -7,7 +7,7 @@
 #include "PerformanceTracker.h"
 
 #include "InputTranslator.h"
-#include "Entity.h"
+#include "Player.h"
 #include "simpleini-4.17\SimpleIni.h"
 #include "GraphicsBufferManager.h"
 #include "SceneManager.h"
@@ -58,7 +58,7 @@ class Game : EventListener
 		Sprite mPlayerSprite;
 		Animation mPlayerAnim;
 
-		Entity mPlayer;
+		Player mPlayer;
 
 		//External assets
 		const string mLOCAL_ASSET_PATH = "assets\\";
@@ -100,6 +100,7 @@ class Game : EventListener
 		const int mUI_SIZE = 20;
 		Color mWhiteText;
 
+		int mouseX, mouseY;
 		int angle;
 		double dY, dX;
 

@@ -37,11 +37,6 @@ void InputTranslator::cleanupInputTranslator()
 void InputTranslator::handleEvent(const Event& theEvent)
 {
 	mEventType = theEvent.getType();
-	x = theEvent.getX();
-	y = theEvent.getY();
-
-	cout << endl << "Translator Listener" << endl;
-	cout << "\t" << theEvent.getEventName() << " Received: ";
 	
 	switch (mEventType)
 	{
@@ -51,12 +46,15 @@ void InputTranslator::handleEvent(const Event& theEvent)
 			break;
 		
 		case MOUSE_MOTION:
-			mTranslatorEvent.setType(ROTATION);
-			mTranslatorEvent.setX(x);
-			mTranslatorEvent.setY(y);
-			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+		{	
+			const MouseEvent& mouseEvent = static_cast<const MouseEvent&>(theEvent);
+		//	mTranslatorMouseEvent = mouseEvent;
+			//mTranslatorEvent.setType(ROTATION);
+
+  			//mTranslatorEvent.setType(MOVE_UP);
+  			EventSystem::getInstance()->fireEvent(MouseEvent(ROTATION, mouseEvent.getX(), mouseEvent.getY()));
 			break;
-		
+		}
 		case UP_ARROW:
 			mTranslatorEvent.setType(MOVE_UP);
 			EventSystem::getInstance()->fireEvent(mTranslatorEvent);

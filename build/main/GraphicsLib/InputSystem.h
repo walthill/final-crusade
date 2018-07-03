@@ -32,9 +32,8 @@ class InputSystem : public Trackable
 		void cleanupInputSystem();
 
 		//Input and mouse position
-		void getKeyEvents();
-		void getMouseEvents();
-
+		void getInputEvents();
+		
 		//Call mouse and key events
 		void update(double elapsedTime);
 };

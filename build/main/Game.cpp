@@ -78,7 +78,6 @@ bool Game::initGame()
 		
 	mPlayer.setAnimation(mPlayerAnim);
 	mPlayer.setLoc(400,200);
-	//TODO(high): create player class that extends entity
 
 	mIsRunning = true;
 
@@ -253,6 +252,7 @@ void Game::update(double timeElapsed)
 	
 	if (mSceneManager.getCurrentScene() == SC_GAME)
 	{
+		mPlayer.update(timeElapsed, mouseX, mouseY);
 	}
 }
 
@@ -281,9 +281,6 @@ void Game::render()
 void Game::handleEvent(const Event& theEvent)
 {
 	mEventType = theEvent.getType();
-
-	cout << endl << "Game Listener" << endl;
-	cout << "\t" << theEvent.getEventName() << " Received: ";
 
 	switch (mEventType)
 	{
@@ -324,15 +321,20 @@ void Game::handleEvent(const Event& theEvent)
 		break;
 
 	case ROTATION:
+	{
+		const MouseEvent& mouseEvent = static_cast<const MouseEvent&>(theEvent);
+
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			cout << "Mouse location: " + to_string(theEvent.getX()) << endl;
-			
-			rotatePlayer(theEvent.getX(), theEvent.getY());
+			cout << "Mouse location: " + to_string(mouseEvent.getX()) << endl;
 
-		}		
+			mouseX = mouseEvent.getX();
+				mouseY = mouseEvent.getY();
+			//rotatePlayer(mouseEvent.getX(), mouseEvent.getY());
+
+		}
 		break;
-
+	}
 	
 	case MOVE_DOWN:
 		cout << endl;

@@ -176,6 +176,7 @@
     <ClCompile Include="Language.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GUIManager.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
   </ItemGroup>
@@ -185,6 +186,7 @@
     <ClInclude Include="GraphicsBufferManager.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="GUIManager.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Language.h" />
     <ClInclude Include="InputTranslator.h" />

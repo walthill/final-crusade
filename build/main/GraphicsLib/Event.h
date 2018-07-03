@@ -82,15 +82,15 @@ public:
 	EventType getType() const { return mType; };
 	const string& getEventName() const;
 
-	void setX(int xPos);
-	void setY(int yPos);
+//	void setX(int xPos);
+//	void setY(int yPos);
 
-	int getY() const;
-	int getX() const;
+	//int getY() const;
+//	int getX() const;
 
-private:
+protected:
 	EventType mType;
-	int x = 0, y = 0;
+//	int x, y;
 };
 
 #endif // !EVENT_H
