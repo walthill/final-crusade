@@ -35,7 +35,7 @@ GraphicsBuffer::GraphicsBuffer(int width, int height)
 
 GraphicsBuffer::GraphicsBuffer(int width, int height, string filePath)
 {
-	mpBitmap = SDL_CreateTextureFromSurface(mpRenderer, SDL_LoadBMP(filePath.c_str()));
+	mpBitmap = SDL_CreateTextureFromSurface(mpRenderer, IMG_Load(filePath.c_str()));
 	mBitmapWidth = width;
 	mBitmapHeight = height;
 
@@ -53,7 +53,7 @@ GraphicsBuffer::~GraphicsBuffer()
 void GraphicsBuffer::initGraphicsBuffer(GraphicsBuffer *surface, int width, int height, string filePath)
 {
 	//NOTE: mp surface gets width and height
-	mpSurface = SDL_LoadBMP(filePath.c_str());
+	mpSurface = IMG_Load(filePath.c_str());
 	mpRenderer = surface->mpRenderer;
 
 	mpBitmap = SDL_CreateTextureFromSurface(mpRenderer, mpSurface);

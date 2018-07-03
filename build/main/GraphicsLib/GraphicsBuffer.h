@@ -2,6 +2,7 @@
 #define GRAPHICS_BUFFER
 
 #include "SDL.h"
+#include "SDL_image.h"
 #include "Trackable.h"
 
 using namespace std;

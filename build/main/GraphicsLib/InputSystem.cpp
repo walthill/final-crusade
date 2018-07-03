@@ -66,14 +66,23 @@ void InputSystem::update(double elapsedTime)
 void InputSystem::getKeyEvents()
 {
 
-	// Alegro event queue help @ https://www.youtube.com/watch?v=upgb6HFUep4 
-	//al_get_next_event(mInputQueue, &mEvents);
 	while (SDL_PollEvent(&mEvent))
 	{
 		switch (mEvent.type)
 		{
+		case SDL_MOUSEMOTION: //TODO(low): test for performance
+			cout << "InputSystem: ROTATION" << endl;
+			mKeyEvent.setType(MOUSE_MOTION);
+			mKeyEvent.setX( mEvent.motion.x);
+			mKeyEvent.setY( mEvent.motion.y);
+
+			EventSystem::getInstance()->fireEvent(mKeyEvent);
+			break;
 		case SDL_MOUSEBUTTONDOWN:
-			//getMouseEvents();
+			if (mEvent.button.button == SDL_BUTTON_LEFT)
+			{
+				//cout << "InputSystem: Left mouse button clicked" << endl;
+			}
 			break;
 		case SDL_KEYDOWN:
 			if (mEvent.key.keysym.sym == SDLK_ESCAPE)
@@ -88,25 +97,25 @@ void InputSystem::getKeyEvents()
 				mKeyEvent.setType(ENTER);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
-			if (mEvent.key.keysym.sym == SDLK_UP)
+			if (mEvent.key.keysym.sym == SDLK_w)
 			{
 				cout << "InputSystem: Up arrow" << endl;
 				mKeyEvent.setType(UP_ARROW);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
-			if (mEvent.key.keysym.sym == SDLK_DOWN)
+			if (mEvent.key.keysym.sym == SDLK_s)
 			{
 				cout << "InputSystem: Down arrow" << endl;
 				mKeyEvent.setType(DOWN_ARROW);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
-			if (mEvent.key.keysym.sym == SDLK_LEFT)
+			if (mEvent.key.keysym.sym == SDLK_a)
 			{
 				cout << "InputSystem: Left arrow" << endl;
 				mKeyEvent.setType(LEFT_ARROW);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
-			if (mEvent.key.keysym.sym == SDLK_RIGHT)
+			if (mEvent.key.keysym.sym == SDLK_d)
 			{
 				cout << "InputSystem: Right arrow" << endl;
 				mKeyEvent.setType(RIGHT_ARROW);
@@ -116,110 +125,6 @@ void InputSystem::getKeyEvents()
 			break;
 		}
 	};
-
-	
-
-//	mKeyState =	SDL_GetKeyboardState(NULL);
-	
-
-	/*if (mEvent.type == SDL_KEYDOWN)
-	{
-		mIsKeyDown = true;
-		if (mEvent.key.keysym.sym == SDLK_ESCAPE)
-		{
-			cout << "InputSystem: ESC" << endl;
-			mKeyEvent.setType(ESC);
-			EventSystem::getInstance()->fireEvent(mKeyEvent);
-		}
-		if (mEvent.key.keysym.sym == SDLK_SPACE)
-		{
-			cout << "InputSystem: Space" << endl;
-			mKeyEvent.setType(SPACE);
-			EventSystem::getInstance()->fireEvent(mKeyEvent);
-		}
-		if (mEvent.key.keysym.sym == SDL_SCANCODE_UP)
-		{
-			cout << "InputSystem: Up arrow" << endl;
-			mKeyEvent.setType(UP_ARROW);
-			EventSystem::getInstance()->fireEvent(mKeyEvent);
-		}
-		if (mEvent.key.keysym.sym == SDL_SCANCODE_DOWN)
-		{
-			cout << "InputSystem: Right arrow" << endl;
-			mKeyEvent.setType(DOWN_ARROW);
-			EventSystem::getInstance()->fireEvent(mKeyEvent);
-		}
-		if (mEvent.key.keysym.sym == SDL_SCANCODE_LEFT)
-		{
-			cout << "InputSystem: Right arrow" << endl;
-			mKeyEvent.setType(LEFT_ARROW);
-			EventSystem::getInstance()->fireEvent(mKeyEvent);
-		}
-		if (mEvent.key.keysym.sym == SDL_SCANCODE_RIGHT)
-		{
-			cout << "InputSystem: Right arrow" << endl;
-			mKeyEvent.setType(RIGHT_ARROW);
-			EventSystem::getInstance()->fireEvent(mKeyEvent);
-		}
-	}
-	else if(mEvent.type == SDL_KEYUP && mIsKeyDown)
-	{
-		mIsKeyDown = false;
-	}
-	*/
-	
-/*	if (mEvents.type == ALLEGRO_EVENT_KEY_DOWN)
-	{
-		mIsKeyDown = true;
-
-		switch (mEvents.keyboard.keycode)
-		{
-			case ALLEGRO_KEY_ESCAPE:
-				cout << "InputSystem: ESC" << endl;
-				mKeyEvent.setType(ESC);
-				EventSystem::getInstance()->fireEvent(mKeyEvent);
-				
-				break;
-
-			case ALLEGRO_KEY_UP:
-				cout << "InputSystem: Up arrow" << endl;
-				mKeyEvent.setType(UP_ARROW);
-				EventSystem::getInstance()->fireEvent(mKeyEvent);
-
-				break;
-
-			case ALLEGRO_KEY_DOWN:
-				cout << "InputSystem: Down arrow" << endl;
-				mKeyEvent.setType(DOWN_ARROW);
-				EventSystem::getInstance()->fireEvent(mKeyEvent);
-
-				break;
-			case ALLEGRO_KEY_LEFT:
-				cout << "InputSystem: Left arrow" << endl;
-				mKeyEvent.setType(LEFT_ARROW);
-				EventSystem::getInstance()->fireEvent(mKeyEvent);
-
-				break;
-			case ALLEGRO_KEY_RIGHT:
-				cout << "InputSystem: Right arrow" << endl;
-				mKeyEvent.setType(RIGHT_ARROW);
-				EventSystem::getInstance()->fireEvent(mKeyEvent);
-
-				break;
-			case ALLEGRO_KEY_SPACE:
-				cout << "InputSystem: Right arrow" << endl;
-				mKeyEvent.setType(SPACE);
-				EventSystem::getInstance()->fireEvent(mKeyEvent);
-
-				break;
-
-		}
-	}
-	else if (mEvents.type == ALLEGRO_EVENT_KEY_UP && mIsKeyDown)
-	{
-		mIsKeyDown = false;
-	}*/
-
 }
 
 
@@ -253,6 +158,7 @@ void InputSystem::getMouseEvents()
 		mIsKeyDown = false;
 	}*/
 }
+
 
 
 /*ALLEGRO_MOUSE_STATE InputSystem::getMouse()

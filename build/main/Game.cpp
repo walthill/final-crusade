@@ -22,6 +22,8 @@ void Game::installListeners()
 	EventSystem::getInstance()->addListener(MOVE_RIGHT, this);
 	EventSystem::getInstance()->addListener(MOVE_DOWN, this);
 	EventSystem::getInstance()->addListener(MOVE_UP, this);
+	EventSystem::getInstance()->addListener(ROTATION, this);
+
 
 	cout << "*******Initialized listeners*******" << endl;
 }
@@ -29,7 +31,7 @@ void Game::installListeners()
 void Game::displayLoadingScreen()
 {
 	//show image while game data & assets load in
-	mLoadingScreen.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + "spacepurple.bmp");
+	mLoadingScreen.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + mLOADING_IMG);
 	mBufferManager.addGraphicsBuffer(mLOAD_ID, &mLoadingScreen);
 
 	mLoadingSprite.initSprite(mBufferManager.getGraphicsBuffer(mLOAD_ID), 0, 0, mBufferManager.getGraphicsBuffer(mLOAD_ID)->getBitmapWidth(),
@@ -55,7 +57,7 @@ bool Game::initGame()
 
 	cout << "*******Initialized system*******" << endl;
 
-	//displayLoadingScreen();
+	displayLoadingScreen();
 
 	//Initialize game-side input translation from event system
 	mInputTranslator.initInputTranslator();
@@ -68,6 +70,15 @@ bool Game::initGame()
 	initUI();
 	loadScenes();
 	initAudio();
+
+	mPlayerBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayHeight, mDisplayWidth, mLOCAL_ASSET_PATH + mPLAYER_ASSET);
+	mBufferManager.addGraphicsBuffer(mPLAYER_ID, &mPlayerBuffer);
+
+	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 1, 16, 16);
+		
+	mPlayer.setAnimation(mPlayerAnim);
+	mPlayer.setLoc(400,200);
+	//TODO(high): create player class that extends entity
 
 	mIsRunning = true;
 
@@ -105,11 +116,12 @@ void Game::initAudio()
 
 void Game::loadBackgrounds()
 {
-	//Initialize bitmaps
+	//Initialize bitmaps using initGraphicsBuffer()
 
-	//Add buffers to manager
+
+	//Add buffers to buffer manager
 	
-	//Background sprites
+	//init Background sprites using initSprite()
 	
 
 	cout << "*******Initialized buffers*******" << endl;
@@ -145,7 +157,7 @@ void Game::loadScenes()
 	//add to manager
 	mSceneManager.addScene("a", &mMainMenu);
 	
-	mSceneManager.setCurrentScene(SC_MAIN);
+	mSceneManager.setCurrentScene(SC_GAME);
 
 	cout << "~~| Twisting loose screws |~~" << endl;
 	cout << "*******Scenes Loaded*******" << endl;
@@ -208,6 +220,7 @@ bool Game::runGameLoop()
 		pPerformanceTracker->startTracking(mDRAW_TRACKER_NAME);
 		frameTimer->start();
 
+		//rotatePlayer();
 
 		update(mFRAME_TIME_60FPS);
 		render();
@@ -243,10 +256,23 @@ void Game::update(double timeElapsed)
 	}
 }
 
+void Game::rotatePlayer(int mouseX, int mouseY)
+{
+	//Math salvation from jordsti @ https://bit.ly/2KrJx7Y
+	
+	dX = mPlayer.getX() - mouseX;
+	dY = mPlayer.getY() - mouseY;
+
+	angle = (atan2(dY, dX)*180.0) / 3.1416;
+	mPlayer.setRotation(angle);
+}
+
 
 void Game::render()
 {
 	mSceneManager.draw(mSystem.getGraphicsSystem());
+
+	mPlayer.draw(mSystem.getGraphicsSystem());
 
 	mSystem.getGraphicsSystem()->flip();
 }
@@ -262,10 +288,11 @@ void Game::handleEvent(const Event& theEvent)
 	switch (mEventType)
 	{
 	case PAUSE_GAME:
-		if (mSceneManager.getCurrentScene() == SC_GAME)
+		/*if (mSceneManager.getCurrentScene() == SC_GAME)
 			mSceneManager.setCurrentScene(SC_PAUSE);
 		else if(mSceneManager.getCurrentScene() == SC_PAUSE)
-			mSceneManager.setCurrentScene(SC_GAME);
+			mSceneManager.setCurrentScene(SC_GAME);*/
+		mIsRunning = false;
 		break;
 
 	case BUTTON_SELECT:
@@ -276,7 +303,7 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
 		{
-			
+
 		}
 		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
 		{
@@ -284,23 +311,34 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_LOSE)
 		{
-			
+
 		}
 		else if (mSceneManager.getCurrentScene() == SC_CREDITS)
 		{
-			
+
 		}
 		else if (mSceneManager.getCurrentScene() == SC_STATS)
 		{
-			
+
 		}
 		break;
 
+	case ROTATION:
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			cout << "Mouse location: " + to_string(theEvent.getX()) << endl;
+			
+			rotatePlayer(theEvent.getX(), theEvent.getY());
+
+		}		
+		break;
+
+	
 	case MOVE_DOWN:
 		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			
+
 		}
 		else if (mSceneManager.getCurrentScene() == SC_MAIN)
 		{
@@ -348,7 +386,7 @@ void Game::handleEvent(const Event& theEvent)
 		break;
 
 
-	case MOVE_LEFT:
+	case MOVE_LEFT: //TODO: movement
 		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
@@ -360,7 +398,6 @@ void Game::handleEvent(const Event& theEvent)
 		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-
 		}
 		break;
 	}

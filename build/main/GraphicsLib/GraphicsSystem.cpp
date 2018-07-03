@@ -32,6 +32,12 @@ bool GraphicsSystem::initGraphics(int displayWidth, int displayHeight)
 		return false;
 	}
 
+	if(IMG_Init(IMG_INIT_PNG) == 0)
+	{
+		cout << "error with SDL Image Extension initialization";
+		return false;
+	}
+
 	if (TTF_Init() != 0)
 	{
 		cout << "error with SDL Font Extension init";
@@ -79,7 +85,7 @@ bool GraphicsSystem::initGraphics(int displayWidth, int displayHeight)
 		return false;
 	}*/
 
-	mDisplay = SDL_CreateWindow("Tetris",
+	mDisplay = SDL_CreateWindow("Final Crusade",
 								300, 100,
 								displayWidth, displayHeight,
 								0);
@@ -107,6 +113,8 @@ void GraphicsSystem::cleanupGraphics()
 		mBackBuffer = NULL;
 
 		cout << "Display destroyed" << endl;
+		
+		IMG_Quit();
 		SDL_Quit();
 	}
 }
@@ -121,11 +129,10 @@ void GraphicsSystem::flip()
 {
 	SDL_RenderPresent(mRenderer);
 	SDL_RenderClear(mRenderer);	
-//	SDL_UpdateWindowSurface(mDisplay);
 }
 
 
-void GraphicsSystem::draw(int targetX, int targetY, Sprite &spr, float scaleX, float scaleY)
+void GraphicsSystem::draw(int targetX, int targetY, Sprite &spr, float scaleX, float scaleY, double rotationAngle)
 {
 	int width = spr.getSpriteWidth();
 	int height = spr.getSpriteHeight();
@@ -142,7 +149,7 @@ void GraphicsSystem::draw(int targetX, int targetY, Sprite &spr, float scaleX, f
 	drawRect.w = width;
 	drawRect.h = height;
 
-	SDL_RenderCopyEx(mRenderer, spr.getBuffer()->mpBitmap, &sourceRect, &drawRect, NULL, NULL, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(mRenderer, spr.getBuffer()->mpBitmap, &sourceRect, &drawRect, rotationAngle, NULL, SDL_FLIP_NONE);
 }
 
 

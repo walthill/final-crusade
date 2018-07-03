@@ -13,6 +13,7 @@ enum EventType
 	MOUSE_DOWN_EVENT, //Input system events, attached to Allegro
 
 	ESC,
+	MOUSE_MOTION,
 	UP_ARROW,//Input translator events, focused on buttons/keys
 	DOWN_ARROW,
 	LEFT_ARROW,
@@ -25,6 +26,7 @@ enum EventType
 	MOVE_DOWN,
 	MOVE_LEFT,
 	MOVE_RIGHT,
+	ROTATION,
 	
 	UNDEFINED, //button events
 	NEW_GAME,
@@ -80,9 +82,15 @@ public:
 	EventType getType() const { return mType; };
 	const string& getEventName() const;
 
+	void setX(int xPos);
+	void setY(int yPos);
+
+	int getY() const;
+	int getX() const;
+
 private:
 	EventType mType;
-
+	int x = 0, y = 0;
 };
 
 #endif // !EVENT_H

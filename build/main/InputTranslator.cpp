@@ -24,6 +24,8 @@ void InputTranslator::initInputTranslator()
 	EventSystem::getInstance()->addListener(LEFT_ARROW, this);
 	EventSystem::getInstance()->addListener(RIGHT_ARROW, this);
 	EventSystem::getInstance()->addListener(ENTER, this);
+
+	EventSystem::getInstance()->addListener(MOUSE_MOTION, this);
 }
 
 
@@ -35,6 +37,8 @@ void InputTranslator::cleanupInputTranslator()
 void InputTranslator::handleEvent(const Event& theEvent)
 {
 	mEventType = theEvent.getType();
+	x = theEvent.getX();
+	y = theEvent.getY();
 
 	cout << endl << "Translator Listener" << endl;
 	cout << "\t" << theEvent.getEventName() << " Received: ";
@@ -44,9 +48,15 @@ void InputTranslator::handleEvent(const Event& theEvent)
 		case ESC:
 			mTranslatorEvent.setType(PAUSE_GAME);
 			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
-
 			break;
-
+		
+		case MOUSE_MOTION:
+			mTranslatorEvent.setType(ROTATION);
+			mTranslatorEvent.setX(x);
+			mTranslatorEvent.setY(y);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+			break;
+		
 		case UP_ARROW:
 			mTranslatorEvent.setType(MOVE_UP);
 			EventSystem::getInstance()->fireEvent(mTranslatorEvent);

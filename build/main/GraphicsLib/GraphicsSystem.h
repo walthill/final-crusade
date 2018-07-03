@@ -46,7 +46,7 @@ class GraphicsSystem : Trackable
 
 
 		//Draw given sprite's assigned bitmap
-		void draw(int targetX, int targetY, Sprite &spr, float scaleX, float scaleY);
+		void draw(int targetX, int targetY, Sprite &spr, float scaleX, float scaleY, double rotationAngle = NULL);
 
 
 		//Draw to backbuffer

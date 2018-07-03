@@ -7,7 +7,7 @@
 #include "PerformanceTracker.h"
 
 #include "InputTranslator.h"
-
+#include "Entity.h"
 #include "simpleini-4.17\SimpleIni.h"
 #include "GraphicsBufferManager.h"
 #include "SceneManager.h"
@@ -51,24 +51,26 @@ class Game : EventListener
 		GraphicsBuffer mCredit;
 		vector<GraphicsBuffer> mBlockBufferVector;
 		GraphicsBuffer mStartButton;
+		GraphicsBuffer mPlayerBuffer;
 
 		Sprite mBackgroundSprite, mMenuSprite, mCreditBG, mLoadingSprite;
-		Sprite mBlock1Sprite, mBlock2Sprite, mBlock3Sprite,
-			   mBlock4Sprite, mBlock5Sprite, mBlock6Sprite,
-			   mBlock7Sprite, mBlock8Sprite;
-		Sprite mLoadBlock;
+		
+		Sprite mPlayerSprite;
+		Animation mPlayerAnim;
+
+		Entity mPlayer;
 
 		//External assets
 		const string mLOCAL_ASSET_PATH = "assets\\";
-
+		const string mLOADING_IMG = "spacepurple.png";
 		const string mCOUR_FONT = "cour.ttf";
 		const string mINI_FILE = "data.ini";
-		const string mSPACE_BASE = "tetrisBG5.bmp";
-		const string mSPACE_BLUE = "tetrisBG6.bmp";
-		const string mCREDIT_BG = "tetrisBG7.bmp";
 		const string mSPACE_PURPLE = "spacepurple.bmp";
+		const string mPLAYER_ASSET = "phplayer.png";
+
 
 		//Buffer tags
+		const string mPLAYER_ID = "player";
 		const string mMENU_ID = "spacebase";
 		const string mSPACE_ID = "spaceblue";
 		const string mCREDIT_ID, mLOAD_ID = "loading";
@@ -98,7 +100,9 @@ class Game : EventListener
 		const int mUI_SIZE = 20;
 		Color mWhiteText;
 
-		
+		int angle;
+		double dY, dX;
+
 		Game();
 		~Game();
 
@@ -161,6 +165,8 @@ class Game : EventListener
 
 		bool saveGame();
 		void loadLastSave();
+
+		void rotatePlayer(int mouseX, int mouseY);
 
 		//Handles input
 		void handleEvent(const Event& theEvent);

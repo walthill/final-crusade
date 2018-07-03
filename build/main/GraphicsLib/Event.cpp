@@ -31,3 +31,23 @@ const string& Event::getEventName() const
 		return nullString;
 	}
 }
+
+void Event::setX(int xPos)
+{
+	x = xPos;
+}
+
+void Event::setY(int yPos)
+{
+	y = yPos;
+}
+
+int Event::getX() const
+{
+	return x;
+}
+
+int Event::getY() const
+{
+	return y;
+}

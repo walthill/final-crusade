@@ -16,13 +16,15 @@ class Entity : public Trackable
 	protected:
 		double mXLoc, mYLoc;	//world-space location
 		float mXScale, mYScale;
+		double mRotation;
 		Animation mAnim;
-		bool mVisibility, mShouldAnimate;
+		bool mIsVisible, mShouldAnimate;
 
 		
 
 	public:
 		Entity();
+
 		~Entity();
 
 		//Call animation update
@@ -34,6 +36,7 @@ class Entity : public Trackable
 		//Give mAnim a new sprite
 		void shouldAnimate(bool pause);
 
+		void setRotation(double roationAngle);
 
 		void setAnimation(Animation targetAnim);
 		Animation* getAnimation();
@@ -51,6 +54,7 @@ class Entity : public Trackable
 		void setScale(float x, float y);
 		float getXScale();
 		float getYScale();
+		double getRotation();
 };
 
 #endif // !ENTITY_H

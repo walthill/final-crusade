@@ -7,10 +7,12 @@
 class InputTranslator : EventListener
 {
 	private:
+		int x, y;
 		static int mId;
 		unsigned int mEventType;
 
 		Event mTranslatorEvent;
+		MouseEvent mTranslatorMouseEvent;
 		
 	public:
 		InputTranslator();

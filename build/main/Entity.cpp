@@ -2,11 +2,12 @@
 
 Entity::Entity()
 {
-	mVisibility = true;
+	mIsVisible = true;
 	mXLoc = 0;
 	mYLoc = 0;
 	mXScale = 1.0;
 	mYScale = 1.0;
+	mRotation = 0;
 	mShouldAnimate = true;
 }
 
@@ -24,10 +25,10 @@ void Entity::update(double timeElapsed)
 
 void Entity::draw(GraphicsSystem *graphicsSystem)
 {
-	if (mVisibility)
+	if (mIsVisible)
 	{
 		Sprite curSpr = mAnim.getCurrentSprite();
-//		graphicsSystem->draw(xLoc, yLoc, curSpr, 1.0, 1.0);
+		graphicsSystem->draw(mXLoc, mYLoc, curSpr, mXScale, mYScale, mRotation);
 	}
 }
 
@@ -53,13 +54,13 @@ void Entity::shouldAnimate(bool pause)
 
 bool Entity::isVisible()
 {
-	return mVisibility;
+	return mIsVisible;
 }
 
 
 void Entity::setVisible(bool setVisibilty)
 {
-	mVisibility = setVisibilty;
+	mIsVisible = setVisibilty;
 }
 
 
@@ -98,4 +99,15 @@ float Entity::getXScale()
 float Entity::getYScale()
 {
 	return mYScale;
+}
+
+
+void Entity::setRotation(double rot)
+{
+	mRotation = rot;
+}
+
+double Entity::getRotation()
+{
+	return mRotation;
 }

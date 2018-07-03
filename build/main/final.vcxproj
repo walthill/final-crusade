@@ -101,7 +101,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\shared\deanlib\include;..\..\shared\SDL2-2.0.8\include;GraphicsLib\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\shared\SDL2_image-2.0.3\include;..\..\shared\deanlib\include;..\..\shared\SDL2-2.0.8\include;GraphicsLib\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>GraphicsLib\debug;..\..\shared\deanlib\lib;..\..\shared\SDL2-2.0.8\lib\x86</AdditionalLibraryDirectories>
