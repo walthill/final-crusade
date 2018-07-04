@@ -100,8 +100,8 @@ class Game : EventListener
 		const int mUI_SIZE = 20;
 		Color mWhiteText;
 
-		int mouseX, mouseY;
-		int angle;
+		int mouseX, mouseY, playerX, playerY;
+		double angle;
 		double dY, dX;
 
 		Game();

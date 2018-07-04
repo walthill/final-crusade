@@ -92,6 +92,34 @@ void InputSystem::getInputEvents()
 			}
 
 			break;
+
+		case SDL_KEYUP:
+			if (mEvent.key.keysym.sym == SDLK_w)
+			{
+				cout << "InputSystem: Up arrow" << endl;
+				mKeyEvent.setType(UP_ARROW_RELEASED);
+				EventSystem::getInstance()->fireEvent(mKeyEvent);
+			}
+			if (mEvent.key.keysym.sym == SDLK_s)
+			{
+				cout << "InputSystem: Down arrow" << endl;
+				mKeyEvent.setType(DOWN_ARROW_RELEASED);
+				EventSystem::getInstance()->fireEvent(mKeyEvent);
+			}
+			if (mEvent.key.keysym.sym == SDLK_a)
+			{
+				cout << "InputSystem: Left arrow" << endl;
+				mKeyEvent.setType(LEFT_ARROW_RELEASED);
+				EventSystem::getInstance()->fireEvent(mKeyEvent);
+			}
+			if (mEvent.key.keysym.sym == SDLK_d)
+			{
+				cout << "InputSystem: Right arrow" << endl;
+				mKeyEvent.setType(RIGHT_ARROW_RELEASED);
+				EventSystem::getInstance()->fireEvent(mKeyEvent);
+			}
+
+			break;
 		}
 	};
 }

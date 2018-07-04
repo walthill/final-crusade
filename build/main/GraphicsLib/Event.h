@@ -14,10 +14,14 @@ enum EventType
 
 	ESC,
 	MOUSE_MOTION,
-	UP_ARROW,//Input translator events, focused on buttons/keys
+	UP_ARROW,
+	UP_ARROW_RELEASED,//Input translator events, focused on buttons/keys
 	DOWN_ARROW,
+	DOWN_ARROW_RELEASED,
 	LEFT_ARROW,
+	LEFT_ARROW_RELEASED,
 	RIGHT_ARROW,
+	RIGHT_ARROW_RELEASED,
 	ENTER,
 
 	PAUSE_GAME,
@@ -26,6 +30,10 @@ enum EventType
 	MOVE_DOWN,
 	MOVE_LEFT,
 	MOVE_RIGHT,
+	STOP_LEFT,
+	STOP_RIGHT,
+	STOP_UP,
+	STOP_DOWN,
 	ROTATION,
 	
 	UNDEFINED, //button events

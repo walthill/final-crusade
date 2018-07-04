@@ -23,6 +23,10 @@ void Game::installListeners()
 	EventSystem::getInstance()->addListener(MOVE_DOWN, this);
 	EventSystem::getInstance()->addListener(MOVE_UP, this);
 	EventSystem::getInstance()->addListener(ROTATION, this);
+	EventSystem::getInstance()->addListener(STOP_LEFT, this);
+	EventSystem::getInstance()->addListener(STOP_RIGHT, this);
+	EventSystem::getInstance()->addListener(STOP_DOWN, this);
+	EventSystem::getInstance()->addListener(STOP_UP, this);
 
 
 	cout << "*******Initialized listeners*******" << endl;
@@ -243,7 +247,6 @@ bool Game::runGameLoop()
 
 void Game::update(double timeElapsed)
 {
-
 	//Input
 	mSystem.getInputSystem()->update(timeElapsed);
 
@@ -256,23 +259,12 @@ void Game::update(double timeElapsed)
 	}
 }
 
-void Game::rotatePlayer(int mouseX, int mouseY)
-{
-	//Math salvation from jordsti @ https://bit.ly/2KrJx7Y
-	
-	dX = mPlayer.getX() - mouseX;
-	dY = mPlayer.getY() - mouseY;
-
-	angle = (atan2(dY, dX)*180.0) / 3.1416;
-	mPlayer.setRotation(angle);
-}
-
 
 void Game::render()
 {
 	mSceneManager.draw(mSystem.getGraphicsSystem());
 
-	mPlayer.draw(mSystem.getGraphicsSystem());
+	mPlayer.draw(mSystem.getGraphicsSystem()); //TODO(low): create a unit manager
 
 	mSystem.getGraphicsSystem()->flip();
 }
@@ -289,7 +281,7 @@ void Game::handleEvent(const Event& theEvent)
 			mSceneManager.setCurrentScene(SC_PAUSE);
 		else if(mSceneManager.getCurrentScene() == SC_PAUSE)
 			mSceneManager.setCurrentScene(SC_GAME);*/
-		mIsRunning = false;
+		mIsRunning = false; //temp
 		break;
 
 	case BUTTON_SELECT:
@@ -329,9 +321,7 @@ void Game::handleEvent(const Event& theEvent)
 			cout << "Mouse location: " + to_string(mouseEvent.getX()) << endl;
 
 			mouseX = mouseEvent.getX();
-				mouseY = mouseEvent.getY();
-			//rotatePlayer(mouseEvent.getX(), mouseEvent.getY());
-
+			mouseY = mouseEvent.getY();
 		}
 		break;
 	}
@@ -340,7 +330,7 @@ void Game::handleEvent(const Event& theEvent)
 		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-
+			mPlayer.setDown(true);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_MAIN)
 		{
@@ -368,7 +358,7 @@ void Game::handleEvent(const Event& theEvent)
 		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			
+			mPlayer.setUp(true);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_MAIN)
 		{
@@ -388,11 +378,11 @@ void Game::handleEvent(const Event& theEvent)
 		break;
 
 
-	case MOVE_LEFT: //TODO: movement
+	case MOVE_LEFT:
 		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-
+			mPlayer.setLeft(true);		
 		}
 		break;
 
@@ -400,6 +390,43 @@ void Game::handleEvent(const Event& theEvent)
 		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
+			mPlayer.setRight(true);
+		}
+		break;
+
+
+
+	case STOP_DOWN:
+		cout << endl;
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			mPlayer.setDown(false);
+		}
+
+		break;
+
+	case STOP_UP:
+		cout << endl;
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			mPlayer.setUp(false);
+		}
+		break;
+
+
+	case STOP_LEFT: 
+		cout << endl;
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			mPlayer.setLeft(false);		
+		}
+		break;
+
+	case STOP_RIGHT:
+		cout << endl;
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			mPlayer.setRight(false);
 		}
 		break;
 	}
