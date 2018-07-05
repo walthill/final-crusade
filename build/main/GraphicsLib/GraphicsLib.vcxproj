@@ -174,11 +174,13 @@
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="MouseEvent.cpp" />
     <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="System.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventListener.h" />

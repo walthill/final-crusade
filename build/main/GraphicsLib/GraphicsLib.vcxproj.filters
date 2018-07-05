@@ -72,6 +72,9 @@
     <ClCompile Include="MouseEvent.cpp">
       <Filter>Source Files\Event Filter</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\Graphics Filter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Font.h">
@@ -112,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="MouseEvent.h">
       <Filter>Header Files\Event Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\Graphics Filter</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

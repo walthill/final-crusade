@@ -103,11 +103,18 @@ void Game::loadGameData()
 
 	const char * iniWidth = ini.GetValue("VIEW", "windowW", "default");
 	const char * iniHeight = ini.GetValue("VIEW", "windowH", "default");
+	const char * iniLevelWidth = ini.GetValue("VIEW", "levelW", "default");
+	const char * iniLevelHeight = ini.GetValue("VIEW", "levelH", "default");
+
+	//TODO(low): lock in sprite sizes (16? 32?) 
 	const char * spriteSize = ini.GetValue("VIEW", "tileSize", "default");
 
 
 	mDisplayWidth = atoi(iniWidth);
 	mDisplayHeight = atoi(iniHeight);
+	
+	mLevelWidth = atoi(iniLevelWidth);
+	mLevelHeight = atoi(iniLevelHeight);
 	
 	cout << "*******Loaded game data*******" << endl;
 }
@@ -260,7 +267,7 @@ void Game::update(double timeElapsed)
 }
 
 
-void Game::render()
+void Game::render(int viewX, int viewY)
 {
 	mSceneManager.draw(mSystem.getGraphicsSystem());
 

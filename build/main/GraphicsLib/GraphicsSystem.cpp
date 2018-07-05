@@ -94,6 +94,7 @@ bool GraphicsSystem::initGraphics(int displayWidth, int displayHeight)
 	mRenderer = SDL_CreateRenderer(mDisplay, -1, SDL_RENDERER_ACCELERATED);
 	mBackBuffer = new GraphicsBuffer( SDL_GetWindowSurface(mDisplay), mRenderer);
 
+	SDL_ShowCursor(1);
 	
 	cout << "Graphics Library Initialized" << endl;
 

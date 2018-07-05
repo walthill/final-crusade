@@ -19,7 +19,7 @@ Entity::~Entity()
 
 void Entity::update(double timeElapsed)
 {
-	mAnim.update(timeElapsed, mShouldAnimate);
+ 	mAnim.update(timeElapsed, mShouldAnimate);
 }
 
 
@@ -28,7 +28,7 @@ void Entity::draw(GraphicsSystem *graphicsSystem)
 	if (mIsVisible)
 	{
 		Sprite curSpr = mAnim.getCurrentSprite();
-		graphicsSystem->draw(mXLoc, mYLoc, curSpr, mXScale, mYScale, mRotation);
+  		graphicsSystem->draw(mXLoc, mYLoc, curSpr, mXScale, mYScale, mRotation);
 	}
 }
 

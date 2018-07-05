@@ -93,7 +93,7 @@ class Game : EventListener
 		int mSpriteSize;
 		int mGridW, mGridH;
 
-		int mDisplayWidth, mDisplayHeight;
+		
 
 		Font *mFont, *mGameUI;
 		const int mFONT_SIZE = 25;
@@ -116,6 +116,8 @@ class Game : EventListener
 		double mFPS;
 
 	public:
+		int _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight;
+
 		//Static class functions
 		static Game* getInstance()
 		{
@@ -159,7 +161,7 @@ class Game : EventListener
 		void update(double timeElapsed);
 
 		//Draw to the screen
-		void render();
+		void render(int viewX, int viewY);
 		
 		void loadGameData();
 		void installListeners();
