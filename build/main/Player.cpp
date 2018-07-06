@@ -4,13 +4,19 @@ Player::Player()
 {
 	mPlayerFrameSpeed = 10;
 	mVelocity = 3;
-	xBound = 790;
-	yBound = 590; //screen sizes 
+	//xBound = 1600;
+	//yBound = 1200; //screen sizes 
 }
 
 Player::~Player()
 {
 
+}
+
+void Player::init(int xBounds, int yBounds)
+{
+	mXBound = xBounds;
+	mYBound = yBounds;
 }
 
 void Player::update(double timeElapsed, int mouseX, int mouseY)
@@ -28,17 +34,27 @@ void Player::update(double timeElapsed, int mouseX, int mouseY)
 	}
 }
 
+void Player::draw(GraphicsSystem *graphicsSystem, int camX, int camY)
+{
+	if (mIsVisible)
+	{
+		Sprite curSpr = mAnim.getCurrentSprite();
+
+		//draw relative to camera position
+		graphicsSystem->draw(mXLoc - camX, mYLoc - camY, curSpr, mXScale, mYScale, mRotation);
+	}
+}
 
 void Player::checkBounds()
 {
-	if (mXLoc < 0)
+ 	if (mXLoc < 0)
 		mXLoc = 0;
-	if (mXLoc > xBound)
-		mXLoc = xBound;
+	if (mXLoc > mXBound)
+		mXLoc = mXBound;
 	if (mYLoc < 0)
 		mYLoc = 0;
-	if (mYLoc > yBound)
-		mYLoc = yBound;
+	if (mYLoc > mYBound)
+		mYLoc = mYBound;
 }
 
 void Player::move(int mouseX, int mouseY)

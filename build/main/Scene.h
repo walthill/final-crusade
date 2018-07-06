@@ -2,6 +2,7 @@
 #define SCENE_H
 
 #include "GUIManager.h"
+#include "View.h"
 
 
 enum SceneType

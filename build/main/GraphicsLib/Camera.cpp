@@ -30,7 +30,10 @@ void Camera::setY(int yLoc)
 }
 void Camera::setW(int width)
 {
-	camera.w = width;
+	//if (width < 0)
+//		camera.w = 0;
+//	else
+		camera.w = width;
 }
 
 void Camera::setH(int height)
@@ -56,4 +59,9 @@ int Camera::getW()
 int Camera::getH()
 {
 	return camera.h;
+}
+
+SDL_Rect* Camera::getCamera()
+{
+	return &camera;
 }

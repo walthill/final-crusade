@@ -23,7 +23,7 @@ class System : public Trackable
 		~System();
 
 		//Init graphics and input
-		bool initSystem(int displayWidth, int displayHeight);
+		bool initSystem(string windowName, int displayWidth, int displayHeight, Camera *camera);
 
 		//Explicit destructor
 		void cleanupSystem();
@@ -32,8 +32,6 @@ class System : public Trackable
 
 		//Accessors
 		GraphicsSystem* getGraphicsSystem();
-		int getMouseX();
-		int getMouseY();
 };
 
 #endif // !SYS_H

@@ -1,9 +1,6 @@
-//NOTE: Additional allegro libraries included into this file
-
 #include "Font.h"
 
 #include <SDL.h>
-//#include <SDL_main.h>
 
 #include "GraphicsSystem.h"
 #include "Color.h"
@@ -24,7 +21,7 @@ GraphicsSystem::~GraphicsSystem()
 }
 
 
-bool GraphicsSystem::initGraphics(int displayWidth, int displayHeight)
+bool GraphicsSystem::initGraphics(string windowName, int displayWidth, int displayHeight, Camera *camera)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
@@ -44,56 +41,20 @@ bool GraphicsSystem::initGraphics(int displayWidth, int displayHeight)
 		return false;
 
 	}
-	/*if (!al_init())
-	{
-		cout << "error initting Allegro\n";
-		return false;
-	}
-	if (!al_init_image_addon())
-	{
-		cout << "error - Image Add-on not initted\n";
-		return false;
-	}
-	if (!al_init_font_addon())
-	{
-		cout << "error - Font Add-on not initted\n";
-		return false;
-	}
-	if (!al_init_ttf_addon())
-	{
-		cout << "error - TTF Add-on not initted\n";
-		return false;
-	}
-	if (!al_init_primitives_addon())
-	{
-		cout << "error - primitives Add-on not initted\n";
-		return false;
-	}
-	if (!al_install_audio())
-	{
-		cout << "error - Audio Add-on not initted\n";
-		return false;
-	}
-	if (!al_init_acodec_addon())
-	{
-		cout << "error - Audio Codec Add-on not initted\n";
-		return false;
-	}
-	if (!al_reserve_samples(1))
-	{
-		cout << "error - samples not reserved\n";
-		return false;
-	}*/
 
-	mDisplay = SDL_CreateWindow("Final Crusade",
+	mWidth = displayWidth;
+	mHeight = displayHeight;
+
+	mDisplay = SDL_CreateWindow(windowName.c_str(),
 								300, 100,
-								displayWidth, displayHeight,
+								mWidth, mHeight,
 								0);
 	assert(mDisplay);
 
 	mRenderer = SDL_CreateRenderer(mDisplay, -1, SDL_RENDERER_ACCELERATED);
 	mBackBuffer = new GraphicsBuffer( SDL_GetWindowSurface(mDisplay), mRenderer);
 
+	mCamera = camera;
 	SDL_ShowCursor(1);
 	
 	cout << "Graphics Library Initialized" << endl;
@@ -114,7 +75,7 @@ void GraphicsSystem::cleanupGraphics()
 		mBackBuffer = NULL;
 
 		cout << "Display destroyed" << endl;
-		
+
 		IMG_Quit();
 		SDL_Quit();
 	}
@@ -125,34 +86,46 @@ GraphicsBuffer* GraphicsSystem::getBackbuffer()
 {
 	return mBackBuffer;
 }
- 
+
 void GraphicsSystem::flip()
 {
 	SDL_RenderPresent(mRenderer);
-	SDL_RenderClear(mRenderer);	
+	SDL_RenderClear(mRenderer);
 }
+
+
 
 
 void GraphicsSystem::draw(int targetX, int targetY, Sprite &spr, float scaleX, float scaleY, double rotationAngle)
 {
-	int width = spr.getSpriteWidth();
-	int height = spr.getSpriteHeight();
-	SDL_Rect sourceRect;
-	SDL_Rect drawRect;
+	spriteWidth = spr.getSpriteWidth();
+	spriteHeight = spr.getSpriteHeight();
 
 	sourceRect.x = spr.getSpriteX();
 	sourceRect.y = spr.getSpriteY();
-	sourceRect.w = width;
-	sourceRect.h = height;
-	
+	sourceRect.w = spriteWidth;
+	sourceRect.h = spriteHeight;
+
 	drawRect.x = targetX;
 	drawRect.y = targetY;
-	drawRect.w = width;
-	drawRect.h = height;
+	drawRect.w = spriteWidth;
+	drawRect.h = spriteHeight;
 
 	SDL_RenderCopyEx(mRenderer, spr.getBuffer()->mpBitmap, &sourceRect, &drawRect, rotationAngle, NULL, SDL_FLIP_NONE);
+
 }
 
+
+void GraphicsSystem::viewDraw(int targetX, int targetY, Sprite &spr, double rotationAngle)
+{
+	drawRect.x = targetX;
+	drawRect.y = targetY;
+	drawRect.w = mCamera->camera.w;
+	drawRect.h = mCamera->camera.h;
+
+	SDL_RenderCopyEx(mRenderer, spr.getBuffer()->mpBitmap, &mCamera->camera, &drawRect, rotationAngle, NULL, SDL_FLIP_NONE);
+
+}
 
 void GraphicsSystem::drawBackbuffer(GraphicsBuffer *targetBuffer, int displayX, int displayY,
 	Sprite sprBuffer, float scaleX, float scaleY)
@@ -163,34 +136,35 @@ void GraphicsSystem::drawBackbuffer(GraphicsBuffer *targetBuffer, int displayX, 
 	int height = sprBuffer.getSpriteHeight();
 
 	SDL_SetRenderTarget(mRenderer, targetBuffer->mpBitmap);
-	/*al_draw_scaled_bitmap(sprBuffer.getBuffer()->mBitmap, sprBuffer.getSpriteX(), sprBuffer.getSpriteY(),
-						  width, height, displayX, displayY, width*scaleX, 
-						  height*scaleY, mDEFAULT_FLAG);
-						  */
 	SDL_SetRenderTarget(mRenderer, prevBit);
 
 
 }
 
-void GraphicsSystem::drawSprite(GraphicsBuffer *targetBuffer, int sourceX, int sourceY,
-	Sprite sprBuffer, int spriteW, int spriteH,
-	int displayX, int displayY)
-{
-	//al_draw_bitmap_region(targetBuffer->mBitmap, sourceX, sourceY, spriteW, spriteH, displayX, displayY, mDEFAULT_FLAG);
-}
 
 //TODO: (low) test this function
-void GraphicsSystem::saveBuffer(GraphicsBuffer *bufferToSave, string filename)
+//Big help from TalesM @ StackOverflow https://bit.ly/2AAUTkU
+void GraphicsSystem::takeScreenshot(GraphicsBuffer *bufferToSave, string filename)
 {
-	/*int SDL_SaveBMP(SDL_Surface* surface,
-		const char*  file)
-*/
-	SDL_Surface *tmpSurface = nullptr;
-	tmpSurface = SDL_GetWindowSurface(mDisplay);
-	SDL_SaveBMP(tmpSurface, filename.c_str());
+	SDL_Surface *saveSurface = SDL_CreateRGBSurface(0, mWidth, mHeight, PIXEL_BIT_DEPTH,
+													rMask, gMask, bMask, aMask);
 
-//	SDL_SaveBMP( bufferToSave->mBitmap, filename.c_str());
-	cout << "Buffer saved " << endl;
+	SDL_RenderReadPixels(mRenderer, NULL, SDL_GetWindowPixelFormat(mDisplay),
+						 saveSurface->pixels, saveSurface->pitch);
+
+	filePath = SCREENS_FOLDER + filename;
+	if (SDL_SaveBMP(saveSurface, filePath.c_str()) == 0)
+	{
+		cout << "Screenshot Captured!" << endl;
+		//TODO(very low): add screenshot sound
+	}
+	else
+	{
+		cout << "Screenshot failed." << endl;
+	}
+
+	SDL_FreeSurface(saveSurface);
+
 }
 
 

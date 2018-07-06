@@ -2,12 +2,15 @@
 #define CAMERA_H
 
 #include "SDL.h"
+#include "Trackable.h"
 
-class Camera
+class Camera : public Trackable
 {
+	friend class GraphicsSystem;
+
 	private:
 		SDL_Rect camera;
-	
+		
 	public:
 		Camera();
 		Camera(int maxWidth, int maxHeight);
@@ -20,11 +23,12 @@ class Camera
 		void setW(int width);
 		void setH(int height);
 
-
 		int getX();
 		int getY();
 		int getW();
 		int getH();
+
+		//SDL_Rect* getCamera();
 };
 
 #endif // !CAMERA_H

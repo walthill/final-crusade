@@ -2,6 +2,13 @@
 
 Game* Game::mGameInstance = NULL;
 
+//TODO: position object relative to window size
+//https://gamedev.stackexchange.com/questions/151687/how-to-position-objects-responsively-in-sdl
+
+//divide by screen width & height --> all positions will be between 0 and 1
+
+//TODO(low): screenshot button
+
 Game::Game()
 	:EventListener(nullptr) //Null because Event System is static
 {
@@ -28,21 +35,20 @@ void Game::installListeners()
 	EventSystem::getInstance()->addListener(STOP_DOWN, this);
 	EventSystem::getInstance()->addListener(STOP_UP, this);
 
-
 	cout << "*******Initialized listeners*******" << endl;
 }
 
 void Game::displayLoadingScreen()
 {
 	//show image while game data & assets load in
-	mLoadingScreen.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + mLOADING_IMG);
+	mLoadingScreen.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLevelWidth, mLevelHeight, mLOCAL_ASSET_PATH + mLOADING_IMG);
 	mBufferManager.addGraphicsBuffer(mLOAD_ID, &mLoadingScreen);
 
 	mLoadingSprite.initSprite(mBufferManager.getGraphicsBuffer(mLOAD_ID), 0, 0, mBufferManager.getGraphicsBuffer(mLOAD_ID)->getBitmapWidth(),
 		mBufferManager.getGraphicsBuffer(mLOAD_ID)->getBitmapHeight());
 
-	mSystem.getGraphicsSystem()->draw(0, 0, mLoadingSprite, 1.0f, 1.0f);
-	mSystem.getGraphicsSystem()->flip();
+	//mSystem.getGraphicsSystem()->draw(0, 0, mLoadingSprite, 1.0f, 1.0f);
+	//mSystem.getGraphicsSystem()->flip();
 }
 
 bool Game::initGame()
@@ -50,13 +56,11 @@ bool Game::initGame()
 	PerformanceTracker* pPerformanceTracker = new PerformanceTracker;
 	pPerformanceTracker->startTracking(mINIT_TRACKER_NAME);
 
-	//srand(unsigned(time(NULL)));
-
 	loadGameData();
 	loadLocalization();
 
 	//Initialize graphics, controls, and event system
-	if (!mSystem.initSystem(mDisplayWidth, mDisplayHeight))
+	if (!mSystem.initSystem(GAME_TITLE, mDisplayWidth, mDisplayHeight, mGameView.getCamera()))
 		return false;
 
 	cout << "*******Initialized system*******" << endl;
@@ -80,10 +84,13 @@ bool Game::initGame()
 
 	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 1, 16, 16);
 		
+	mPlayer.init(mLevelWidth, mLevelHeight);
 	mPlayer.setAnimation(mPlayerAnim);
-	mPlayer.setLoc(400,200);
+	mPlayer.setLoc(450,200);
 
-	mIsRunning = true;
+  	mGameView.initView(&mPlayer, mDisplayWidth, mDisplayHeight, mLevelWidth, mLevelHeight);
+
+ 	mIsRunning = true;
 
 	pPerformanceTracker->stopTracking(mINIT_TRACKER_NAME);
 	cout << endl << "Time to Init:" << pPerformanceTracker->getElapsedTime(mINIT_TRACKER_NAME) << " ms" << endl;
@@ -162,7 +169,7 @@ void Game::initUI()
 
 void Game::loadScenes()
 {
-	mMainMenu.initScene(SC_MAIN, true, &mGuiManagerMain, &mLoadingSprite);
+	mMainMenu.initScene(SC_GAME, true, &mGuiManagerMain, &mLoadingSprite);
 
 	//add to manager
 	mSceneManager.addScene("a", &mMainMenu);
@@ -230,11 +237,8 @@ bool Game::runGameLoop()
 		pPerformanceTracker->startTracking(mDRAW_TRACKER_NAME);
 		frameTimer->start();
 
-		//rotatePlayer();
-
 		update(mFRAME_TIME_60FPS);
 		render();
-
 
 		frameTimer->sleepUntilElapsed(mFRAME_TIME_60FPS);
 		pPerformanceTracker->stopTracking(mDRAW_TRACKER_NAME);
@@ -263,15 +267,16 @@ void Game::update(double timeElapsed)
 	if (mSceneManager.getCurrentScene() == SC_GAME)
 	{
 		mPlayer.update(timeElapsed, mouseX, mouseY);
+		mGameView.update(timeElapsed);
 	}
 }
 
 
-void Game::render(int viewX, int viewY)
+void Game::render()
 {
-	mSceneManager.draw(mSystem.getGraphicsSystem());
+ 	mSceneManager.draw(mSystem.getGraphicsSystem());
 
-	mPlayer.draw(mSystem.getGraphicsSystem()); //TODO(low): create a unit manager
+	mPlayer.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 
 	mSystem.getGraphicsSystem()->flip();
 }
@@ -325,7 +330,7 @@ void Game::handleEvent(const Event& theEvent)
 
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			cout << "Mouse location: " + to_string(mouseEvent.getX()) << endl;
+			cout << "Mouse Y location: " + to_string(mouseEvent.getY()) << endl;
 
 			mouseX = mouseEvent.getX();
 			mouseY = mouseEvent.getY();

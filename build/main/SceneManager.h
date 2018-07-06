@@ -5,7 +5,6 @@
 #include <string>
 #include "Scene.h"
 #include "Sound.h"
-
 #include "Language.h"
 
 typedef string SceneID;
@@ -37,7 +36,7 @@ class SceneManager
 		//Explicit destructor
 		void clearManager();
 
-		
+		//Take in values for UI info
 		void update(double timeElapsed, double fps);
 
 		void draw(GraphicsSystem *graphicsSystem);

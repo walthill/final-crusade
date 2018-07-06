@@ -98,9 +98,6 @@ void SceneManager::clearManager()
 	}
 
 	mSceneCollection.clear();
-
-	//TODO: Hunt for memory leaks
-	//delete mLocalization;
 }
 
 

@@ -5,9 +5,18 @@ View::View()
 
 }
 
-View::View(Player *player)
+View::View(Player *player, int displayWidth, int displayHeight, int levelWidth, int levelHeight)
 {
 	mPlayerRef = player;
+
+	mDisplayWidth = displayWidth;
+	mDisplayHeight = displayHeight;
+	mLevelWidth = levelWidth;
+	mLevelHeight = levelHeight;
+
+	mCamera.setW(displayWidth);
+	mCamera.setH(displayHeight);
+	
 	centerView();
 }
 
@@ -16,43 +25,69 @@ View::~View()
 {
 }
 
+void View::initView(Player *player, int displayWidth, int displayHeight, int levelWidth, int levelHeight)
+{
+	mPlayerRef = player;
+
+	mDisplayWidth = displayWidth;
+	mDisplayHeight = displayHeight;
+	mLevelWidth = levelWidth;
+	mLevelHeight = levelHeight;
+
+	//camera x&y default to 0
+	mCamera.setW(displayWidth);
+	mCamera.setH(displayHeight);
+
+	centerView();
+	checkBounds();
+}
+
 void View::update(double timeElapsed)
 {
-	if(mPlayerRef != nullptr)
+ 	if (mPlayerRef != nullptr)// && timeElapsed > mTimeBeforeUpdate)
+	{
+ 		centerView();
 		checkBounds();
+		
+	}
 }
 
 
-void View::render(GraphicsSystem *graphicsSystem)
+/*void View::render(GraphicsSystem *graphicsSystem)
 {
 
-}
+}*/
 
 void View::checkBounds()
 {
 	//Keep the camera in bounds
-	if (camera.getX() < 0)
+	if (mCamera.getX() < 0)
 	{
-		camera.setX(0);
+		mCamera.setX(0);
 	}
-	if (camera.getY() < 0)
+	if (mCamera.getY() < 0)
 	{
-		camera.setY(0);
+		mCamera.setY(0);
 	}
-	if (camera.getX() > Game::getInstance()->_LevelWidth - camera.getW())
+	if (mCamera.getX() > mLevelWidth - mCamera.getW())
 	{
-		camera.setX(Game::getInstance()->_LevelWidth - camera.getW());
+		mCamera.setX(mLevelWidth - mCamera.getW());
 	}
-	if (camera.getY() > Game::getInstance()->_LevelHeight - camera.getH())
+	if (mCamera.getY() > mLevelHeight - mCamera.getH())
 	{
-		camera.setY(Game::getInstance()->_LevelHeight - camera.getH());
+		mCamera.setY(mLevelHeight - mCamera.getH());
 	}
 }
 
 void View::centerView()
 {
 	//center camera
-	camera.setX((mPlayerRef->getX() + mPlayerRef->getWidth() / 2) - Game::getInstance()->_DisplayWidth / 2);
-	camera.setY((mPlayerRef->getY() + mPlayerRef->getHeight() / 2) - Game::getInstance()->_DisplayHeight / 2);
+	mCamera.setX((mPlayerRef->getX() + mPlayerRef->getWidth() / 2) - mDisplayWidth / 2);
+	mCamera.setY((mPlayerRef->getY() + mPlayerRef->getHeight() / 2) - mDisplayHeight / 2);
 }
 
+
+Camera* View::getCamera()
+{
+	return &mCamera;
+}

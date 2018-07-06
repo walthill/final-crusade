@@ -11,6 +11,7 @@
 #include "simpleini-4.17\SimpleIni.h"
 #include "GraphicsBufferManager.h"
 #include "SceneManager.h"
+#include "View.h"
 
 
 /*
@@ -29,11 +30,15 @@ class Game : EventListener
 	private:
 		static Game* mGameInstance; 
 		
+		const string GAME_TITLE = "Final Crusade";
+
 		unsigned int mEventType;
 
 		System mSystem; //Gives access to window and graphics
 		GraphicsBufferManager mBufferManager; 
 		InputTranslator mInputTranslator;
+
+		View mGameView;
 		
 		//each scene has a manager
 		GUIManager mGuiManagerMain, mGuiManagerGame, mGuiManagerOptions, mGuiManagerStats,
@@ -46,6 +51,7 @@ class Game : EventListener
 
 		Language mLocalization;
 
+		//Assets
 		GraphicsBuffer mMenuBuffer;
 		GraphicsBuffer mSpaceBlue, mLoadingScreen;
 		GraphicsBuffer mCredit;
@@ -62,7 +68,7 @@ class Game : EventListener
 
 		//External assets
 		const string mLOCAL_ASSET_PATH = "assets\\";
-		const string mLOADING_IMG = "spacepurple.png";
+		const string mLOADING_IMG = "bigspace.png";
 		const string mCOUR_FONT = "cour.ttf";
 		const string mINI_FILE = "data.ini";
 		const string mSPACE_PURPLE = "spacepurple.bmp";
@@ -93,7 +99,7 @@ class Game : EventListener
 		int mSpriteSize;
 		int mGridW, mGridH;
 
-		
+		int mDisplayWidth, mDisplayHeight, mLevelWidth, mLevelHeight;
 
 		Font *mFont, *mGameUI;
 		const int mFONT_SIZE = 25;
@@ -116,7 +122,6 @@ class Game : EventListener
 		double mFPS;
 
 	public:
-		int _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight;
 
 		//Static class functions
 		static Game* getInstance()
@@ -161,7 +166,7 @@ class Game : EventListener
 		void update(double timeElapsed);
 
 		//Draw to the screen
-		void render(int viewX, int viewY);
+		void render();
 		
 		void loadGameData();
 		void installListeners();

@@ -12,6 +12,7 @@
 
 #include "GraphicsBuffer.h"
 #include "Sprite.h"
+#include "Camera.h"
 
 struct SDL_Window;
 class Font;
@@ -24,13 +25,30 @@ class GraphicsSystem : Trackable
 		GraphicsBuffer *mBackBuffer;	//The window's own backbuffer
 		int mHeight, mWidth;			
 		const int mDEFAULT_FLAG = 0;	//Flag should always be zero
+		Camera *mCamera; 
+		//TODO(low): look at performance of this pointer vs passing a parameter thru scene object 
+
+		//draw vars
+		SDL_Rect drawRect;
+		SDL_Rect sourceRect;
+		int spriteWidth, spriteHeight;
+
+		//screenshot vars
+		const string SCREENS_FOLDER = "screens\\";
+		string filePath;
+		const int PIXEL_BIT_DEPTH = 32;
+		Uint32 rMask = 0x00ff0000,
+			   gMask = 0x0000ff00,
+			   bMask = 0x000000ff,
+			   aMask = 0xff000000;
+
 
 	public:
 		GraphicsSystem();	
 		~GraphicsSystem();	
 
 		//Initialize all allegro libraries
-		bool initGraphics(int displayHeight, int displayWidth);
+		bool initGraphics(string windowName, int displayHeight, int displayWidth, Camera *camera);
 		
 
 		//Explicit destructor
@@ -47,20 +65,15 @@ class GraphicsSystem : Trackable
 
 		//Draw given sprite's assigned bitmap
 		void draw(int targetX, int targetY, Sprite &spr, float scaleX, float scaleY, double rotationAngle = NULL);
+		void viewDraw(int targetX, int targetY, Sprite &spr, double rotationAngle = NULL);
 
 
 		//Draw to backbuffer
 		void drawBackbuffer(GraphicsBuffer *targetBuffer, int displayX, int displayY,
 			Sprite sprBuffer, float scaleX, float scaleY);
 		
-
-		//Draw sprite from sheet
-		void drawSprite(GraphicsBuffer *targetBuffer, int sourceX, int sourceY,
-						Sprite sprBuffer, int spriteW, int spriteH, int displayX, int displayY);
-		
-
 		//Save specified buffer
-		void saveBuffer(GraphicsBuffer *bufferToSave, string filename);
+		void takeScreenshot(GraphicsBuffer *bufferToSave, string filename);
 
 
 		//Write text to backBuffer

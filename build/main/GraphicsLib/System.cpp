@@ -11,10 +11,10 @@ System::~System()
 }
 
 
-bool System::initSystem(int displayWidth, int displayHeight)
+bool System::initSystem(string windowName, int displayWidth, int displayHeight, Camera *camera)
 {
 	
-	if (!mGraphicsSystem.initGraphics(displayWidth, displayHeight))
+	if (!mGraphicsSystem.initGraphics(windowName, displayWidth, displayHeight, camera))
 	{
 		cout << "error - could not init graphics.\n";
 		return false;
@@ -46,18 +46,6 @@ void System::cleanupSystem()
 		mInputSystem = NULL;
 	}
 }
-
-
-/*int System::getMouseX()
-{
-	return mInputSystem->getMouse().x;
-}
-
-
-int System::getMouseY()
-{
-	return mInputSystem->getMouse().y;
-}*/
 
 
 InputSystem* System::getInputSystem()

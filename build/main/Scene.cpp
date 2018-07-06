@@ -26,30 +26,36 @@ void Scene::update(double timeElapsed)
 
 void Scene::draw(GraphicsSystem *graphicsSystem)
 {
-	graphicsSystem->draw(0, 0, *mSceneBG, 1.0, 1.0);
 
 	switch (mSceneType)
 	{
 		case SC_UNDEF:
 			break;
 		case SC_MAIN:
+			graphicsSystem->draw(0, 0, *mSceneBG, 1.0, 1.0);
 			mGuiManager->draw(graphicsSystem, "mainmenu");
 			break;
 		case SC_GAME:
+			graphicsSystem->viewDraw(0, 0, *mSceneBG);
 			mGuiManager->draw(graphicsSystem, "game");
 			break;
 		case SC_OPTIONS:
+			graphicsSystem->draw(0, 0, *mSceneBG, 1.0, 1.0);
 			mGuiManager->draw(graphicsSystem, "options");
 			break;
 		case SC_PAUSE:
+			graphicsSystem->draw(0, 0, *mSceneBG, 1.0, 1.0);
 			mGuiManager->draw(graphicsSystem, "pause");
 			break;
 		case SC_CREDITS:
+			graphicsSystem->draw(0, 0, *mSceneBG, 1.0, 1.0);
 			mGuiManager->draw(graphicsSystem, "credits");
 			break;
 		case SC_STATS:
+			graphicsSystem->draw(0, 0, *mSceneBG, 1.0, 1.0);
 			mGuiManager->draw(graphicsSystem, "stats");
 		case SC_LOSE:
+			graphicsSystem->draw(0, 0, *mSceneBG, 1.0, 1.0);
 			mGuiManager->draw(graphicsSystem, "lose");
 			break;
 		default:

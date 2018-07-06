@@ -1,33 +1,38 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-//#include "GraphicsSystem.h"
 #include "Camera.h"
 #include "Player.h"
-#include "Game.h"
 
+
+//Lazyfoo helped a whole lot here https://bit.ly/2KDwJva
 class View 
 {
 	private:
-		bool isActive;
-		//bool isFollowingPlayer;
+		int mDisplayWidth, mDisplayHeight, mLevelWidth, mLevelHeight;
 
-		Camera camera; //TODO(high): camera initialization of width and height in View constructor
+		Camera mCamera;
 		Player *mPlayerRef;
+
+		int mTimeBeforeUpdate = 10;
 
 	public:
 		View();
-		View(Player *player);
+		View(Player *player, int displayWidth, int displayHeight, int levelWidth, int levelHeight);
 		~View();
 
+		void initView(Player *player, int displayWidth, int displayHeight, int levelWidth, int levelHeight);
+
 		void update(double timeElapsed);
-		void render(GraphicsSystem *graphicsSystem);
 
 		void checkBounds();
 		void centerView();
 
-		void setActive(bool activate);
-		bool isViewActive();
+		Camera* getCamera();
+
 };
 
 #endif // !VIEW_H
+
+
+//300

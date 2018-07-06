@@ -31,7 +31,6 @@ class Entity : public Trackable
 		void update(double timeElapsed);
 		//Draw animated sprite
 		void draw(GraphicsSystem *graphicsSystem);
-
 		
 		//Give mAnim a new sprite
 		void shouldAnimate(bool pause);
