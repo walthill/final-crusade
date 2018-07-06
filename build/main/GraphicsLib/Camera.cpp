@@ -61,7 +61,7 @@ int Camera::getH()
 	return camera.h;
 }
 
-SDL_Rect* Camera::getCamera()
+/*SDL_Rect* Camera::getCamera()
 {
 	return &camera;
-}
+}*/

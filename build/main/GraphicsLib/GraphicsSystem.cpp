@@ -94,8 +94,6 @@ void GraphicsSystem::flip()
 }
 
 
-
-
 void GraphicsSystem::draw(int targetX, int targetY, Sprite &spr, float scaleX, float scaleY, double rotationAngle)
 {
 	spriteWidth = spr.getSpriteWidth();
@@ -137,7 +135,6 @@ void GraphicsSystem::drawBackbuffer(GraphicsBuffer *targetBuffer, int displayX, 
 
 	SDL_SetRenderTarget(mRenderer, targetBuffer->mpBitmap);
 	SDL_SetRenderTarget(mRenderer, prevBit);
-
 
 }
 

@@ -4,8 +4,8 @@ Player::Player()
 {
 	mPlayerFrameSpeed = 10;
 	mVelocity = 3;
-	//xBound = 1600;
-	//yBound = 1200; //screen sizes 
+	mXBound = 0;
+	mYBound = 0; //screen sizes 
 }
 
 Player::~Player()
@@ -34,7 +34,7 @@ void Player::update(double timeElapsed, int mouseX, int mouseY)
 	}
 }
 
-void Player::draw(GraphicsSystem *graphicsSystem, int camX, int camY)
+/*void Player::draw(GraphicsSystem *graphicsSystem, int camX, int camY)
 {
 	if (mIsVisible)
 	{
@@ -43,7 +43,7 @@ void Player::draw(GraphicsSystem *graphicsSystem, int camX, int camY)
 		//draw relative to camera position
 		graphicsSystem->draw(mXLoc - camX, mYLoc - camY, curSpr, mXScale, mYScale, mRotation);
 	}
-}
+}*/
 
 void Player::checkBounds()
 {

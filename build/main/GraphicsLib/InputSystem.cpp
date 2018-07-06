@@ -50,7 +50,8 @@ void InputSystem::getInputEvents()
 		case SDL_MOUSEBUTTONDOWN:
 			if (mEvent.button.button == SDL_BUTTON_LEFT)
 			{
-				//cout << "InputSystem: Left mouse button clicked" << endl;
+				mKeyEvent.setType(LEFT_MOUSE_DOWN);
+				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
 			break;
 		case SDL_KEYDOWN:

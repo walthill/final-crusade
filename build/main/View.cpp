@@ -53,11 +53,6 @@ void View::update(double timeElapsed)
 }
 
 
-/*void View::render(GraphicsSystem *graphicsSystem)
-{
-
-}*/
-
 void View::checkBounds()
 {
 	//Keep the camera in bounds

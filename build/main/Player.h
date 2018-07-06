@@ -15,6 +15,7 @@ class Player : public Entity
 
 		//movement vars
 		bool mLeft, mRight, mUp, mDown;
+		
 		int mPlayerFrameSpeed, mVelocity; 
 		int mXBound, mYBound;//TODO: data driven here
 
@@ -25,7 +26,7 @@ class Player : public Entity
 		void init(int xBounds, int yBounds);
 
 		void update(double timeElapsed, int mouseX, int mouseY);
-		void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
+		//void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 
 		void checkBounds();
 		void move(int mouseX, int mouseY);

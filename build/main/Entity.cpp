@@ -23,12 +23,22 @@ void Entity::update(double timeElapsed)
 }
 
 
+void Entity::draw(GraphicsSystem *graphicsSystem, int camX, int camY)
+{
+	if (mIsVisible)
+	{
+		Sprite curSpr = mAnim.getCurrentSprite();
+		graphicsSystem->draw(mXLoc-camX, mYLoc-camY, curSpr, mXScale, mYScale, mRotation);
+	}
+}
+
+
 void Entity::draw(GraphicsSystem *graphicsSystem)
 {
 	if (mIsVisible)
 	{
 		Sprite curSpr = mAnim.getCurrentSprite();
-  		graphicsSystem->draw(mXLoc, mYLoc, curSpr, mXScale, mYScale, mRotation);
+		graphicsSystem->draw(mXLoc, mYLoc, curSpr, mXScale, mYScale, mRotation);
 	}
 }
 

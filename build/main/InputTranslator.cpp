@@ -29,6 +29,7 @@ void InputTranslator::initInputTranslator()
 	EventSystem::getInstance()->addListener(RIGHT_ARROW_RELEASED, this);
 	EventSystem::getInstance()->addListener(UP_ARROW_RELEASED, this);
 	EventSystem::getInstance()->addListener(MOUSE_MOTION, this);
+	EventSystem::getInstance()->addListener(LEFT_MOUSE_DOWN, this);
 }
 
 
@@ -58,6 +59,13 @@ void InputTranslator::handleEvent(const Event& theEvent)
   			EventSystem::getInstance()->fireEvent(MouseEvent(ROTATION, mouseEvent.getX(), mouseEvent.getY()));
 			break;
 		}
+
+		case LEFT_MOUSE_DOWN:
+			mTranslatorEvent.setType(SHOOT);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+
+			break;
+
 		case UP_ARROW:
 			mTranslatorEvent.setType(MOVE_UP);
 			EventSystem::getInstance()->fireEvent(mTranslatorEvent);

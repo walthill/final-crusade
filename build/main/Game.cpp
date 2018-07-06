@@ -34,6 +34,7 @@ void Game::installListeners()
 	EventSystem::getInstance()->addListener(STOP_RIGHT, this);
 	EventSystem::getInstance()->addListener(STOP_DOWN, this);
 	EventSystem::getInstance()->addListener(STOP_UP, this);
+	EventSystem::getInstance()->addListener(SHOOT, this);
 
 	cout << "*******Initialized listeners*******" << endl;
 }
@@ -79,14 +80,22 @@ bool Game::initGame()
 	loadScenes();
 	initAudio();
 
+	//init game objs
 	mPlayerBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayHeight, mDisplayWidth, mLOCAL_ASSET_PATH + mPLAYER_ASSET);
 	mBufferManager.addGraphicsBuffer(mPLAYER_ID, &mPlayerBuffer);
+
+	mBulletBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + mBULLET_ASSET);
+	mBufferManager.addGraphicsBuffer(mBULLET_ID, &mBulletBuffer);
 
 	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 1, 16, 16);
 		
 	mPlayer.init(mLevelWidth, mLevelHeight);
 	mPlayer.setAnimation(mPlayerAnim);
 	mPlayer.setLoc(450,200);
+
+	//set player bullet sprite
+	mBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mBULLET_ID), 1, 1, 15, 15);
+	mBulletManager.initBulletData(mBulletAnim, mLevelWidth, mLevelHeight, true);
 
   	mGameView.initView(&mPlayer, mDisplayWidth, mDisplayHeight, mLevelWidth, mLevelHeight);
 
@@ -268,6 +277,7 @@ void Game::update(double timeElapsed)
 	{
 		mPlayer.update(timeElapsed, mouseX, mouseY);
 		mGameView.update(timeElapsed);
+		mBulletManager.update(timeElapsed);
 	}
 }
 
@@ -277,6 +287,7 @@ void Game::render()
  	mSceneManager.draw(mSystem.getGraphicsSystem());
 
 	mPlayer.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+	mBulletManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 
 	mSystem.getGraphicsSystem()->flip();
 }
@@ -323,14 +334,23 @@ void Game::handleEvent(const Event& theEvent)
 
 		}
 		break;
+	case SHOOT:
+		
+		bulletSpawnX = mPlayer.getX();
+		bulletSpawnY = mPlayer.getY();
 
+		mBulletManager.fireProjectile(mFRAME_TIME_60FPS, bulletSpawnX, bulletSpawnY, mPlayer.getRotation());
+
+		//TODO: shooting audio
+		//cout << "SHOOT SHOOT SHOOP" << endl;
+		break;
 	case ROTATION:
 	{
 		const MouseEvent& mouseEvent = static_cast<const MouseEvent&>(theEvent);
 
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			cout << "Mouse Y location: " + to_string(mouseEvent.getY()) << endl;
+			//cout << "Mouse Y location: " + to_string(mouseEvent.getY()) << endl;
 
 			mouseX = mouseEvent.getX();
 			mouseY = mouseEvent.getY();

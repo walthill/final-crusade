@@ -12,7 +12,7 @@
 #include "GraphicsBufferManager.h"
 #include "SceneManager.h"
 #include "View.h"
-
+#include "BulletPool.h"
 
 /*
 File I/O performed using brofield's SimpleIni
@@ -57,14 +57,13 @@ class Game : EventListener
 		GraphicsBuffer mCredit;
 		vector<GraphicsBuffer> mBlockBufferVector;
 		GraphicsBuffer mStartButton;
-		GraphicsBuffer mPlayerBuffer;
+		GraphicsBuffer mPlayerBuffer, mBulletBuffer;
 
 		Sprite mBackgroundSprite, mMenuSprite, mCreditBG, mLoadingSprite;
-		
-		Sprite mPlayerSprite;
-		Animation mPlayerAnim;
+		Animation mPlayerAnim, mBulletAnim;
 
 		Player mPlayer;
+		BulletPool mBulletManager;
 
 		//External assets
 		const string mLOCAL_ASSET_PATH = "assets\\";
@@ -73,10 +72,12 @@ class Game : EventListener
 		const string mINI_FILE = "data.ini";
 		const string mSPACE_PURPLE = "spacepurple.bmp";
 		const string mPLAYER_ASSET = "phplayer.png";
+		const string mBULLET_ASSET = "bullet.png";
 
 
 		//Buffer tags
 		const string mPLAYER_ID = "player";
+		const string mBULLET_ID = "bullet";
 		const string mMENU_ID = "spacebase";
 		const string mSPACE_ID = "spaceblue";
 		const string mCREDIT_ID, mLOAD_ID = "loading";
@@ -93,9 +94,6 @@ class Game : EventListener
 		bool mStartGame;
 		bool mIsRunning;
 		
-		int mAudioCounter = 1;
-	
-		
 		int mSpriteSize;
 		int mGridW, mGridH;
 
@@ -106,9 +104,10 @@ class Game : EventListener
 		const int mUI_SIZE = 20;
 		Color mWhiteText;
 
-		int mouseX, mouseY, playerX, playerY;
-		double angle;
-		double dY, dX;
+		int mouseX, mouseY;
+
+		int bulletSpawnX, bulletSpawnY;
+
 
 		Game();
 		~Game();
@@ -173,8 +172,6 @@ class Game : EventListener
 
 		bool saveGame();
 		void loadLastSave();
-
-		void rotatePlayer(int mouseX, int mouseY);
 
 		//Handles input
 		void handleEvent(const Event& theEvent);

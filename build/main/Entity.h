@@ -19,7 +19,6 @@ class Entity : public Trackable
 		double mRotation;
 		Animation mAnim;
 		bool mIsVisible, mShouldAnimate;
-
 		
 
 	public:
@@ -29,7 +28,9 @@ class Entity : public Trackable
 
 		//Call animation update
 		void update(double timeElapsed);
+		
 		//Draw animated sprite
+		void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 		void draw(GraphicsSystem *graphicsSystem);
 		
 		//Give mAnim a new sprite
