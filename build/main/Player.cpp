@@ -5,7 +5,9 @@ Player::Player()
 	mPlayerFrameSpeed = 10;
 	mVelocity = 3;
 	mXBound = 0;
-	mYBound = 0; //screen sizes 
+	mYBound = 0; 
+	mScreenXSize = 0;
+	mScreenYSize = 0; //screen sizes 
 }
 
 Player::~Player()
@@ -13,24 +15,25 @@ Player::~Player()
 
 }
 
-void Player::init(int xBounds, int yBounds)
+void Player::init(int xBounds, int yBounds, int screenXSize, int screenYSize)
 {
 	mXBound = xBounds;
 	mYBound = yBounds;
+	mScreenXSize = screenXSize;
+	mScreenYSize = screenYSize;
+
 }
 
-void Player::update(double timeElapsed, int mouseX, int mouseY)
+void Player::update(double timeElapsed, int mouseX, int mouseY, int camX, int camY)
 {
 	Entity::update(timeElapsed);
 
-	
-
  	if (timeElapsed > mPlayerFrameSpeed)
 	{
-		rotate(mouseX, mouseY);
+		rotate(mouseX, mouseY, camX, camY);
 
 		checkBounds();
-		move(mouseX, mouseY);
+		move(mouseX, mouseY, camX, camY);
 	}
 }
 
@@ -57,7 +60,7 @@ void Player::checkBounds()
 		mYLoc = mYBound;
 }
 
-void Player::move(int mouseX, int mouseY)
+void Player::move(int mouseX, int mouseY, int camX, int camY)
 {
 	//Help from WAKS on the c++ forums @ https://bit.ly/2KHZL8T 
 
@@ -78,19 +81,19 @@ void Player::move(int mouseX, int mouseY)
 		mYLoc += mVelocity;
 	}
 
-	rotate(mouseX, mouseY);
+	rotate(mouseX, mouseY, camX, camY);
 }
 
 
-void Player::rotate(int mouseX, int mouseY)
+void Player::rotate(int mouseX, int mouseY, int camX, int camY)
 {
 	//Math salvation from jordsti on StackOverflow @ https://bit.ly/2KrJx7Y
 
 	if (mouseX != 0)
 	{
-		//NOTE: origin is in the top left
-		dX = (mXLoc)-mouseX;
-		dY = (mYLoc+ ROT_ALIGNMENT)-mouseY;
+		//subtract camera position to accurately rotate outside of screen space coordinates
+		dX = (mXLoc - camX) - mouseX;
+		dY = (mYLoc + ROT_ALIGNMENT - camY) - mouseY;
 
 		angle = (atan2(dY, dX)*DEGREE_CONVERSION_VAL) / PI;
 		setRotation(angle);

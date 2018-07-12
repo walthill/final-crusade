@@ -19,7 +19,6 @@ File I/O performed using brofield's SimpleIni
 Link: https://github.com/brofield/simpleini
 */
 
-
 /*
 Object headers include Trackable in order
 to use time and memory managment tool

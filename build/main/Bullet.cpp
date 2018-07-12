@@ -41,12 +41,12 @@ bool Bullet::checkState()
 {
 	bool isDead = false;
 
-	if (mXLoc < 0 || mXLoc > mDisplayWidth)
+	if (mXLoc < 0 || mXLoc > mLiveBoundX)
 	{
 		mState.mLive.mInUse = false;
 		isDead = true;
 	}
-	if (mYLoc < 0 || mYLoc >mDisplayHeight)
+	if (mYLoc < 0 || mYLoc >mLiveBoundY)
 	{
 		mState.mLive.mInUse = false;
 		isDead = true;
@@ -79,10 +79,10 @@ bool Bullet::isInUse()
 
 void Bullet::setXBound(int xBound)
 {
-mDisplayWidth = xBound;
+	mLiveBoundX = xBound;
 }
 
 void Bullet::setYBound(int yBound)
 {
-	mDisplayHeight = yBound;
+	mLiveBoundY = yBound;
 }

@@ -8,10 +8,10 @@ class BulletPool
 	//Game Programming Patterns was a great help https://bit.ly/2LrxN20
 
 	private:
-		int mFireRate = 16.7f;
-		float mDeltaTime = 16.7;
+		double mFireRate = 16.7;
+		double mDeltaTime = 16.7;
 
-		const float PI = 3.14156, DEGREE_CONVERSION_VALUE = 180;
+		const float PI = 3.14156f, DEGREE_CONVERSION_VALUE = 180.0f;
 	
 		float bulletX, bulletY;
 

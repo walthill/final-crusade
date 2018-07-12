@@ -22,7 +22,7 @@ void BulletPool::initBulletData(Animation bulletSpriteData, int windowW, int win
   	initPool();
 }
 
-void BulletPool::create(int x, int y, int xVelocity, int yVeloctity, bool isPlayerBullet)
+/* void BulletPool::create(int x, int y, int xVelocity, int yVeloctity, bool isPlayerBullet)
 {
 	//make sure pool isn't full
 	assert(mFirstAvailable != NULL);
@@ -40,9 +40,9 @@ void BulletPool::create(int x, int y, int xVelocity, int yVeloctity, bool isPlay
 			bullets[i].initBullet(x, y, xVelocity, yVeloctity, isPlayerBullet);
 			return;
 		}
-	}*/
+	}
 
-}
+} */
 
 void BulletPool::initPool()
 {

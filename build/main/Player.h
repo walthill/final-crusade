@@ -15,22 +15,22 @@ class Player : public Entity
 
 		//movement vars
 		bool mLeft, mRight, mUp, mDown;
-		
 		int mPlayerFrameSpeed, mVelocity; 
-		int mXBound, mYBound;//TODO: data driven here
+		int mXBound, mYBound;
+		int mScreenXSize, mScreenYSize;//TODO: data driven here
 
 	public:
 		Player();
 		~Player();
 
-		void init(int xBounds, int yBounds);
+		void init(int xBounds, int yBounds, int screenXSize, int screenYSize);
 
-		void update(double timeElapsed, int mouseX, int mouseY);
+		void update(double timeElapsed, int mouseX, int mouseY, int camX, int camY);
 		//void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 
 		void checkBounds();
-		void move(int mouseX, int mouseY);
-		void rotate(int mouseX, int mouseY);
+		void move(int mouseX, int mouseY, int camX, int camY);
+		void rotate(int mouseX, int mouseY, int camX, int camY);
 
 		void setLeft(bool isMovingLeft);
 		void setRight(bool isMovingRight);

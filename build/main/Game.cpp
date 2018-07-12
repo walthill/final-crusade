@@ -2,11 +2,6 @@
 
 Game* Game::mGameInstance = NULL;
 
-//TODO: position object relative to window size
-//https://gamedev.stackexchange.com/questions/151687/how-to-position-objects-responsively-in-sdl
-
-//divide by screen width & height --> all positions will be between 0 and 1
-
 //TODO(low): screenshot button
 
 Game::Game()
@@ -89,7 +84,7 @@ bool Game::initGame()
 
 	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 1, 16, 16);
 		
-	mPlayer.init(mLevelWidth, mLevelHeight);
+	mPlayer.init(mLevelWidth, mLevelHeight, mDisplayWidth, mDisplayHeight);
 	mPlayer.setAnimation(mPlayerAnim);
 	mPlayer.setLoc(450,200);
 
@@ -122,7 +117,7 @@ void Game::loadGameData()
 	const char * iniLevelWidth = ini.GetValue("VIEW", "levelW", "default");
 	const char * iniLevelHeight = ini.GetValue("VIEW", "levelH", "default");
 
-	//TODO(low): lock in sprite sizes (16? 32?) 
+	//TODO: lock in sprite sizes (16? 32?) 
 	const char * spriteSize = ini.GetValue("VIEW", "tileSize", "default");
 
 
@@ -275,7 +270,7 @@ void Game::update(double timeElapsed)
 	
 	if (mSceneManager.getCurrentScene() == SC_GAME)
 	{
-		mPlayer.update(timeElapsed, mouseX, mouseY);
+		mPlayer.update(timeElapsed, mouseX, mouseY, mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 		mGameView.update(timeElapsed);
 		mBulletManager.update(timeElapsed);
 	}

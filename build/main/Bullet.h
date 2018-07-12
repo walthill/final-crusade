@@ -6,8 +6,8 @@
 class Bullet : public Entity
 {
 	private:
-		int mDisplayWidth, mDisplayHeight;
-		int mBulletSpeed = 10;
+		int mLiveBoundX, mLiveBoundY;
+		int mBulletSpeed = 10; //TODO: data driven
 
 		union //used for a free list
 		{
