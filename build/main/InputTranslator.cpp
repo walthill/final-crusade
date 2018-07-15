@@ -30,6 +30,8 @@ void InputTranslator::initInputTranslator()
 	EventSystem::getInstance()->addListener(UP_ARROW_RELEASED, this);
 	EventSystem::getInstance()->addListener(MOUSE_MOTION, this);
 	EventSystem::getInstance()->addListener(LEFT_MOUSE_DOWN, this);
+	EventSystem::getInstance()->addListener(LCTRL, this);
+
 }
 
 
@@ -48,7 +50,12 @@ void InputTranslator::handleEvent(const Event& theEvent)
 			mTranslatorEvent.setType(PAUSE_GAME);
 			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
 			break;
-		
+
+		case LCTRL:
+			mTranslatorEvent.setType(SCREENCAP);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+			break;
+
 		case MOUSE_MOTION:
 		{	
 			const MouseEvent& mouseEvent = static_cast<const MouseEvent&>(theEvent);

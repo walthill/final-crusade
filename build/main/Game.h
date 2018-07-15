@@ -7,6 +7,7 @@
 #include "PerformanceTracker.h"
 
 #include "InputTranslator.h"
+#include "Ronin.h"
 #include "Player.h"
 #include "simpleini-4.17\SimpleIni.h"
 #include "GraphicsBufferManager.h"
@@ -56,11 +57,12 @@ class Game : EventListener
 		GraphicsBuffer mCredit;
 		vector<GraphicsBuffer> mBlockBufferVector;
 		GraphicsBuffer mStartButton;
-		GraphicsBuffer mPlayerBuffer, mBulletBuffer;
+		GraphicsBuffer mPlayerBuffer, mBulletBuffer, mRoninBuffer;
 
 		Sprite mBackgroundSprite, mMenuSprite, mCreditBG, mLoadingSprite;
-		Animation mPlayerAnim, mBulletAnim;
+		Animation mPlayerAnim, mBulletAnim, mRoninAnim;
 
+		Ronin mRonin;
 		Player mPlayer;
 		BulletPool mBulletManager;
 
@@ -71,11 +73,13 @@ class Game : EventListener
 		const string mINI_FILE = "data.ini";
 		const string mSPACE_PURPLE = "spacepurple.bmp";
 		const string mPLAYER_ASSET = "phplayer.png";
+		const string mRONIN_ASSET = "phronin.png";
 		const string mBULLET_ASSET = "bullet.png";
 
 
 		//Buffer tags
 		const string mPLAYER_ID = "player";
+		const string mRONIN_ID = "ronin";
 		const string mBULLET_ID = "bullet";
 		const string mMENU_ID = "spacebase";
 		const string mSPACE_ID = "spaceblue";
@@ -116,7 +120,9 @@ class Game : EventListener
 		const string mDRAW_TRACKER_NAME = "draw";
 
 		const double mFRAME_TIME_60FPS = 16.7;
-
+		int mCapNum=0;
+		const string mScreencapFilename = "capture";
+		bool takeScreenshot;
 		double mFPS;
 
 	public:

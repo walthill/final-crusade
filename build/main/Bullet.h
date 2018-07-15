@@ -41,7 +41,7 @@ class Bullet : public Entity
 
 		void setInUse(bool isInUse);
 		bool isInUse();
-
+		
 		void setXBound(int xBound);
 		void setYBound(int yBound);
 

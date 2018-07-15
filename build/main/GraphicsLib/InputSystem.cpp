@@ -92,6 +92,15 @@ void InputSystem::getInputEvents()
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
 
+			#ifdef _DEBUG 
+			if (mEvent.key.keysym.sym == SDLK_LCTRL)
+			{
+				cout << "InputSystem: LCTRL" << endl;
+				mKeyEvent.setType(LCTRL);
+				EventSystem::getInstance()->fireEvent(mKeyEvent);
+			}
+			#endif
+			
 			break;
 
 		case SDL_KEYUP:

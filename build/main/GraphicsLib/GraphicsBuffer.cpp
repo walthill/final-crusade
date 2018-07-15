@@ -12,6 +12,7 @@ GraphicsBuffer::GraphicsBuffer()
 GraphicsBuffer::GraphicsBuffer(SDL_Surface* bMap, SDL_Renderer* bRender)
 {
 	mpRenderer = bRender;
+	mpSurface = bMap;
 	mpBitmap = SDL_CreateTextureFromSurface(mpRenderer ,bMap);
 
 	mBitmapHeight = bMap->h;

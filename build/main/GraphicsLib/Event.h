@@ -14,6 +14,7 @@ enum EventType
 
 	ESC,
 	MOUSE_MOTION,
+	LCTRL,
 	LEFT_MOUSE_DOWN,
 	UP_ARROW,
 	UP_ARROW_RELEASED,//Input translator events, focused on buttons/keys
@@ -37,6 +38,7 @@ enum EventType
 	STOP_DOWN,
 	ROTATION,
 	SHOOT,
+	SCREENCAP,
 	
 	UNDEFINED, //menu button events
 	NEW_GAME,

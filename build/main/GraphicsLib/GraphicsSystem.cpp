@@ -139,12 +139,11 @@ void GraphicsSystem::drawBackbuffer(GraphicsBuffer *targetBuffer, int displayX, 
 }
 
 
-//TODO: (low) test this function
 //Big help from TalesM @ StackOverflow https://bit.ly/2AAUTkU
 void GraphicsSystem::takeScreenshot(GraphicsBuffer *bufferToSave, string filename)
 {
-	SDL_Surface *saveSurface = SDL_CreateRGBSurface(0, mWidth, mHeight, PIXEL_BIT_DEPTH,
-													rMask, gMask, bMask, aMask);
+	SDL_Surface *saveSurface = bufferToSave->mpSurface; //SDL_CreateRGBSurface(0, mWidth, mHeight, PIXEL_BIT_DEPTH,
+													//rMask, gMask, bMask, aMask);
 
 	SDL_RenderReadPixels(mRenderer, NULL, SDL_GetWindowPixelFormat(mDisplay),
 						 saveSurface->pixels, saveSurface->pitch);

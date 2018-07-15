@@ -2,7 +2,9 @@
 
 Game* Game::mGameInstance = NULL;
 
-//TODO(low): screenshot button
+//TODO: entity manager
+
+//TODO(high): collision detection
 
 Game::Game()
 	:EventListener(nullptr) //Null because Event System is static
@@ -30,6 +32,7 @@ void Game::installListeners()
 	EventSystem::getInstance()->addListener(STOP_DOWN, this);
 	EventSystem::getInstance()->addListener(STOP_UP, this);
 	EventSystem::getInstance()->addListener(SHOOT, this);
+	EventSystem::getInstance()->addListener(SCREENCAP, this);
 
 	cout << "*******Initialized listeners*******" << endl;
 }
@@ -75,18 +78,17 @@ bool Game::initGame()
 	loadScenes();
 	initAudio();
 
-	//init game objs
-	mPlayerBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayHeight, mDisplayWidth, mLOCAL_ASSET_PATH + mPLAYER_ASSET);
-	mBufferManager.addGraphicsBuffer(mPLAYER_ID, &mPlayerBuffer);
-
-	mBulletBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + mBULLET_ASSET);
-	mBufferManager.addGraphicsBuffer(mBULLET_ID, &mBulletBuffer);
-
+	
 	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 1, 16, 16);
 		
 	mPlayer.init(mLevelWidth, mLevelHeight, mDisplayWidth, mDisplayHeight);
 	mPlayer.setAnimation(mPlayerAnim);
 	mPlayer.setLoc(450,200);
+
+	mRoninAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mRONIN_ID), 1, 1, 32, 32);
+
+	mRonin.setAnimation(mRoninAnim);
+	mRonin.setLoc(200, 200);
 
 	//set player bullet sprite
 	mBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mBULLET_ID), 1, 1, 15, 15);
@@ -117,7 +119,6 @@ void Game::loadGameData()
 	const char * iniLevelWidth = ini.GetValue("VIEW", "levelW", "default");
 	const char * iniLevelHeight = ini.GetValue("VIEW", "levelH", "default");
 
-	//TODO: lock in sprite sizes (16? 32?) 
 	const char * spriteSize = ini.GetValue("VIEW", "tileSize", "default");
 
 
@@ -138,10 +139,16 @@ void Game::initAudio()
 void Game::loadBackgrounds()
 {
 	//Initialize bitmaps using initGraphicsBuffer()
-
+	mPlayerBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + mPLAYER_ASSET);
+	mBulletBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + mBULLET_ASSET);
+	mRoninBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + mRONIN_ASSET);
 
 	//Add buffers to buffer manager
-	
+	mBufferManager.addGraphicsBuffer(mPLAYER_ID, &mPlayerBuffer);
+	mBufferManager.addGraphicsBuffer(mBULLET_ID, &mBulletBuffer);
+	mBufferManager.addGraphicsBuffer(mRONIN_ID, &mRoninBuffer);
+
+
 	//init Background sprites using initSprite()
 	
 
@@ -273,6 +280,7 @@ void Game::update(double timeElapsed)
 		mPlayer.update(timeElapsed, mouseX, mouseY, mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 		mGameView.update(timeElapsed);
 		mBulletManager.update(timeElapsed);
+		mRonin.update(timeElapsed);
 	}
 }
 
@@ -283,6 +291,15 @@ void Game::render()
 
 	mPlayer.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 	mBulletManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+
+	mRonin.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+
+	if (takeScreenshot)
+	{
+		mSystem.getGraphicsSystem()->takeScreenshot(mSystem.getGraphicsSystem()->getBackbuffer(), mScreencapFilename + to_string(mCapNum) + ".png");
+		takeScreenshot = false;
+		mCapNum++;
+	}
 
 	mSystem.getGraphicsSystem()->flip();
 }
@@ -354,7 +371,6 @@ void Game::handleEvent(const Event& theEvent)
 	}
 	
 	case MOVE_DOWN:
-		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
 			mPlayer.setDown(true);
@@ -382,7 +398,6 @@ void Game::handleEvent(const Event& theEvent)
 		break;
 
 	case MOVE_UP:
-		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
 			mPlayer.setUp(true);
@@ -406,7 +421,6 @@ void Game::handleEvent(const Event& theEvent)
 
 
 	case MOVE_LEFT:
-		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
 			mPlayer.setLeft(true);		
@@ -414,7 +428,6 @@ void Game::handleEvent(const Event& theEvent)
 		break;
 
 	case MOVE_RIGHT:
-		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
 			mPlayer.setRight(true);
@@ -424,7 +437,6 @@ void Game::handleEvent(const Event& theEvent)
 
 
 	case STOP_DOWN:
-		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
 			mPlayer.setDown(false);
@@ -433,7 +445,6 @@ void Game::handleEvent(const Event& theEvent)
 		break;
 
 	case STOP_UP:
-		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
 			mPlayer.setUp(false);
@@ -442,7 +453,6 @@ void Game::handleEvent(const Event& theEvent)
 
 
 	case STOP_LEFT: 
-		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
 			mPlayer.setLeft(false);		
@@ -450,11 +460,19 @@ void Game::handleEvent(const Event& theEvent)
 		break;
 
 	case STOP_RIGHT:
-		cout << endl;
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
 			mPlayer.setRight(false);
 		}
 		break;
+
+	case SCREENCAP:
+		takeScreenshot = true;
+		//mSystem.getGraphicsSystem()->takeScreenshot(mSystem.getGraphicsSystem(), "ss1.png");
+		cout << "SCREENSHOT CAPTURED!" << endl;
+		break;
+
 	}
+
+
 }

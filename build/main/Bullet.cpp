@@ -51,6 +51,8 @@ bool Bullet::checkState()
 		mState.mLive.mInUse = false;
 		isDead = true;
 	}
+	
+	//TODO: destroy bullet on enemy hit
 
 	return isDead;
 }
