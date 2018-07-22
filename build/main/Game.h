@@ -7,13 +7,13 @@
 #include "PerformanceTracker.h"
 
 #include "InputTranslator.h"
-#include "Ronin.h"
 #include "Player.h"
 #include "simpleini-4.17\SimpleIni.h"
 #include "GraphicsBufferManager.h"
 #include "SceneManager.h"
 #include "View.h"
 #include "BulletPool.h"
+#include "RoninManager.h"
 
 /*
 File I/O performed using brofield's SimpleIni
@@ -66,6 +66,10 @@ class Game : EventListener
 		Sprite mBackgroundSprite, mMenuSprite, mCreditBG, mLoadingSprite;
 		Animation mPlayerAnim, mBulletAnim, mRoninAnim;
 
+		RoninManager mEnemyManager;
+
+		int mNumEnemies, mNumRonin;
+
 		Ronin mRonin;
 		Player mPlayer;
 		BulletPool mBulletManager;
@@ -92,6 +96,8 @@ class Game : EventListener
 		const string mMENU_ID = "spacebase";
 		const string mSPACE_ID = "spaceblue";
 		const string mCREDIT_ID, mLOAD_ID = "loading";
+
+		string mEnemyManTag = "e";
 
 		//UI tags
 		const string mGEN_TAG = "general";

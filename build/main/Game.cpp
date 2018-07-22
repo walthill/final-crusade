@@ -2,7 +2,7 @@
 
 Game* Game::mGameInstance = NULL;
 
-//TODO: enemy entity manager 
+
 
 //creating exe
 //https://discourse.libsdl.org/t/creating-an-easily-distributable-executable-file/24413
@@ -84,18 +84,30 @@ bool Game::initGame()
 	initAudio();
 
 	
-	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 1, 16, 16);
+	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 2, 16, 16);
 		
 	mPlayer.init(mLevelWidth, mLevelHeight, mDisplayWidth, mDisplayHeight);
 	mPlayer.setAnimation(mPlayerAnim);
+	mPlayer.shouldAnimate(false);
 	mPlayer.setCollider(PLAYER_COL_TAG);
 	mPlayer.setLoc(450,200);
 
 	mRoninAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mRONIN_ID), 1, 1, 32, 32);
 
-	mRonin.setAnimation(mRoninAnim);
-	mRonin.setCollider(RONIN_COL_TAG);
-	mRonin.setLoc(200, 200);
+	//mRonin.setAnimation(mRoninAnim);
+	//mRonin.setCollider(RONIN_COL_TAG);
+	//mRonin.setLoc(200, 200);
+	srand(unsigned(time(NULL)));
+
+	
+	for (int i = 0; i < mNumRonin; i++)
+	{
+
+		int randX = rand() % 1500;
+		int randY = rand() % 1100;
+
+		mEnemyManager.createAndAddEntity(mEnemyManTag + to_string(i), randX, randY, mRoninAnim);
+	}
 
 	//set player bullet sprite
 	mBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mBULLET_ID), 1, 1, 15, 15);
@@ -126,6 +138,8 @@ void Game::loadGameData()
 	const char * iniLevelWidth = ini.GetValue("VIEW", "levelW", "default");
 	const char * iniLevelHeight = ini.GetValue("VIEW", "levelH", "default");
 
+	const char * iniNumEnemies = ini.GetValue("LEVELDATA", "numEnemies", "defualt");
+	const char * iniNumRonin = ini.GetValue("LEVELDATA", "numRonin", "defualt");
 	const char * spriteSize = ini.GetValue("VIEW", "tileSize", "default");
 
 
@@ -134,7 +148,10 @@ void Game::loadGameData()
 	
 	mLevelWidth = atoi(iniLevelWidth);
 	mLevelHeight = atoi(iniLevelHeight);
-	
+
+	mNumEnemies = atoi(iniNumEnemies);
+	mNumRonin = atoi(iniNumRonin);
+
 	cout << "*******Loaded game data*******" << endl;
 }
 
@@ -284,9 +301,10 @@ void Game::update(double timeElapsed)
 	
 	if (mSceneManager.getCurrentScene() == SC_GAME)
 	{
-		mRonin.update(timeElapsed);
-		mBulletManager.update(timeElapsed, mRonin.getCollider());
-		mPlayer.update(timeElapsed, mRonin.getCollider(), mouseX, mouseY, mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+		mEnemyManager.update(timeElapsed);
+		//TODO: check collisions on all enemies
+		mBulletManager.update(timeElapsed, mEnemyManager.getEntity("e0")->getCollider());
+		mPlayer.update(timeElapsed, mEnemyManager.getEntity("e0")->getCollider(), mouseX, mouseY, mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 		mGameView.update(timeElapsed);
 	}
 }
@@ -299,7 +317,8 @@ void Game::render()
 	mPlayer.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 	mBulletManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 
-	mRonin.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+	mEnemyManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+	//mRonin.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 
 	if (takeScreenshot)
 	{

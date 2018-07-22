@@ -10,15 +10,26 @@ Ronin::~Ronin()
 {
 }
 
+/*void Ronin::destroy()
+{
+
+}*/
+
 void Ronin::update(double timeElapsed)
 {
-	Entity::update(timeElapsed);
+	if (mIsVisible)
+	{
+		Entity::update(timeElapsed);
 
-	checkBounds();
+		checkBounds();
 
-	mXLoc += mXVelocity*mSpeed;
-	mYLoc += mYVelocity*mSpeed; // enemy should rotate in the direction of 
-
+		mXLoc += mXVelocity * mSpeed;
+		mYLoc += mYVelocity * mSpeed; // enemy should rotate in the direction of 
+	}
+	else
+	{
+		//add to score & combo
+	}
 }
 
 void Ronin::checkBounds()

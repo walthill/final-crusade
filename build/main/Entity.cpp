@@ -10,6 +10,7 @@ Entity::Entity()
 	mRotation = 0;
 	mShouldAnimate = true;
 	mHasCollider = false;
+	mHasCollided = false;
 }
 
 
@@ -31,39 +32,44 @@ void Entity::update(double timeElapsed)
 
 bool Entity::checkCollision(Collider a, Collider b)
 {
-	assert(!mHasCollider);
-	
-	//calculate sides of a
-	mLeftA = a.getX();
-	mRightA = mLeftA + a.getW();
-	mTopA = a.getY();
-	mBottomA = mTopA + a.getH();
+	assert(mHasCollider);
 
-	//calculate sides of b
-	mLeftB = b.getX();
-	mRightB = mLeftB + b.getW();
-	mTopB = b.getY();
-	mBottomB = mTopB + b.getH();
+	if (b.getEntity()->isVisible())
+	{
+		//calculate sides of a
+		mLeftA = a.getX();
+		mRightA = mLeftA + a.getW();
+		mTopA = a.getY();
+		mBottomA = mTopA + a.getH();
 
-	//collision detection
-	if (mBottomA <= mTopB)
-	{
-		return false;
+		//calculate sides of b
+		mLeftB = b.getX();
+		mRightB = mLeftB + b.getW();
+		mTopB = b.getY();
+		mBottomB = mTopB + b.getH();
+
+		//collision detection
+		if (mBottomA <= mTopB)
+		{
+			return mHasCollided;
+		}
+		if (mTopA >= mBottomB)
+		{
+			return mHasCollided;
+		}
+		if (mRightA <= mLeftB)
+		{
+			return mHasCollided;
+		}
+		if (mLeftA >= mRightB)
+		{
+			return mHasCollided;
+		}
+
+		mHasCollided = true;
 	}
-	if (mTopA >= mBottomB)
-	{
-		return false;
-	}
-	if (mRightA <= mLeftB)
-	{
-		return false;
-	}
-	if (mLeftA >= mRightB)
-	{
-		return false;
-	}
-	
-	return true;
+
+	return mHasCollided;
 }
 
 
@@ -92,6 +98,10 @@ void Entity::setAnimation(Animation targetAnim)
 	mAnim = targetAnim;
 }
 
+/*Animation Entity::getAnimation()
+{
+	return mAnim;
+}*/
 
 Animation* Entity::getAnimation()
 {

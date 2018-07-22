@@ -2,6 +2,7 @@
 #define BULLET_H
 
 #include "Entity.h"
+#include "RoninManager.h"
 
 class Bullet : public Entity
 {

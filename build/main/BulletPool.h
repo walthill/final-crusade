@@ -33,7 +33,7 @@ class BulletPool
 		void resetPool();
 
 		void update(double timeElapsed, Collider* b);
-		void BulletPool::draw(GraphicsSystem *graphicsSystem, int camX, int camY);
+		void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 
 		void fireProjectile(double deltaTime, int playerX, int playerY, float direction);
 };

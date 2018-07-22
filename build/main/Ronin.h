@@ -18,6 +18,8 @@ class Ronin : public Entity
 		Ronin();
 		~Ronin();
 
+		void destroy();
+
 		void initEnemy(int levelW, int levelH);
 
 		void update(double timeElapsed);

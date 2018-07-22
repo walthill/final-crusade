@@ -52,14 +52,15 @@ bool Bullet::checkState(Collider* b)
 		isDead = true;
 	}
 	
-	//TODO(high): destroy bullet on enemy hit - put this code on enemy?
-
 	if (checkCollision(mThisCollider, *b))
 	{
 		if (b->getTag() == "ronin")
 		{
 			cout << "ENEMY HIT" << endl;
-			//isDead = true; //buggy here
+			mState.mLive.mInUse = false;
+			isDead = true;
+
+			b->getEntity()->setVisible(false);
 		}
 	}
 

@@ -2,12 +2,13 @@
 
 Player::Player()
 {
-	mPlayerFrameSpeed = 10;
+	mPlayerFrameSpeed = 16;
 	mVelocity = 3;
 	mXBound = 0;
 	mYBound = 0; 
 	mScreenXSize = 0;
 	mScreenYSize = 0; //screen sizes 
+	lastLife = false;
 }
 
 Player::~Player()
@@ -25,21 +26,19 @@ void Player::init(int xBounds, int yBounds, int screenXSize, int screenYSize)
 
 void Player::update(double timeElapsed, Collider *b, int mouseX, int mouseY, int camX, int camY)
 {
-	Entity::update(timeElapsed);
-
- 	if (timeElapsed > mPlayerFrameSpeed)
+	if (mIsVisible)
 	{
-		rotate(mouseX, mouseY, camX, camY);
+		Entity::update(timeElapsed);
 
-		checkBounds();
-		
-		if (checkCollision(mThisCollider, *b))
+		if (timeElapsed > mPlayerFrameSpeed)
 		{
-			if (b->getTag() == "ronin")
-				cout << "ENEMY COLLISION" << endl; //TODO(high): player death
-		}
+			rotate(mouseX, mouseY, camX, camY);
 
-		move(mouseX, mouseY, camX, camY);
+			checkBounds();
+			checkForEnemyCollision(b, timeElapsed);
+
+			move(mouseX, mouseY, camX, camY);
+		}
 	}
 }
 
@@ -64,6 +63,42 @@ void Player::checkBounds()
 		mYLoc = 1;
 	if (mYLoc > mYBound)
 		mYLoc = mYBound-5;
+}
+
+void Player::checkForEnemyCollision(Collider *b, double timeElapsed)
+{
+	if (checkCollision(mThisCollider, *b) && !collisionDetected)
+	{
+		if (b->getTag() == "ronin")
+		{
+			if (!lastLife)
+			{
+				collisionDetected = true;
+				mShouldAnimate = true;
+				mAnim.setLooping(true); //death should go to lose screen    //cout << "ENEMY COLLISION" << endl; //TODO(high): player death
+				lastLife = true;
+			}
+			else if (hasRecovered)
+			{
+				mIsVisible = false; //lose screen
+				lastLife = false;
+			}
+		}
+	}
+	else
+	{
+		mHasCollided = false;
+	}
+
+	if (lastLife && dtTime < 5000)
+	{
+		dtTime += timeElapsed;
+		if (dtTime > 5000)
+		{
+			hasRecovered = true;
+			collisionDetected = false;
+		}
+	}
 }
 
 

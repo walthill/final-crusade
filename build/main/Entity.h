@@ -24,6 +24,7 @@ class Entity : public Trackable
 		Collider mThisCollider;
 		
 		//collder vars
+		bool mHasCollided = false;
 		int mLeftA, mLeftB, mRightA, mRightB;
 		int mTopA, mTopB, mBottomA, mBottomB;
 
@@ -48,6 +49,8 @@ class Entity : public Trackable
 
 		void setAnimation(Animation targetAnim);
 		Animation* getAnimation();
+		//Animation getAnimation();
+
 
 		//Toggle object visibility in-game
 		void setVisible(bool setVisibilty);

@@ -19,6 +19,12 @@ class Player : public Entity
 		int mXBound, mYBound;
 		int mScreenXSize, mScreenYSize;//TODO: data driven here
 
+		bool lastLife, hasRecovered = false;
+		double dtTime =0;
+		int tempInvulnerable = 5000;
+
+		bool collisionDetected = false;
+
 	//	Collider mCollider;
 
 	public:
@@ -31,6 +37,7 @@ class Player : public Entity
 		//void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 
 		void checkBounds();
+		void checkForEnemyCollision(Collider *b, double timeElapsed);
 //		bool checkCollision(Collider a, Collider b);
 
 		void move(int mouseX, int mouseY, int camX, int camY);
