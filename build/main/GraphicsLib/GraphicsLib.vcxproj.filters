@@ -75,6 +75,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files\Graphics Filter</Filter>
     </ClCompile>
+    <ClCompile Include="..\Collider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Font.h">
@@ -118,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files\Graphics Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Collider.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

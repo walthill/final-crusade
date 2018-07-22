@@ -9,6 +9,8 @@ class Bullet : public Entity
 		int mLiveBoundX, mLiveBoundY;
 		int mBulletSpeed = 10; //TODO: data driven
 
+		//TODO: smaller bullet sprites
+
 		union //used for a free list
 		{
 			//state when in use
@@ -28,15 +30,15 @@ class Bullet : public Entity
 		Bullet();
 		~Bullet();
 
-		void initBullet(int x, int y, int xVelocity, int yVelocity, bool isPlayers);
+		//void initBullet(int x, int y, int xVelocity, int yVelocity, bool isPlayers);
 
 		Bullet* getNext() const { return mState.nextBullet;  }
 		void setNext(Bullet* next) { mState.nextBullet = next;  }
 
-		bool update(double timeElapsed);
+		bool update(double timeElapsed, Collider* b);
 		//void draw(GraphicsSystem *graphicsSystem);
 
-		bool checkState();
+		bool checkState(Collider* b);
 		void fire(int spawnX, int spawnY, float xVelocity, float yVelocity);
 
 		void setInUse(bool isInUse);

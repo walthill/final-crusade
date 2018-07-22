@@ -2,9 +2,14 @@
 
 Game* Game::mGameInstance = NULL;
 
-//TODO: entity manager
+//TODO: enemy entity manager 
 
-//TODO(high): collision detection
+//creating exe
+//https://discourse.libsdl.org/t/creating-an-easily-distributable-executable-file/24413
+
+
+//collisions
+//https://www.gamedev.net/articles/programming/general-and-gameplay-programming/intelligent-2d-collision-and-pixel-perfect-precision-r3311/
 
 Game::Game()
 	:EventListener(nullptr) //Null because Event System is static
@@ -83,16 +88,18 @@ bool Game::initGame()
 		
 	mPlayer.init(mLevelWidth, mLevelHeight, mDisplayWidth, mDisplayHeight);
 	mPlayer.setAnimation(mPlayerAnim);
+	mPlayer.setCollider(PLAYER_COL_TAG);
 	mPlayer.setLoc(450,200);
 
 	mRoninAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mRONIN_ID), 1, 1, 32, 32);
 
 	mRonin.setAnimation(mRoninAnim);
+	mRonin.setCollider(RONIN_COL_TAG);
 	mRonin.setLoc(200, 200);
 
 	//set player bullet sprite
 	mBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mBULLET_ID), 1, 1, 15, 15);
-	mBulletManager.initBulletData(mBulletAnim, mLevelWidth, mLevelHeight, true);
+	mBulletManager.initBulletData(mBulletAnim, mLevelWidth, mLevelHeight, true, BULLET_COL_TAG);
 
   	mGameView.initView(&mPlayer, mDisplayWidth, mDisplayHeight, mLevelWidth, mLevelHeight);
 
@@ -277,10 +284,10 @@ void Game::update(double timeElapsed)
 	
 	if (mSceneManager.getCurrentScene() == SC_GAME)
 	{
-		mPlayer.update(timeElapsed, mouseX, mouseY, mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
-		mGameView.update(timeElapsed);
-		mBulletManager.update(timeElapsed);
 		mRonin.update(timeElapsed);
+		mBulletManager.update(timeElapsed, mRonin.getCollider());
+		mPlayer.update(timeElapsed, mRonin.getCollider(), mouseX, mouseY, mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+		mGameView.update(timeElapsed);
 	}
 }
 

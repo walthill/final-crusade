@@ -19,16 +19,20 @@ class Player : public Entity
 		int mXBound, mYBound;
 		int mScreenXSize, mScreenYSize;//TODO: data driven here
 
+	//	Collider mCollider;
+
 	public:
 		Player();
 		~Player();
 
 		void init(int xBounds, int yBounds, int screenXSize, int screenYSize);
 
-		void update(double timeElapsed, int mouseX, int mouseY, int camX, int camY);
+		void update(double timeElapsed, Collider *b, int mouseX, int mouseY, int camX, int camY);
 		//void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 
 		void checkBounds();
+//		bool checkCollision(Collider a, Collider b);
+
 		void move(int mouseX, int mouseY, int camX, int camY);
 		void rotate(int mouseX, int mouseY, int camX, int camY);
 
@@ -39,6 +43,7 @@ class Player : public Entity
 
 		int getWidth();
 		int getHeight();
+
 };
 
 #endif //!PLAYER_H

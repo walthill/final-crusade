@@ -21,10 +21,9 @@ void Player::init(int xBounds, int yBounds, int screenXSize, int screenYSize)
 	mYBound = yBounds;
 	mScreenXSize = screenXSize;
 	mScreenYSize = screenYSize;
-
 }
 
-void Player::update(double timeElapsed, int mouseX, int mouseY, int camX, int camY)
+void Player::update(double timeElapsed, Collider *b, int mouseX, int mouseY, int camX, int camY)
 {
 	Entity::update(timeElapsed);
 
@@ -33,6 +32,13 @@ void Player::update(double timeElapsed, int mouseX, int mouseY, int camX, int ca
 		rotate(mouseX, mouseY, camX, camY);
 
 		checkBounds();
+		
+		if (checkCollision(mThisCollider, *b))
+		{
+			if (b->getTag() == "ronin")
+				cout << "ENEMY COLLISION" << endl; //TODO(high): player death
+		}
+
 		move(mouseX, mouseY, camX, camY);
 	}
 }
@@ -51,14 +57,20 @@ void Player::update(double timeElapsed, int mouseX, int mouseY, int camX, int ca
 void Player::checkBounds()
 {
  	if (mXLoc < 0)
-		mXLoc = 0;
+		mXLoc = 1;
 	if (mXLoc > mXBound)
-		mXLoc = mXBound;
+		mXLoc = mXBound-5;
 	if (mYLoc < 0)
-		mYLoc = 0;
+		mYLoc = 1;
 	if (mYLoc > mYBound)
-		mYLoc = mYBound;
+		mYLoc = mYBound-5;
 }
+
+
+/*bool Player::checkCollision(Collider a, Collider b)
+{
+
+}*/
 
 void Player::move(int mouseX, int mouseY, int camX, int camY)
 {

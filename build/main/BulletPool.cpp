@@ -9,14 +9,15 @@ BulletPool::~BulletPool()
 {
 }
 
-void BulletPool::initBulletData(Animation bulletSpriteData, int windowW, int windowH, bool isOwnerPlayer)
+void BulletPool::initBulletData(Animation bulletSpriteData, int levelW, int levelH, bool isOwnerPlayer, string colliderTag)
 {
 	for (int i = 0; i < mPOOL_SIZE; i++)
 	{
-		bullets[i].setXBound(windowW);
-		bullets[i].setYBound(windowH);
+		bullets[i].setXBound(levelW);
+		bullets[i].setYBound(levelH);
 
 		bullets[i].setAnimation(bulletSpriteData);
+		bullets[i].setCollider(colliderTag);
 	}
 
   	initPool();
@@ -67,11 +68,11 @@ void BulletPool::resetPool()
 }
 
 
-void BulletPool::update(double timeElapsed)
+void BulletPool::update(double timeElapsed, Collider* b)
 {
 	for (int i = 0; i < mPOOL_SIZE; i++)
 	{
-		if (bullets[i].update(timeElapsed)) //returns true if bullet is not in use
+		if (bullets[i].update(timeElapsed, b)) //returns true if bullet is not in use
 		{
  			bullets[i].setNext(mFirstAvailable);
 			mFirstAvailable = &bullets[i];

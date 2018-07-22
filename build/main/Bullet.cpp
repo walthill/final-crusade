@@ -23,21 +23,21 @@ Bullet::~Bullet()
 	mState.mLive.mYVelocity = yVelocity;
 }*/
 
-bool Bullet::update(double timeElapsed)
+bool Bullet::update(double timeElapsed, Collider* b)
 {
 	if (!mState.mLive.mInUse)
 		return false;
 
-	//call entity update to animate
+	//call entity update to animate & update collison
 	Entity::update(timeElapsed);
 
 	mXLoc += mState.mLive.mXVelocity;
 	mYLoc += mState.mLive.mYVelocity;
 
-	return checkState();
+	return checkState(b);
 }
 
-bool Bullet::checkState()
+bool Bullet::checkState(Collider* b)
 {
 	bool isDead = false;
 
@@ -52,7 +52,16 @@ bool Bullet::checkState()
 		isDead = true;
 	}
 	
-	//TODO: destroy bullet on enemy hit
+	//TODO(high): destroy bullet on enemy hit - put this code on enemy?
+
+	if (checkCollision(mThisCollider, *b))
+	{
+		if (b->getTag() == "ronin")
+		{
+			cout << "ENEMY HIT" << endl;
+			//isDead = true; //buggy here
+		}
+	}
 
 	return isDead;
 }

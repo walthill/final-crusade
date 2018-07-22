@@ -9,6 +9,7 @@ Entity::Entity()
 	mYScale = 1.0;
 	mRotation = 0;
 	mShouldAnimate = true;
+	mHasCollider = false;
 }
 
 
@@ -19,7 +20,50 @@ Entity::~Entity()
 
 void Entity::update(double timeElapsed)
 {
- 	mAnim.update(timeElapsed, mShouldAnimate);
+	mAnim.update(timeElapsed, mShouldAnimate);
+
+	if (mHasCollider)
+	{
+		mThisCollider.setX(mXLoc);
+		mThisCollider.setY(mYLoc);
+	}
+}
+
+bool Entity::checkCollision(Collider a, Collider b)
+{
+	assert(!mHasCollider);
+	
+	//calculate sides of a
+	mLeftA = a.getX();
+	mRightA = mLeftA + a.getW();
+	mTopA = a.getY();
+	mBottomA = mTopA + a.getH();
+
+	//calculate sides of b
+	mLeftB = b.getX();
+	mRightB = mLeftB + b.getW();
+	mTopB = b.getY();
+	mBottomB = mTopB + b.getH();
+
+	//collision detection
+	if (mBottomA <= mTopB)
+	{
+		return false;
+	}
+	if (mTopA >= mBottomB)
+	{
+		return false;
+	}
+	if (mRightA <= mLeftB)
+	{
+		return false;
+	}
+	if (mLeftA >= mRightB)
+	{
+		return false;
+	}
+	
+	return true;
 }
 
 
@@ -120,4 +164,17 @@ void Entity::setRotation(double rot)
 double Entity::getRotation()
 {
 	return mRotation;
+}
+
+void Entity::setCollider(string colliderNameTag)
+{
+	mHasCollider = true;
+
+	mThisCollider.initCollider(0, 0, mAnim.getCurrentSprite().getSpriteWidth(), mAnim.getCurrentSprite().getSpriteHeight(),
+							   colliderNameTag, this);
+}
+
+Collider* Entity::getCollider()
+{
+	return &mThisCollider;
 }

@@ -24,7 +24,7 @@ class BulletPool
 		BulletPool();
 		~BulletPool();
 
-		void initBulletData(Animation bulletSpriteData, int windowW, int windowH, bool isOwnerPlayer);
+		void initBulletData(Animation bulletSpriteData, int windowW, int windowH, bool isOwnerPlayer, string colliderTag);
 
 
 		void create(int x, int y, int xVelocity, int yVeloctity, bool isPlayerBullet);
@@ -32,7 +32,7 @@ class BulletPool
 		void initPool();
 		void resetPool();
 
-		void update(double timeElapsed);
+		void update(double timeElapsed, Collider* b);
 		void BulletPool::draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 
 		void fireProjectile(double deltaTime, int playerX, int playerY, float direction);

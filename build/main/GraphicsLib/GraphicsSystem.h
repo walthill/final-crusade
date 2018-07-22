@@ -34,7 +34,7 @@ class GraphicsSystem : Trackable
 		int spriteWidth, spriteHeight;
 
 		//screenshot vars
-		const string SCREENS_FOLDER = "screens\\";
+		const string SCREENS_FOLDER = "..\\..\\ext\\screens\\";
 		string filePath;
 		const int PIXEL_BIT_DEPTH = 32;
 		Uint32 rMask = 0x00ff0000,

@@ -12,6 +12,8 @@ Ronin::~Ronin()
 
 void Ronin::update(double timeElapsed)
 {
+	Entity::update(timeElapsed);
+
 	checkBounds();
 
 	mXLoc += mXVelocity*mSpeed;

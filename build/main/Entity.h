@@ -3,6 +3,7 @@
 
 #include "GraphicsSystem.h"
 #include "Animation.h"
+#include "Collider.h"
 
 /*
 All object headers include Trackable in order
@@ -18,8 +19,13 @@ class Entity : public Trackable
 		float mXScale, mYScale;
 		double mRotation;
 		Animation mAnim;
-		bool mIsVisible, mShouldAnimate;
+		bool mIsVisible, mShouldAnimate, mHasCollider;
+
+		Collider mThisCollider;
 		
+		//collder vars
+		int mLeftA, mLeftB, mRightA, mRightB;
+		int mTopA, mTopB, mBottomA, mBottomB;
 
 	public:
 		Entity();
@@ -29,6 +35,8 @@ class Entity : public Trackable
 		//Call animation update
 		void update(double timeElapsed);
 		
+		bool checkCollision(Collider a, Collider b);
+
 		//Draw animated sprite
 		void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 		void draw(GraphicsSystem *graphicsSystem);
@@ -55,6 +63,9 @@ class Entity : public Trackable
 		float getXScale();
 		float getYScale();
 		double getRotation();
+
+		void setCollider(string colliderNameTag);
+		Collider* getCollider();
 };
 
 #endif // !ENTITY_H

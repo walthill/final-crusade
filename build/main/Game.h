@@ -25,6 +25,10 @@ Object headers include Trackable in order
 to use time and memory managment tool
 */
 
+typedef string ColliderTag;
+typedef string AssetString;
+//typedef string UITag;
+
 class Game : EventListener
 {
 	private:
@@ -66,15 +70,19 @@ class Game : EventListener
 		Player mPlayer;
 		BulletPool mBulletManager;
 
+		const ColliderTag PLAYER_COL_TAG = "player";
+		const ColliderTag RONIN_COL_TAG = "ronin";
+		const ColliderTag BULLET_COL_TAG = "stdBullet";
+
 		//External assets
-		const string mLOCAL_ASSET_PATH = "assets\\";
-		const string mLOADING_IMG = "bigspace.png";
-		const string mCOUR_FONT = "cour.ttf";
-		const string mINI_FILE = "data.ini";
-		const string mSPACE_PURPLE = "spacepurple.bmp";
-		const string mPLAYER_ASSET = "phplayer.png";
-		const string mRONIN_ASSET = "phronin.png";
-		const string mBULLET_ASSET = "bullet.png";
+		const AssetString mLOCAL_ASSET_PATH = "assets\\";
+		const AssetString mLOADING_IMG = "bigspace.png";
+		const AssetString mCOUR_FONT = "cour.ttf";
+		const AssetString mINI_FILE = "data.ini";
+		const AssetString mSPACE_PURPLE = "spacepurple.bmp";
+		const AssetString mPLAYER_ASSET = "phplayer.png";
+		const AssetString mRONIN_ASSET = "phronin.png";
+		const AssetString mBULLET_ASSET = "bullet.png";
 
 
 		//Buffer tags

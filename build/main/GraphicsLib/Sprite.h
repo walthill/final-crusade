@@ -20,7 +20,7 @@ public:
 	~Sprite();
 
 	void initSprite(GraphicsBuffer *graphicsBufferPtr, int spriteX, int spriteY,
-		int spriteWidth, int spriteHeight);
+					int spriteWidth, int spriteHeight);
 
 	GraphicsBuffer* getBuffer();
 
