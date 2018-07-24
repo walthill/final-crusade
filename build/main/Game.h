@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <random>
 #include <iomanip>
 #include "Timer.h"
 #include "MemoryTracker.h"
@@ -66,7 +67,7 @@ class Game : EventListener
 		Sprite mBackgroundSprite, mMenuSprite, mCreditBG, mLoadingSprite;
 		Animation mPlayerAnim, mBulletAnim, mRoninAnim;
 
-		RoninManager mEnemyManager;
+		RoninManager mRoninManager;
 
 		int mNumEnemies, mNumRonin;
 

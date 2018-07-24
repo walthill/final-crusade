@@ -2,7 +2,9 @@
 
 Game* Game::mGameInstance = NULL;
 
+//TODO: player knockback on shooting/damaged?
 
+//TODO(high): combo system - probably gonna need some ui work
 
 //creating exe
 //https://discourse.libsdl.org/t/creating-an-easily-distributable-executable-file/24413
@@ -97,16 +99,21 @@ bool Game::initGame()
 	//mRonin.setAnimation(mRoninAnim);
 	//mRonin.setCollider(RONIN_COL_TAG);
 	//mRonin.setLoc(200, 200);
-	srand(unsigned(time(NULL)));
+	//int randX, randY;
 
-	
+	random_device rd1,rd2;
+	uniform_int_distribution<int> randGenX(1, 1500);
+	uniform_int_distribution<int> randGenY(1, 1100);
+	int randX, randY;
+
 	for (int i = 0; i < mNumRonin; i++)
 	{
+		randX = randGenX(rd1);
+		//rand() % 1500;
+		randY = randGenY(rd2);
+		//rand() % 1100;
 
-		int randX = rand() % 1500;
-		int randY = rand() % 1100;
-
-		mEnemyManager.createAndAddEntity(mEnemyManTag + to_string(i), randX, randY, mRoninAnim);
+		mRoninManager.createAndAddEntity(mEnemyManTag + to_string(i), randX, randY, mRoninAnim);
 	}
 
 	//set player bullet sprite
@@ -301,10 +308,9 @@ void Game::update(double timeElapsed)
 	
 	if (mSceneManager.getCurrentScene() == SC_GAME)
 	{
-		mEnemyManager.update(timeElapsed);
-		//TODO: check collisions on all enemies
-		mBulletManager.update(timeElapsed, mEnemyManager.getEntity("e0")->getCollider());
-		mPlayer.update(timeElapsed, mEnemyManager.getEntity("e0")->getCollider(), mouseX, mouseY, mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+		mRoninManager.update(timeElapsed);
+		mBulletManager.update(timeElapsed, mRoninManager.getColliderList());//mEnemyManager.getEntity("e0")->getCollider());
+		mPlayer.update(timeElapsed, mRoninManager.getColliderList()/*mEnemyManager.getEntity("e0")->getCollider()*/, mouseX, mouseY, mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 		mGameView.update(timeElapsed);
 	}
 }
@@ -317,7 +323,7 @@ void Game::render()
 	mPlayer.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 	mBulletManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 
-	mEnemyManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+	mRoninManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 	//mRonin.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 
 	if (takeScreenshot)
@@ -378,6 +384,9 @@ void Game::handleEvent(const Event& theEvent)
 		bulletSpawnY = mPlayer.getY();
 
 		mBulletManager.fireProjectile(mFRAME_TIME_60FPS, bulletSpawnX, bulletSpawnY, mPlayer.getRotation());
+		
+		mGameView.toggleScreenShake(true);
+
 
 		//TODO: shooting audio
 		//cout << "SHOOT SHOOT SHOOP" << endl;

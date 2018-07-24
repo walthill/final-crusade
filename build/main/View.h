@@ -3,18 +3,25 @@
 
 #include "Camera.h"
 #include "Player.h"
+#include <random>
 
 
 //Lazyfoo helped a whole lot here https://bit.ly/2KDwJva
-class View 
+class View
 {
 	private:
 		int mDisplayWidth, mDisplayHeight, mLevelWidth, mLevelHeight;
+		int shakeX, shakeY;
 
 		Camera mCamera;
 		Player *mPlayerRef;
 
-		int mTimeBeforeUpdate = 10;
+		bool shakeScreen = false;
+		//int mTimeBeforeUpdate = 10;
+
+		int originalCamX, originalCamY;
+		float originalShakeValue;
+		float screenShakeIntensity;
 
 	public:
 		View();
@@ -28,11 +35,11 @@ class View
 		void checkBounds();
 		void centerView();
 
+		void toggleScreenShake(bool shouldShake);
+		void screenShake();
+
 		Camera* getCamera();
 
 };
 
 #endif // !VIEW_H
-
-
-//300

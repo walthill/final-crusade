@@ -23,7 +23,7 @@ Bullet::~Bullet()
 	mState.mLive.mYVelocity = yVelocity;
 }*/
 
-bool Bullet::update(double timeElapsed, Collider* b)
+bool Bullet::update(double timeElapsed, vector<Collider*> colliderList)
 {
 	if (!mState.mLive.mInUse)
 		return false;
@@ -34,10 +34,10 @@ bool Bullet::update(double timeElapsed, Collider* b)
 	mXLoc += mState.mLive.mXVelocity;
 	mYLoc += mState.mLive.mYVelocity;
 
-	return checkState(b);
+	return checkState(colliderList);
 }
 
-bool Bullet::checkState(Collider* b)
+bool Bullet::checkState(vector<Collider*> colliderList)//Collider* b)
 {
 	bool isDead = false;
 
@@ -52,17 +52,24 @@ bool Bullet::checkState(Collider* b)
 		isDead = true;
 	}
 	
-	if (checkCollision(mThisCollider, *b))
-	{
-		if (b->getTag() == "ronin")
-		{
-			cout << "ENEMY HIT" << endl;
-			mState.mLive.mInUse = false;
-			isDead = true;
 
-			b->getEntity()->setVisible(false);
+	for (unsigned int i = 0; i < colliderList.size(); i++)
+	{
+		Collider b = *colliderList[i];
+
+		if (checkCollision(mThisCollider, b))
+		{
+			if (b.getTag() == "ronin")
+			{
+				cout << "ENEMY HIT" << endl;
+				mState.mLive.mInUse = false;
+				isDead = true;
+
+				b.getEntity()->setVisible(false);
+			}
 		}
 	}
+
 
 	return isDead;
 }

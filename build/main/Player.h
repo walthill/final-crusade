@@ -33,11 +33,11 @@ class Player : public Entity
 
 		void init(int xBounds, int yBounds, int screenXSize, int screenYSize);
 
-		void update(double timeElapsed, Collider *b, int mouseX, int mouseY, int camX, int camY);
+		void update(double timeElapsed, vector<Collider*> colliderList, int mouseX, int mouseY, int camX, int camY);
 		//void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 
 		void checkBounds();
-		void checkForEnemyCollision(Collider *b, double timeElapsed);
+		void checkForEnemyCollision(vector<Collider*> colliderList, double timeElapsed);
 //		bool checkCollision(Collider a, Collider b);
 
 		void move(int mouseX, int mouseY, int camX, int camY);

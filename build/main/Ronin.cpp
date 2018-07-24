@@ -3,6 +3,12 @@
 Ronin::Ronin()
 {
 	srand(unsigned(time(NULL)));
+	
+/*	random_device rd;
+	uniform_int_distribution<int> randGen(0, 360);
+
+	randGen(rd);*/
+
 	rotate();
 }
 
@@ -19,7 +25,7 @@ void Ronin::update(double timeElapsed)
 {
 	if (mIsVisible)
 	{
-		Entity::update(timeElapsed);
+		Entity::update(timeElapsed); //animate
 
 		checkBounds();
 
@@ -28,7 +34,7 @@ void Ronin::update(double timeElapsed)
 	}
 	else
 	{
-		//add to score & combo
+		//tmp - add to score & combo
 	}
 }
 

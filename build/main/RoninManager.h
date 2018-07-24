@@ -1,7 +1,7 @@
 #ifndef ENTITY_MAN
 #define ENTITY_MAN
 
-#include <map>
+#include <vector>
 #include "Trackable.h"
 #include "Ronin.h"
 
@@ -12,12 +12,8 @@ typedef string EntityId;
 class RoninManager : Trackable
 {
 	private:
-
-		//TODO: turn this into a vector??
-		map<EntityId, Ronin*> mEntityMap;
-
-		//TODO: collider list??
-
+		vector<Ronin*> mRoninList;
+		vector<Collider*> mColliderList;
 
 	public:
 		RoninManager();
@@ -37,11 +33,13 @@ class RoninManager : Trackable
 		void addEntity(EntityId key, Ronin *objToAdd);
 
 		//Remove from collection by key or object
-		void removeEntity(EntityId key);
+		void removeEntity(int index);
 		void removeEntity(Ronin *objToRemove);
 
 		Ronin* getEntity(EntityId key);
 		int getCount();
+
+		vector<Collider*> getColliderList();
 
 };
 

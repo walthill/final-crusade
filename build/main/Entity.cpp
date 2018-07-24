@@ -51,25 +51,27 @@ bool Entity::checkCollision(Collider a, Collider b)
 		//collision detection
 		if (mBottomA <= mTopB)
 		{
-			return mHasCollided;
+			return false;
 		}
 		if (mTopA >= mBottomB)
 		{
-			return mHasCollided;
+			return false;
 		}
 		if (mRightA <= mLeftB)
 		{
-			return mHasCollided;
+			return false;
 		}
 		if (mLeftA >= mRightB)
 		{
-			return mHasCollided;
+			return false;
 		}
 
-		mHasCollided = true;
+		return true;
+//		mHasCollided = true;
 	}
-
-	return mHasCollided;
+	
+	return false;
+	
 }
 
 

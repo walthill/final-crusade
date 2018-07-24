@@ -36,10 +36,10 @@ class Bullet : public Entity
 		Bullet* getNext() const { return mState.nextBullet;  }
 		void setNext(Bullet* next) { mState.nextBullet = next;  }
 
-		bool update(double timeElapsed, Collider* b);
+		bool update(double timeElapsed, vector<Collider*> colliderList);//Collider* b);
 		//void draw(GraphicsSystem *graphicsSystem);
 
-		bool checkState(Collider* b);
+		bool checkState(vector<Collider*> colliderList);//Collider* b);
 		void fire(int spawnX, int spawnY, float xVelocity, float yVelocity);
 
 		void setInUse(bool isInUse);

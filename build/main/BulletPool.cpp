@@ -68,11 +68,11 @@ void BulletPool::resetPool()
 }
 
 
-void BulletPool::update(double timeElapsed, Collider* b)
+void BulletPool::update(double timeElapsed, vector<Collider*> colliderList)//Collider* b)
 {
 	for (int i = 0; i < mPOOL_SIZE; i++)
 	{
-		if (bullets[i].update(timeElapsed, b)) //returns true if bullet is not in use
+		if (bullets[i].update(timeElapsed, colliderList)) //returns true if bullet is not in use
 		{
  			bullets[i].setNext(mFirstAvailable);
 			mFirstAvailable = &bullets[i];

@@ -32,7 +32,7 @@ class BulletPool
 		void initPool();
 		void resetPool();
 
-		void update(double timeElapsed, Collider* b);
+		void update(double timeElapsed, vector<Collider*> colliderList);//Collider* b);
 		void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 
 		void fireProjectile(double deltaTime, int playerX, int playerY, float direction);

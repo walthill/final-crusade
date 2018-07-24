@@ -13,7 +13,22 @@ RoninManager::~RoninManager()
 
 void RoninManager::clearManager()
 {
-	map<EntityId, Ronin*>::iterator iter;
+
+	for (int i = 0; i < mRoninList.size(); i++)
+	{
+		Ronin* tmp = mRoninList[i];
+		Collider* tmpCol = mColliderList[i];
+
+		if (tmp != NULL)
+			delete tmp;
+		//if (tmpCol != NULL)
+		//	delete tmpCol;
+	}
+
+	mRoninList.clear();
+	mColliderList.clear();
+
+/*	map<EntityId, Ronin*>::iterator iter;
 
 	for (iter = mEntityMap.begin(); iter != mEntityMap.end(); iter++)
 	{
@@ -23,43 +38,58 @@ void RoninManager::clearManager()
 			delete tmp;
 	}
 
-	mEntityMap.clear();
+	mEntityMap.clear();*/
 }
 
 
 void RoninManager::update(double elapsedTime)
 {
-	map<EntityId, Ronin*>::iterator iter;
+
+	for (int i = 0; i < mRoninList.size(); i++)
+	{
+		mRoninList[i]->update(elapsedTime);
+	}
+/*	map<EntityId, Ronin*>::iterator iter;
 
 	for (iter = mEntityMap.begin(); iter != mEntityMap.end(); iter++)
-		iter->second->update(elapsedTime);
+		iter->second->update(elapsedTime);*/
 }
 
 
 void RoninManager::draw(GraphicsSystem *system)
 {
-	map<EntityId, Ronin*>::iterator iter;
+
+	for (int i = 0; i < mRoninList.size(); i++)
+	{
+		mRoninList[i]->draw(system);
+	}
+	/*map<EntityId, Ronin*>::iterator iter;
 
 	for (iter = mEntityMap.begin(); iter != mEntityMap.end(); iter++)
-		iter->second->draw(system);
+		iter->second->draw(system);*/
 }
 
 void RoninManager::draw(GraphicsSystem *system, int camX, int camY)
 {
-	map<EntityId, Ronin*>::iterator iter;
+
+	for (int i = 0; i < mRoninList.size(); i++)
+	{
+		mRoninList[i]->draw(system, camX, camY);
+	}
+/*	map<EntityId, Ronin*>::iterator iter;
 
 	for (iter = mEntityMap.begin(); iter != mEntityMap.end(); iter++)
-		iter->second->draw(system, camX, camY);
+		iter->second->draw(system, camX, camY);*/
 }
 
 
 void RoninManager::createAndAddEntity(EntityId key, int x, int y, Animation anim)
 {
 	//pass in the animation, location
-	map<EntityId, Ronin*>::iterator iter = mEntityMap.find(key);
+//	map<EntityId, Ronin*>::iterator iter = mEntityMap.find(key);
 
-	if (iter == mEntityMap.end())
-	{
+	//if (iter == mEntityMap.end())
+	//{
 		Ronin *newEntity = new Ronin;
 
 		newEntity->setAnimation(anim);
@@ -67,17 +97,19 @@ void RoninManager::createAndAddEntity(EntityId key, int x, int y, Animation anim
 		
 		newEntity->setCollider("ronin");
 
-		mEntityMap[key] = newEntity;
+		mRoninList.push_back(newEntity);
+		mColliderList.push_back(newEntity->getCollider());
+		//mEntityMap[key] = newEntity;
 		newEntity = NULL;
 
 		cout << "NEW SPRITE" << endl;
-	}
+	//}
 }
 
 
 void RoninManager::createAndAddEntity(EntityId key, int x, int y, Animation anim, int amount)
 {
-	//pass in the animation, location
+	/*//pass in the animation, location
 	map<EntityId, Ronin*>::iterator iter = mEntityMap.find(key);
 	srand(unsigned(time(NULL)));
 
@@ -99,31 +131,37 @@ void RoninManager::createAndAddEntity(EntityId key, int x, int y, Animation anim
 
 			cout << "NEW SPRITE" << endl;
 		}
-	}
+	}*/
 }
 
 
 void RoninManager::addEntity(EntityId key, Ronin *objToAdd)
 {
-	map<EntityId, Ronin*>::iterator iter = mEntityMap.find(key);
+	mRoninList.push_back(objToAdd);
+	mColliderList.push_back(objToAdd->getCollider());
+
+
+	/*map<EntityId, Ronin*>::iterator iter = mEntityMap.find(key);
 
 	if (iter == mEntityMap.end())
-		mEntityMap[key] = objToAdd;
+		mEntityMap[key] = objToAdd;*/
 }
 
 
-void RoninManager::removeEntity(EntityId key)
+void RoninManager::removeEntity(int index)
 {
-	map<EntityId, Ronin*>::iterator iter = mEntityMap.find(key);
+	mRoninList.erase(mRoninList.begin() + index);
+	mColliderList.erase(mColliderList.begin() + index);
+	/*map<EntityId, Ronin*>::iterator iter = mEntityMap.find(key);
 
 	if (iter != mEntityMap.end())
-		mEntityMap.erase(key);
+		mEntityMap.erase(key);*/
 }
 
 
 void RoninManager::removeEntity(Ronin *objToRemove)
 {
-	map<EntityId, Ronin*>::iterator iter;
+/*	map<EntityId, Ronin*>::iterator iter;
 
 	for (iter = mEntityMap.begin(); iter != mEntityMap.end(); iter++)
 	{
@@ -134,13 +172,13 @@ void RoninManager::removeEntity(Ronin *objToRemove)
 
 			return;
 		}
-	}
+	}*/
 }
 
 
 Ronin* RoninManager::getEntity(EntityId key)
 {
-	map<EntityId, Ronin*>::iterator iter = mEntityMap.find(key);
+	/*map<EntityId, Ronin*>::iterator iter = mEntityMap.find(key);
 
 	if (iter != mEntityMap.end())
 	{
@@ -149,12 +187,18 @@ Ronin* RoninManager::getEntity(EntityId key)
 	else
 	{
 		return NULL;
-	}
-
+	}*/
+	return nullptr;
 }
 
 
 int RoninManager::getCount()
 {
-	return mEntityMap.size();
+	return mRoninList.size();
+}
+
+
+vector<Collider*> RoninManager::getColliderList()
+{
+	return mColliderList;
 }

@@ -24,7 +24,7 @@ void Player::init(int xBounds, int yBounds, int screenXSize, int screenYSize)
 	mScreenYSize = screenYSize;
 }
 
-void Player::update(double timeElapsed, Collider *b, int mouseX, int mouseY, int camX, int camY)
+void Player::update(double timeElapsed, vector<Collider*> colliderList, int mouseX, int mouseY, int camX, int camY)
 {
 	if (mIsVisible)
 	{
@@ -35,7 +35,7 @@ void Player::update(double timeElapsed, Collider *b, int mouseX, int mouseY, int
 			rotate(mouseX, mouseY, camX, camY);
 
 			checkBounds();
-			checkForEnemyCollision(b, timeElapsed);
+			checkForEnemyCollision(colliderList, timeElapsed);
 
 			move(mouseX, mouseY, camX, camY);
 		}
@@ -65,40 +65,51 @@ void Player::checkBounds()
 		mYLoc = mYBound-5;
 }
 
-void Player::checkForEnemyCollision(Collider *b, double timeElapsed)
+void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeElapsed)
 {
-	if (checkCollision(mThisCollider, *b) && !collisionDetected)
+
+	for (unsigned int i = 0; i < colliderList.size(); i++)
 	{
-		if (b->getTag() == "ronin")
+		Collider b = *colliderList[i];
+
+		if (checkCollision(mThisCollider, b) && !collisionDetected)
 		{
-			if (!lastLife)
+			if (b.getTag() == "ronin")
 			{
-				collisionDetected = true;
-				mShouldAnimate = true;
-				mAnim.setLooping(true); //death should go to lose screen    //cout << "ENEMY COLLISION" << endl; //TODO(high): player death
-				lastLife = true;
-			}
-			else if (hasRecovered)
-			{
-				mIsVisible = false; //lose screen
-				lastLife = false;
+				if (!lastLife)
+				{
+					collisionDetected = true;
+					mShouldAnimate = true;
+					mAnim.setLooping(true); //death should go to lose screen    //cout << "ENEMY COLLISION" << endl; //TODO(high): player death
+					lastLife = true;
+				}
+				else if (hasRecovered)
+				{
+					mIsVisible = false; //lose screen
+					lastLife = false;
+				}
 			}
 		}
-	}
-	else
-	{
-		mHasCollided = false;
+		else
+		{
+			mHasCollided = false;
+		}
+
+		if (lastLife && dtTime < 30000)
+		{
+			dtTime += timeElapsed;
+			if (dtTime > 30000) //invulnerable time
+			{
+				hasRecovered = true;
+				collisionDetected = false;
+
+				mAnim.setSpriteIndex(1);
+				mAnim.setLooping(false);
+			}
+		}
+
 	}
 
-	if (lastLife && dtTime < 5000)
-	{
-		dtTime += timeElapsed;
-		if (dtTime > 5000)
-		{
-			hasRecovered = true;
-			collisionDetected = false;
-		}
-	}
 }
 
 
