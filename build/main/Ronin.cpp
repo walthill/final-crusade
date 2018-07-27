@@ -1,4 +1,5 @@
 #include "Ronin.h"
+#include "Game.h"
 
 Ronin::Ronin()
 {
@@ -14,6 +15,7 @@ Ronin::Ronin()
 
 Ronin::~Ronin()
 {
+	//Game::getInstance()->mScore++;
 }
 
 /*void Ronin::destroy()
@@ -30,11 +32,18 @@ void Ronin::update(double timeElapsed)
 		checkBounds();
 
 		mXLoc += mXVelocity * mSpeed;
-		mYLoc += mYVelocity * mSpeed; // enemy should rotate in the direction of 
+		mYLoc += mYVelocity * mSpeed; 
 	}
-	else
+	else if(destroyedLastFrame)
 	{
 		//tmp - add to score & combo
+		cout << "ADD POINTS AND COMBO" << endl;
+
+		Game::getInstance()->_Score += 450; //TODO: data driven - ronin point value
+		Game::getInstance()->_ComboCount++;  
+		//TODO(high): combo system - probably gonna need some ui work
+
+		destroyedLastFrame = false;
 	}
 }
 

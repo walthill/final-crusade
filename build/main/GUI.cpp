@@ -4,7 +4,7 @@ Gui::Gui()
 {
 	mRenderX = 0;
 	mRenderY = 0;
-	mTag = "general";
+	//mTag = "general";
 	//mShouldUpdate = false;
 	mHasButton = false;
 
@@ -20,15 +20,15 @@ Gui::~Gui()
 }
 
 
-void Gui::initGuiElement(string tag, int x, int y)
+void Gui::initGuiElement(/*string tag, */int x, int y)
 {
 	mRenderX = x;
 	mRenderY = y;
-	mTag = tag;
+//	mTag = tag;
 }
 
 
-void Gui::initGuiText(int fontSize, Color fontColor, string msg)
+void Gui::addGuiText(int fontSize, Color fontColor, string msg)
 {
 	mTextUI.mFontObj = new Font(mLOCAL_ASSET_PATH + mCOUR_FONT, fontSize);
 	mTextUI.mFontColor = fontColor;
@@ -36,8 +36,19 @@ void Gui::initGuiText(int fontSize, Color fontColor, string msg)
 }
 
 
-void Gui::initGuiButton(GraphicsBuffer buttonBuffer, EventType type, int sheetRows, int sheetCols,
-	int spriteW, int spriteH, int fontSize, Color fontColor, string msg)
+void Gui::initGuiElementWithText(/*string tag, */int x, int y, int fontSize, Color fontColor, string msg)
+{
+	mRenderX = x;
+	mRenderY = y;
+	//mTag = tag;
+
+	mTextUI.mFontObj = new Font(mLOCAL_ASSET_PATH + mCOUR_FONT, fontSize);
+	mTextUI.mFontColor = fontColor;
+	mTextUI.mText = msg;
+}
+
+void Gui::addGuiButton(GraphicsBuffer buttonBuffer, EventType type, int sheetRows, int sheetCols,
+					   int spriteW, int spriteH, int fontSize, Color fontColor, string msg)
 {
 	mHasButton = true;
 	mButtonUI.mButtonType = type;
@@ -46,7 +57,7 @@ void Gui::initGuiButton(GraphicsBuffer buttonBuffer, EventType type, int sheetRo
 	mButtonUI.mButtonTextX = mRenderX + 10;
 	mButtonUI.mButtonTextY = mRenderY + 10;
 
-	initGuiText(fontSize, fontColor, msg);
+	addGuiText(fontSize, fontColor, msg);
 
 	mButtonUI.mButtonBuffer = buttonBuffer;
 
@@ -59,6 +70,7 @@ void Gui::initGuiButton(GraphicsBuffer buttonBuffer, EventType type, int sheetRo
 		mButtonUI.mButtonType == RESUME || mButtonUI.mButtonType == RETURN_OPTIONS || mButtonUI.mButtonType == RETURN_MAIN_CREDITS)
 		mButtonUI.mButtonAnim.setSpriteIndex(1);
 }
+
 
 
 void Gui::updateText(double timeElapsed, string strUpdate)
@@ -136,10 +148,10 @@ EventType Gui::getButtonType()
 	return mButtonUI.mButtonType;
 }
 
-string Gui::getTag()
+/*string Gui::getTag()
 {
-	return mTag;
-}
+	//return mTag;
+}*/
 
 int Gui::getX()
 {

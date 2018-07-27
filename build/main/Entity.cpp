@@ -19,6 +19,12 @@ Entity::~Entity()
 }
 
 
+void Entity::destroy()
+{
+	setVisible(false);
+	destroyedLastFrame = true;
+}
+
 void Entity::update(double timeElapsed)
 {
 	mAnim.update(timeElapsed, mShouldAnimate);

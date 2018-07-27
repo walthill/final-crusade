@@ -30,7 +30,7 @@ public:
 	Scene();
 	~Scene();
 
-	void initScene(SceneType type, bool isActive, GUIManager *gManager, Sprite *spr);
+	void initScene(SceneType type, GUIManager *gManager, Sprite *spr, bool isActive = false);
 
 	void update(double timeElapsed);
 	void draw(GraphicsSystem *graphicsSystem);

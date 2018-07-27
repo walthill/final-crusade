@@ -65,7 +65,7 @@ bool Bullet::checkState(vector<Collider*> colliderList)//Collider* b)
 				mState.mLive.mInUse = false;
 				isDead = true;
 
-				b.getEntity()->setVisible(false);
+				b.getEntity()->destroy();
 			}
 		}
 	}

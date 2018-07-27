@@ -12,11 +12,11 @@
 class Gui : public Trackable
 {
 	private:
-		const string mLOCAL_ASSET_PATH = "assets\\";
-		const string mCOUR_FONT = "cour.ttf";
+		const string mLOCAL_ASSET_PATH = "assets\\"; 
+		const string mCOUR_FONT = "cour.ttf"; //see game.h variables
 
 		int mRenderX, mRenderY;
-		string mTag;
+		//string mTag;
 		bool mShouldUpdate, mHasButton;
 		
 		struct TextUI
@@ -40,16 +40,22 @@ class Gui : public Trackable
 		Gui();
 		~Gui();
 
-		//Assigns gui element a tag and a position
-		void initGuiElement(string tag, int x, int y);
+		//Assigns GUI element a tag and a position
+		void initGuiElement(/*string tag,*/ int x, int y);
 
-		//Sets text for gui element
-		void initGuiText(int fontSize, Color fontColor, string msg);
+		//Sets text for GUI element
+		void addGuiText(int fontSize, Color fontColor, string msg);
+		
+		//Inits GUI element and creates text
+		void initGuiElementWithText(/*string tag,*/ int x, int y, 
+								   int fontSize, Color fontColor, string msg);
+
 
 		//Sets button w/ text for gui element
-		void initGuiButton(GraphicsBuffer buttonBuffer, EventType type, int sheetRows, int sheetCols, 
-						   int spriteW, int spriteH, int fontSize, 
-						   Color fontColor, string msg);
+		void addGuiButton(GraphicsBuffer buttonBuffer, EventType type, 
+			              int sheetRows, int sheetCols, 
+						  int spriteW, int spriteH, int fontSize, 
+						  Color fontColor, string msg);
 
 		//used for scores/timers etc
 		void updateText(double timeElapsed, string strUpdate);
@@ -66,7 +72,7 @@ class Gui : public Trackable
 		bool isButtonSelected();
 
 		EventType getButtonType();
-		string getTag();
+		//string getTag();
 		int getX();
 		int getY();
 };

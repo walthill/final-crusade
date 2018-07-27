@@ -4,7 +4,10 @@ Game* Game::mGameInstance = NULL;
 
 //TODO: player knockback on shooting/damaged?
 
-//TODO(high): combo system - probably gonna need some ui work
+
+//TODO: add in localization code
+
+//Including in .h vs .cpp https://stackoverflow.com/questions/3002110/include-in-h-or-c-cpp 
 
 //creating exe
 //https://discourse.libsdl.org/t/creating-an-easily-distributable-executable-file/24413
@@ -50,8 +53,8 @@ void Game::displayLoadingScreen()
 	mLoadingScreen.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLevelWidth, mLevelHeight, mLOCAL_ASSET_PATH + mLOADING_IMG);
 	mBufferManager.addGraphicsBuffer(mLOAD_ID, &mLoadingScreen);
 
-	mLoadingSprite.initSprite(mBufferManager.getGraphicsBuffer(mLOAD_ID), 0, 0, mBufferManager.getGraphicsBuffer(mLOAD_ID)->getBitmapWidth(),
-		mBufferManager.getGraphicsBuffer(mLOAD_ID)->getBitmapHeight());
+	mLoadingSprite.initSprite(&mLoadingScreen, 0, 0, mLoadingScreen.getBitmapWidth(),
+							  mLoadingScreen.getBitmapHeight());
 
 	//mSystem.getGraphicsSystem()->draw(0, 0, mLoadingSprite, 1.0f, 1.0f);
 	//mSystem.getGraphicsSystem()->flip();
@@ -71,7 +74,7 @@ bool Game::initGame()
 
 	cout << "*******Initialized system*******" << endl;
 
-	displayLoadingScreen();
+	//displayLoadingScreen();
 
 	//Initialize game-side input translation from event system
 	mInputTranslator.initInputTranslator();
@@ -113,7 +116,7 @@ bool Game::initGame()
 		randY = randGenY(rd2);
 		//rand() % 1100;
 
-		mRoninManager.createAndAddEntity(mEnemyManTag + to_string(i), randX, randY, mRoninAnim);
+		mRoninManager.createAndAddEntity(mRoninManTag + to_string(i), randX, randY, mRoninAnim);
 	}
 
 	//set player bullet sprite
@@ -174,20 +177,25 @@ void Game::loadBackgrounds()
 	mBulletBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + mBULLET_ASSET);
 	mRoninBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + mRONIN_ASSET);
 
+	mMenuBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + mMAINMENU_BG_ASSET);
+
 	//Add buffers to buffer manager
 	mBufferManager.addGraphicsBuffer(mPLAYER_ID, &mPlayerBuffer);
 	mBufferManager.addGraphicsBuffer(mBULLET_ID, &mBulletBuffer);
 	mBufferManager.addGraphicsBuffer(mRONIN_ID, &mRoninBuffer);
-
+	
+	mBufferManager.addGraphicsBuffer(mMAINMENU_BUFFER_ID, &mMenuBuffer);
 
 	//init Background sprites using initSprite()
-	
+	mMenuSprite.initSprite(&mMenuBuffer, 0, 0, mMenuBuffer.getBitmapWidth(), mMenuBuffer.getBitmapHeight());
 
 	cout << "*******Initialized buffers*******" << endl;
 }
 
 void Game::loadLocalization()
 {
+	//load in translations from file, store in memory, and assign to manager
+
 	mLocalization.loadLanguage(ENGLISH);
 	
 
@@ -199,24 +207,57 @@ void Game::loadLocalization()
 void Game::initUI()
 {
 	mWhiteText.setColor(255);
+	mButtonBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mDisplayWidth, mDisplayHeight, mLOCAL_ASSET_PATH + mBUTTON_ASSET);
 
-	mFpscounter.initGuiElement(mGEN_TAG, 10, 10);
-	mFpscounter.initGuiText(12, mWhiteText, to_string(mFPS));
+	//FPS UI
+	mFpscounter.initGuiElement(10, 10);
+	mFpscounter.addGuiText(12, mWhiteText, to_string(mFPS));
 
-	//add to manager
-	mGuiManagerMain.addGuiElement("fps", &mFpscounter);
+	//MAIN MENU UI
+	mMainTitle.initGuiElementWithText(345, 80, mFONT_SIZE, mWhiteText, "Final Crusade");
+
+	mMainStart.initGuiElement(270, 115);
+	mMainStart.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mWhiteText, "Play");
+
+	mMainQuit.initGuiElement(270, 155);
+	mMainQuit.addGuiButton(mButtonBuffer, QUIT, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mWhiteText, "Quit");
+
+	//IN GAME UI
+	mGameCombo.initGuiElementWithText(750, 550, mUI_SIZE, mWhiteText, to_string(_ComboCount));
+	mGameScore.initGuiElementWithText(750, 50, mUI_SIZE, mWhiteText, to_string(_Score));
+	mGameTime.initGuiElementWithText(750, 25, mUI_SIZE, mWhiteText, to_string(_TimeSurvived));
+	
+	
+	/*** add ui objects to manager ***/
+
+
+	//MAIN MENU UI MANAGER
+	mGuiManagerMain.setNumButtons(2);
+	mGuiManagerMain.addToManager("title", &mMainTitle);
+	mGuiManagerMain.addToManager("play", &mMainStart);
+	mGuiManagerMain.addToManager("quit", &mMainQuit);
+	mGuiManagerMain.addToManager("fps", &mFpscounter);
+
+	//GAME UI MANAGER
+	mGuiManagerGame.addToManager("combo", &mGameCombo);
+	mGuiManagerGame.addToManager("score", &mGameScore);
+	mGuiManagerGame.addToManager("time", &mGameTime);
+
+	mGuiManagerGame.addToManager("fps", &mFpscounter);
 
 	cout << "*******Initialized UI*******" << endl;
 }
 
 void Game::loadScenes()
 {
-	mMainMenu.initScene(SC_GAME, true, &mGuiManagerMain, &mLoadingSprite);
+	mMainMenuScene.initScene(SC_MAIN, &mGuiManagerMain, &mMenuSprite, true);
+	mGameScene.initScene(SC_GAME, &mGuiManagerGame, &mLoadingSprite);
 
 	//add to manager
-	mSceneManager.addScene("a", &mMainMenu);
+	mSceneManager.addScene("a", &mMainMenuScene);
+	mSceneManager.addScene("b", &mGameScene);
 	
-	mSceneManager.setCurrentScene(SC_GAME);
+	mSceneManager.setCurrentScene(SC_MAIN);
 
 	cout << "~~| Twisting loose screws |~~" << endl;
 	cout << "*******Scenes Loaded*******" << endl;
@@ -318,13 +359,21 @@ void Game::update(double timeElapsed)
 
 void Game::render()
 {
- 	mSceneManager.draw(mSystem.getGraphicsSystem());
+	//draw scene background
+	mSceneManager.draw(mSystem.getGraphicsSystem());
 
-	mPlayer.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
-	mBulletManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+	if (mSceneManager.getCurrentScene() == SC_GAME)
+	{
+		mPlayer.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+		mBulletManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+		mRoninManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+		//mRonin.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+	}
 
-	mRoninManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
-	//mRonin.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+	//draw gui last so that it exists over the rest of the game
+	//TODO: make into class function
+	mSceneManager.getGuiManager(mSceneManager.getCurrentScene())->draw(mSystem.getGraphicsSystem());
+	//mGuiManagerGame.draw(mSystem.getGraphicsSystem());
 
 	if (takeScreenshot)
 	{
@@ -355,7 +404,14 @@ void Game::handleEvent(const Event& theEvent)
 		//button actions for each scene
 		if (mSceneManager.getCurrentScene() == SC_MAIN)
 		{
-
+			if (mGuiManagerMain.getButtonEventPressed(NEW_GAME))
+			{
+				mSceneManager.setCurrentScene(SC_GAME);
+			}
+			else if (mGuiManagerMain.getButtonEventPressed(QUIT))
+			{
+				mIsRunning = false;
+			}
 		}
 		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
 		{
@@ -412,7 +468,7 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_MAIN)
 		{
-			
+			mSceneManager.moveCursorDown(SC_MAIN);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
 		{
@@ -439,7 +495,7 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_MAIN)
 		{
-			
+			mSceneManager.moveCursorUp(SC_MAIN);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
 		{

@@ -25,7 +25,6 @@ class SceneManager
 		SoundID mCurrentSound;
 		SceneType mCurrentScene;
 
-
 		Language *mLocalization;
 	public:
 		SceneManager();
@@ -40,6 +39,9 @@ class SceneManager
 		void update(double timeElapsed, double fps);
 
 		void draw(GraphicsSystem *graphicsSystem);
+
+		void moveCursorDown(SceneType scene, SoundID buttonMoveSound = "");
+		void moveCursorUp(SceneType scene, SoundID buttonMoveSound = "");
 
 		//Add buffer to collection
 		void addScene(SceneID key, Scene *objToAdd);

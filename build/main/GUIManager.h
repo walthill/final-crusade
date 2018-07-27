@@ -12,10 +12,12 @@ class GUIManager : public Trackable
 		map<GuiID, Gui*> mGuiMap;
 		int mCurrentButton;
 		int mNumButtons;
-
+		 
+		//elements with the given tag or with the global tag "general"
+		
 	public:
 
-		bool buttonPressed, left;
+		bool buttonPressed, isCursorMovingUp;
 		GUIManager();
 		~GUIManager();
 
@@ -32,17 +34,17 @@ class GUIManager : public Trackable
 
 		//selectNextButton() //increment currentbutton value
 
-		//draw all ui elements with the given tag or with the global tag "general"
-		void draw(GraphicsSystem *graphicsSystem, string guiTag);
+		//draw all ui 
+		void draw(GraphicsSystem *graphicsSystem); // , string guiTag);
 
 		//Add buffer to collection
-		void addGuiElement(GuiID key, Gui *objToAdd);
+		void addToManager(GuiID key, Gui *objToAdd);
 
 		//Remove from collection by object or key
-		void removeGuiElement(GuiID key);
-		void removeGuiElement(Gui *objToRemove);
+		void removeFromManager(GuiID key);
+		void removeFromManager(Gui *objToRemove);
 
-		Gui* getGuiElement(GuiID key);
+		Gui* getGuiObject(GuiID key);
 		void setNumButtons(int amount);
 
 };

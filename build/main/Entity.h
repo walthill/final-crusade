@@ -28,10 +28,14 @@ class Entity : public Trackable
 		int mLeftA, mLeftB, mRightA, mRightB;
 		int mTopA, mTopB, mBottomA, mBottomB;
 
+		bool destroyedLastFrame = false;
+
 	public:
 		Entity();
 
 		~Entity();
+
+		void destroy();
 
 		//Call animation update
 		void update(double timeElapsed);
@@ -69,6 +73,7 @@ class Entity : public Trackable
 
 		void setCollider(string colliderNameTag);
 		Collider* getCollider();
+
 };
 
 #endif // !ENTITY_H

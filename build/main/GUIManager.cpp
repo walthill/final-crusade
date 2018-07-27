@@ -1,7 +1,5 @@
 #include "GUIManager.h"
 
-
-
 GUIManager::GUIManager()
 {
 	mCurrentButton = 0;
@@ -62,7 +60,7 @@ void GUIManager::updateButtons(double timeElapsed)
 
 			if (iter->second->hasButton() && iter->second->isButtonSelected() && mCurrentButton < maxNumUpdated)
 			{
-				if (!left && mCurrentButton < mNumButtons-1) //move right/down
+				if (!isCursorMovingUp && mCurrentButton < mNumButtons-1) //move right/down
 				{
 					iter->second->updateButton(timeElapsed);
 					iter++;
@@ -70,7 +68,7 @@ void GUIManager::updateButtons(double timeElapsed)
 					iter--;
 					mCurrentButton++;
 				}
-				else if(left && mCurrentButton > 0)//move left/up
+				else if(isCursorMovingUp && mCurrentButton > 0)//move left/up
 				{
 					iter->second->updateButton(timeElapsed);
 					iter--;
@@ -102,14 +100,14 @@ bool GUIManager::getButtonEventPressed(EventType type)
 	return false;
 }
 
-void GUIManager::draw(GraphicsSystem *graphicsSystem, string guiTag)
+void GUIManager::draw(GraphicsSystem *graphicsSystem)//, string guiTag)
 {
 	map<GuiID, Gui*>::iterator iter;
 
 	for (iter = mGuiMap.begin(); iter != mGuiMap.end(); iter++)
 	{
 		//draw specific elements or use an empty string to define a global ui element that can exist across screens
-		if (guiTag == iter->second->getTag() || iter->second->getTag() == "general")
+	//	if (guiTag == iter->second->getTag() || iter->second->getTag() == "general")
 		{
 			iter->second->draw(graphicsSystem);
 		}
@@ -119,7 +117,7 @@ void GUIManager::draw(GraphicsSystem *graphicsSystem, string guiTag)
 
 
 
-void GUIManager::addGuiElement(GuiID key, Gui *objToAdd)
+void GUIManager::addToManager(GuiID key, Gui *objToAdd)
 {
 	map<GuiID, Gui*>::iterator iter = mGuiMap.find(key);
 
@@ -128,7 +126,7 @@ void GUIManager::addGuiElement(GuiID key, Gui *objToAdd)
 }
 
 
-void GUIManager::removeGuiElement(GuiID key)
+void GUIManager::removeFromManager(GuiID key)
 {
 	map<GuiID, Gui*>::iterator iter = mGuiMap.find(key);
 
@@ -137,7 +135,7 @@ void GUIManager::removeGuiElement(GuiID key)
 }
 
 
-void GUIManager::removeGuiElement(Gui *objToRemove)
+void GUIManager::removeFromManager(Gui *objToRemove)
 {
 	map<GuiID, Gui*>::iterator iter;
 
@@ -151,7 +149,7 @@ void GUIManager::removeGuiElement(Gui *objToRemove)
 }
 
 
-Gui* GUIManager::getGuiElement(GuiID key)
+Gui* GUIManager::getGuiObject(GuiID key)
 {
 	map<GuiID, Gui*>::iterator iter = mGuiMap.find(key);
 

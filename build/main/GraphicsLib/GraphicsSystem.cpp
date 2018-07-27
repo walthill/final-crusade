@@ -167,7 +167,7 @@ void GraphicsSystem::takeScreenshot(GraphicsBuffer *bufferToSave, string filenam
 void GraphicsSystem::writeTextToBackbuffer(int locX, int locY, Font &fontToWrite,
 	Color writeColor, string msg)
 {
-	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(fontToWrite.mFont, msg.c_str(), writeColor.mColor);
+	SDL_Surface* surfaceMessage = TTF_RenderText_Blended(fontToWrite.mFont, msg.c_str(), writeColor.mColor);
 
 	SDL_Texture* Message = SDL_CreateTextureFromSurface(mRenderer, surfaceMessage); //now you can convert it into a texture
 

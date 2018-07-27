@@ -14,7 +14,7 @@ RoninManager::~RoninManager()
 void RoninManager::clearManager()
 {
 
-	for (int i = 0; i < mRoninList.size(); i++)
+	for (unsigned int i = 0; i < mRoninList.size(); i++)
 	{
 		Ronin* tmp = mRoninList[i];
 		Collider* tmpCol = mColliderList[i];
@@ -45,7 +45,7 @@ void RoninManager::clearManager()
 void RoninManager::update(double elapsedTime)
 {
 
-	for (int i = 0; i < mRoninList.size(); i++)
+	for (unsigned int i = 0; i < mRoninList.size(); i++)
 	{
 		mRoninList[i]->update(elapsedTime);
 	}
@@ -59,7 +59,7 @@ void RoninManager::update(double elapsedTime)
 void RoninManager::draw(GraphicsSystem *system)
 {
 
-	for (int i = 0; i < mRoninList.size(); i++)
+	for (unsigned int i = 0; i < mRoninList.size(); i++)
 	{
 		mRoninList[i]->draw(system);
 	}
@@ -72,7 +72,7 @@ void RoninManager::draw(GraphicsSystem *system)
 void RoninManager::draw(GraphicsSystem *system, int camX, int camY)
 {
 
-	for (int i = 0; i < mRoninList.size(); i++)
+	for (unsigned int i = 0; i < mRoninList.size(); i++)
 	{
 		mRoninList[i]->draw(system, camX, camY);
 	}

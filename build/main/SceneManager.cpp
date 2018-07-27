@@ -113,42 +113,43 @@ void SceneManager::update(double timeElapsed, double fps)
 			//Updating UI - allows for language change, scoring, frame data
 			if (iter->second->getSceneType() == SC_MAIN)
 			{
-			
+				//TODO: try GuiManager update text()
 
-				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
+				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_GAME)
 			{
-				
-				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
+				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
+
+				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_OPTIONS)
 			{
 				
-				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
+				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_PAUSE)
 			{
 				
 
-				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
+				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_LOSE)
 			{
 				
-				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
+				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_CREDITS)
 			{
 				
 
-				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
+				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 
 			}
 			else if (iter->second->getSceneType() == SC_STATS)
 			{
 			
-				iter->second->getGuiManager()->getGuiElement("fps")->updateText(timeElapsed, to_string(fps));
+				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 
 			}
 			iter->second->update(timeElapsed);
@@ -175,6 +176,23 @@ void SceneManager::draw(GraphicsSystem *graphicsSystem)
 }
 
 
+
+void SceneManager::moveCursorDown(SceneType scene, SoundID buttonMoveSound)
+{
+	getGuiManager(scene)->buttonPressed = true;
+	getGuiManager(scene)->isCursorMovingUp = false;
+
+	playSfx(buttonMoveSound);
+}
+
+
+void SceneManager::moveCursorUp(SceneType scene, SoundID buttonMoveSound)
+{
+	getGuiManager(scene)->buttonPressed = true;
+	getGuiManager(scene)->isCursorMovingUp = true;
+
+	playSfx(buttonMoveSound);
+}
 
 
 void SceneManager::addScene(SceneID key, Scene *objToAdd)

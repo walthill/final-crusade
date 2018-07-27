@@ -98,7 +98,7 @@ void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeE
 		if (lastLife && dtTime < 30000)
 		{
 			dtTime += timeElapsed;
-			if (dtTime > 30000) //invulnerable time
+			if (dtTime > 30000) //TODO(low): invulnerable time
 			{
 				hasRecovered = true;
 				collisionDetected = false;
