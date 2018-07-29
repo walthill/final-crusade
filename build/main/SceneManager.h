@@ -19,6 +19,8 @@ class SceneManager
 		const string SCORE = "score";
 		const string FPS_COUNT = "mainmenu4";
 
+		string timeStr;
+
 		map<SceneID, Scene*> mSceneCollection;
 		map<SoundID, Sound*> mSoundList;
 
@@ -36,9 +38,11 @@ class SceneManager
 		void clearManager();
 
 		//Take in values for UI info
-		void update(double timeElapsed, double fps);
+		void update(double timeElapsed, int &combo, int &score, int const &minutes, int const &seconds, double &fps);
 
 		void draw(GraphicsSystem *graphicsSystem);
+		void drawGUI(GraphicsSystem *graphicsSystem);
+
 
 		void moveCursorDown(SceneType scene, SoundID buttonMoveSound = "");
 		void moveCursorUp(SceneType scene, SoundID buttonMoveSound = "");

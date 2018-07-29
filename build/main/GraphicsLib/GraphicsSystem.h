@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <stdlib.h>
+#include <time.h>
 
 /*
 	All object headers include Trackable in order 
@@ -34,6 +35,7 @@ class GraphicsSystem : Trackable
 		int spriteWidth, spriteHeight;
 
 		//screenshot vars
+		const string charList = "0123456789abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ";
 		const string SCREENS_FOLDER = "..\\..\\ext\\screens\\";
 		string filePath;
 		const int PIXEL_BIT_DEPTH = 32;
@@ -73,7 +75,7 @@ class GraphicsSystem : Trackable
 			Sprite sprBuffer, float scaleX, float scaleY);
 		
 		//Save specified buffer
-		void takeScreenshot(GraphicsBuffer *bufferToSave, string filename);
+		void takeScreenshot(GraphicsBuffer *bufferToSave);
 
 
 		//Write text to backBuffer

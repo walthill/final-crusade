@@ -2,10 +2,11 @@
 
 Game* Game::mGameInstance = NULL;
 
-//TODO: player knockback on shooting/damaged?
+//TODO: lose screen - work on resetting game
 
+//TODO: add in localization code - eng & fr
 
-//TODO: add in localization code
+//TODO: ememy death audio
 
 //Including in .h vs .cpp https://stackoverflow.com/questions/3002110/include-in-h-or-c-cpp 
 
@@ -74,7 +75,7 @@ bool Game::initGame()
 
 	cout << "*******Initialized system*******" << endl;
 
-	//displayLoadingScreen();
+	displayLoadingScreen();
 
 	//Initialize game-side input translation from event system
 	mInputTranslator.initInputTranslator();
@@ -223,9 +224,9 @@ void Game::initUI()
 	mMainQuit.addGuiButton(mButtonBuffer, QUIT, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mWhiteText, "Quit");
 
 	//IN GAME UI
-	mGameCombo.initGuiElementWithText(750, 550, mUI_SIZE, mWhiteText, to_string(_ComboCount));
-	mGameScore.initGuiElementWithText(750, 50, mUI_SIZE, mWhiteText, to_string(_Score));
-	mGameTime.initGuiElementWithText(750, 25, mUI_SIZE, mWhiteText, to_string(_TimeSurvived));
+	mGameCombo.initGuiElementWithText(745, 550, mUI_SIZE, mWhiteText, to_string(_ComboCount));
+	mGameScore.initGuiElementWithText(745, 30, mUI_SIZE, mWhiteText, to_string(_Score));
+	mGameTime.initGuiElementWithText(745, 5, mUI_SIZE, mWhiteText, to_string(_TimeSurvived));
 	
 	
 	/*** add ui objects to manager ***/
@@ -295,6 +296,9 @@ void Game::loadLastSave()
 
 void Game::cleanupGame()
 {
+	delete survivalTimer;
+	survivalTimer = NULL;
+
 	delete mFont;
 	mFont = NULL;
 
@@ -345,17 +349,78 @@ void Game::update(double timeElapsed)
 	mSystem.getInputSystem()->update(timeElapsed);
 
 	//update displays
-	mSceneManager.update(timeElapsed, mFPS);
+
+	mSceneManager.update(timeElapsed, _ComboCount, _Score, min, sec, mFPS);
 	
 	if (mSceneManager.getCurrentScene() == SC_GAME)
 	{
+		tickSurvivalTimer();
+
 		mRoninManager.update(timeElapsed);
-		mBulletManager.update(timeElapsed, mRoninManager.getColliderList());//mEnemyManager.getEntity("e0")->getCollider());
-		mPlayer.update(timeElapsed, mRoninManager.getColliderList()/*mEnemyManager.getEntity("e0")->getCollider()*/, mouseX, mouseY, mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+		mBulletManager.update(timeElapsed, mRoninManager.getColliderList());
+		mPlayer.update(timeElapsed, mRoninManager.getColliderList(), 
+					   mouseX, mouseY, mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+		
+		comboUpdate(timeElapsed);
+		
 		mGameView.update(timeElapsed);
 	}
 }
 
+void Game::tickSurvivalTimer()
+{
+	millisec = survivalTimer->getElapsedTime();
+
+	sec = millisec / 1000;
+
+	if (sec >= 60)
+	{
+		sec = 0;
+		min += 1;
+		survivalTimer->start();
+	}
+}
+
+void Game::comboUpdate(double timeElapsed)
+{
+	if (_CanCombo)
+	{
+		Color gr(0, 255, 0); //tmp
+		mGuiManagerGame.getGuiObject("combo")->setTextColor(gr);
+
+		dtTime = mCOMBO_WINDOW; //combo window
+		_ComboCount++;
+
+		_CanCombo = false;
+	}
+
+	//3 is the number needed to regen 
+	if (_ComboCount == mCOMBO_NUM_TO_REGEN && mPlayer.isLastLife())
+	{
+		mPlayer.getAnimation()->setLooping(false);
+		mPlayer.shouldAnimate(false);
+
+		mPlayer.getAnimation()->setSpriteIndex(0);
+		mPlayer.setLastLife(false);
+
+		mPlayer.setCollisionDetected(false);
+	}
+
+	if (dtTime > 0)
+	{
+		dtTime -= timeElapsed;
+		if (dtTime <= 0)
+		{
+			endCombo();
+		}
+	}
+}
+
+void Game::endCombo()
+{
+	_ComboCount = 0;
+	mGuiManagerGame.getGuiObject("combo")->setTextColor(mWhiteText);
+}
 
 void Game::render()
 {
@@ -367,19 +432,15 @@ void Game::render()
 		mPlayer.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 		mBulletManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 		mRoninManager.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
-		//mRonin.draw(mSystem.getGraphicsSystem(), mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
 	}
 
 	//draw gui last so that it exists over the rest of the game
-	//TODO: make into class function
-	mSceneManager.getGuiManager(mSceneManager.getCurrentScene())->draw(mSystem.getGraphicsSystem());
-	//mGuiManagerGame.draw(mSystem.getGraphicsSystem());
-
+	mSceneManager.drawGUI(mSystem.getGraphicsSystem());
+	
 	if (takeScreenshot)
 	{
-		mSystem.getGraphicsSystem()->takeScreenshot(mSystem.getGraphicsSystem()->getBackbuffer(), mScreencapFilename + to_string(mCapNum) + ".png");
+		mSystem.getGraphicsSystem()->takeScreenshot(mSystem.getGraphicsSystem()->getBackbuffer());
 		takeScreenshot = false;
-		mCapNum++;
 	}
 
 	mSystem.getGraphicsSystem()->flip();
@@ -407,6 +468,9 @@ void Game::handleEvent(const Event& theEvent)
 			if (mGuiManagerMain.getButtonEventPressed(NEW_GAME))
 			{
 				mSceneManager.setCurrentScene(SC_GAME);
+				
+				survivalTimer = new Timer;
+				survivalTimer->start();
 			}
 			else if (mGuiManagerMain.getButtonEventPressed(QUIT))
 			{
@@ -436,13 +500,15 @@ void Game::handleEvent(const Event& theEvent)
 		break;
 	case SHOOT:
 		
-		bulletSpawnX = mPlayer.getX();
-		bulletSpawnY = mPlayer.getY();
+		if (mPlayer.isVisible())
+		{
+			bulletSpawnX = mPlayer.getX();
+			bulletSpawnY = mPlayer.getY();
 
-		mBulletManager.fireProjectile(mFRAME_TIME_60FPS, bulletSpawnX, bulletSpawnY, mPlayer.getRotation());
-		
-		mGameView.toggleScreenShake(true);
+			mBulletManager.fireProjectile(mFRAME_TIME_60FPS, bulletSpawnX, bulletSpawnY, mPlayer.getRotation());
 
+			mGameView.toggleScreenShake(true);
+		}
 
 		//TODO: shooting audio
 		//cout << "SHOOT SHOOT SHOOP" << endl;
@@ -559,7 +625,6 @@ void Game::handleEvent(const Event& theEvent)
 
 	case SCREENCAP:
 		takeScreenshot = true;
-		//mSystem.getGraphicsSystem()->takeScreenshot(mSystem.getGraphicsSystem(), "ss1.png");
 		cout << "SCREENSHOT CAPTURED!" << endl;
 		break;
 

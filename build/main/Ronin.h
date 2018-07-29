@@ -17,8 +17,9 @@ class Ronin : public Entity
 		double mXVelocity = 1, mYVelocity = 1, direction;
 		int mAngle;
 
+		int multiplier, mScoreValue;
 
-		double mSpeed = 2.1; //TODO: data driven here
+		double mSpeed;// = 2.1;
 
 	public:
 		Ronin();

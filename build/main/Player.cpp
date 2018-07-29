@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Game.h"
 
 Player::Player()
 {
@@ -9,6 +10,8 @@ Player::Player()
 	mScreenXSize = 0;
 	mScreenYSize = 0; //screen sizes 
 	lastLife = false;
+
+	invulnerableTime = 30000;
 }
 
 Player::~Player()
@@ -42,17 +45,6 @@ void Player::update(double timeElapsed, vector<Collider*> colliderList, int mous
 	}
 }
 
-/*void Player::draw(GraphicsSystem *graphicsSystem, int camX, int camY)
-{
-	if (mIsVisible)
-	{
-		Sprite curSpr = mAnim.getCurrentSprite();
-
-		//draw relative to camera position
-		graphicsSystem->draw(mXLoc - camX, mYLoc - camY, curSpr, mXScale, mYScale, mRotation);
-	}
-}*/
-
 void Player::checkBounds()
 {
  	if (mXLoc < 0)
@@ -76,12 +68,14 @@ void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeE
 		{
 			if (b.getTag() == "ronin")
 			{
-				if (!lastLife)
+				if (!lastLife) //first hit - send to near death
 				{
 					collisionDetected = true;
 					mShouldAnimate = true;
 					mAnim.setLooping(true); //death should go to lose screen    //cout << "ENEMY COLLISION" << endl; //TODO(high): player death
 					lastLife = true;
+
+					Game::getInstance()->endCombo();
 				}
 				else if (hasRecovered)
 				{
@@ -95,16 +89,18 @@ void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeE
 			mHasCollided = false;
 		}
 
-		if (lastLife && dtTime < 30000)
+		if (lastLife && dtTime < invulnerableTime)
 		{
 			dtTime += timeElapsed;
-			if (dtTime > 30000) //TODO(low): invulnerable time
+			if (dtTime > invulnerableTime)
 			{
 				hasRecovered = true;
 				collisionDetected = false;
 
 				mAnim.setSpriteIndex(1);
 				mAnim.setLooping(false);
+
+				dtTime = 0;
 			}
 		}
 
@@ -184,4 +180,19 @@ int Player::getWidth()
 int Player::getHeight()
 {
 	return mAnim.getCurrentSprite().getSpriteHeight();
+}
+
+bool Player::isLastLife()
+{
+	return lastLife;
+}
+
+void Player::setLastLife(bool isLastLife)
+{
+	lastLife = isLastLife;
+}
+
+void Player::setCollisionDetected(bool colDetected)
+{
+	collisionDetected = colDetected;
 }

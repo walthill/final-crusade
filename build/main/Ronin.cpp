@@ -3,6 +3,9 @@
 
 Ronin::Ronin()
 {
+	mSpeed = 2.1;
+	multiplier = 1;
+	mScoreValue = 250;
 	srand(unsigned(time(NULL)));
 	
 /*	random_device rd;
@@ -36,13 +39,18 @@ void Ronin::update(double timeElapsed)
 	}
 	else if(destroyedLastFrame)
 	{
-		//tmp - add to score & combo
 		cout << "ADD POINTS AND COMBO" << endl;
 
-		Game::getInstance()->_Score += 450; //TODO: data driven - ronin point value
-		Game::getInstance()->_ComboCount++;  
-		//TODO(high): combo system - probably gonna need some ui work
+		if (Game::getInstance()->_ComboCount > 5)
+			multiplier = 2;
+		else if (Game::getInstance()->_ComboCount > 15)
+			multiplier = 3;
+		else
+			multiplier = 1;
 
+		Game::getInstance()->_Score += mScoreValue * multiplier; 
+		Game::getInstance()->_CanCombo = true;
+	
 		destroyedLastFrame = false;
 	}
 }

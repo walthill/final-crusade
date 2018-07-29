@@ -140,7 +140,7 @@ void GraphicsSystem::drawBackbuffer(GraphicsBuffer *targetBuffer, int displayX, 
 
 
 //Big help from TalesM @ StackOverflow https://bit.ly/2AAUTkU
-void GraphicsSystem::takeScreenshot(GraphicsBuffer *bufferToSave, string filename)
+void GraphicsSystem::takeScreenshot(GraphicsBuffer *bufferToSave)
 {
 	SDL_Surface *saveSurface = bufferToSave->mpSurface; //SDL_CreateRGBSurface(0, mWidth, mHeight, PIXEL_BIT_DEPTH,
 													//rMask, gMask, bMask, aMask);
@@ -148,11 +148,20 @@ void GraphicsSystem::takeScreenshot(GraphicsBuffer *bufferToSave, string filenam
 	SDL_RenderReadPixels(mRenderer, NULL, SDL_GetWindowPixelFormat(mDisplay),
 						 saveSurface->pixels, saveSurface->pitch);
 
-	filePath = SCREENS_FOLDER + filename;
+	srand(time(0));
+	string fn = "";
+
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		fn += charList[rand() % charList.size()];
+	}
+
+	filePath = SCREENS_FOLDER + fn + ".png";
+	
+	
 	if (SDL_SaveBMP(saveSurface, filePath.c_str()) == 0)
 	{
 		cout << "Screenshot Captured!" << endl;
-		//TODO(very low): add screenshot sound
 	}
 	else
 	{

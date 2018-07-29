@@ -8,7 +8,7 @@ class Bullet : public Entity
 {
 	private:
 		int mLiveBoundX, mLiveBoundY;
-		int mBulletSpeed = 10; //TODO: data driven
+		int mBulletSpeed;
 
 		//TODO: smaller bullet sprites
 

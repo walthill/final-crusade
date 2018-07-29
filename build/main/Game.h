@@ -139,18 +139,23 @@ class Game : EventListener
 		const string mDRAW_TRACKER_NAME = "draw";
 		const double mFRAME_TIME_60FPS = 16.7;
 		
-		//screenshot vars
-		int mCapNum=0;
-		const string mScreencapFilename = "capture";
+		//screenshot var
 		bool takeScreenshot;
 		
+		Timer *survivalTimer;
+
 		double mFPS;
 		bool mIsRunning;
+		int dtTime;	int sec = 0, millisec, min = 0;
+		const int mCOMBO_WINDOW = 2500;
+		const int mCOMBO_NUM_TO_REGEN = 3;
 
+		
 	public:
 
 		//gloabl vars
 		int _Score, _ComboCount, _TimeSurvived;
+		bool _CanCombo;
 
 		//Static class functions
 		static Game* getInstance()
@@ -193,6 +198,10 @@ class Game : EventListener
 
 		//Update game objects
 		void update(double timeElapsed);
+		
+		void tickSurvivalTimer();
+		void comboUpdate(double timeElapsed);
+		void endCombo();
 
 		//Draw to the screen
 		void render();

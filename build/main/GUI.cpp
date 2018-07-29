@@ -163,3 +163,8 @@ int Gui::getY()
 {
 	return mRenderY;
 }
+
+void Gui::setTextColor(Color textColor)
+{
+	mTextUI.mFontColor = textColor;
+}

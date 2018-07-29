@@ -36,7 +36,7 @@ class Animation : public Trackable
 		int getSpriteIndex();
 		void setSpriteIndex(int index);
 
-		//Mutator
+		//Determine if played animation should loop
 		void setLooping(bool loop);
 		
 		//Change animation time

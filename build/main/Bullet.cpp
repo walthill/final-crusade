@@ -6,6 +6,8 @@ Bullet::Bullet()
 	mState.mLive.mDamageValue = 0;
 	mState.mLive.mXVelocity = 0;
 	mState.mLive.mYVelocity = 0;
+
+	mBulletSpeed = 5;
 }
 
 Bullet::~Bullet()
@@ -31,8 +33,8 @@ bool Bullet::update(double timeElapsed, vector<Collider*> colliderList)
 	//call entity update to animate & update collison
 	Entity::update(timeElapsed);
 
-	mXLoc += mState.mLive.mXVelocity;
-	mYLoc += mState.mLive.mYVelocity;
+	mXLoc += mState.mLive.mXVelocity;;// *1.4;
+	mYLoc += mState.mLive.mYVelocity;//  * 1.4;
 
 	return checkState(colliderList);
 }
@@ -80,8 +82,8 @@ void Bullet::fire(int spawnX, int spawnY, float xVelocity, float yVelocity)
 	mState.mLive.mInUse = true;
 	mXLoc = spawnX;
 	mYLoc = spawnY;
-	mState.mLive.mXVelocity = xVelocity * 3;
-	mState.mLive.mYVelocity = yVelocity * 3;
+	mState.mLive.mXVelocity = xVelocity * mBulletSpeed;
+	mState.mLive.mYVelocity = yVelocity * mBulletSpeed;
 }
 
 

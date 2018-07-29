@@ -101,7 +101,7 @@ void SceneManager::clearManager()
 }
 
 
-void SceneManager::update(double timeElapsed, double fps)
+void SceneManager::update(double timeElapsed, int &combo, int &score, int const &minutes, int const &timeSurvived, double &fps)
 {
 	map<SceneID, Scene*>::iterator iter;
 
@@ -113,14 +113,18 @@ void SceneManager::update(double timeElapsed, double fps)
 			//Updating UI - allows for language change, scoring, frame data
 			if (iter->second->getSceneType() == SC_MAIN)
 			{
-				//TODO: try GuiManager update text()
-
 				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_GAME)
 			{
-				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
+				if (timeSurvived < 10)
+					timeStr = ":0";
+				else
+					timeStr = ":";
 
+				iter->second->getGuiManager()->getGuiObject("time")->updateText(timeElapsed, to_string(minutes) + timeStr + to_string(timeSurvived));
+				iter->second->getGuiManager()->getGuiObject("combo")->updateText(timeElapsed, to_string(combo));
+				iter->second->getGuiManager()->getGuiObject("score")->updateText(timeElapsed, to_string(score));
 				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 			}
 			else if (iter->second->getSceneType() == SC_OPTIONS)
@@ -175,6 +179,10 @@ void SceneManager::draw(GraphicsSystem *graphicsSystem)
 	}
 }
 
+void SceneManager::drawGUI(GraphicsSystem *graphicsSystem)
+{
+	getGuiManager(getCurrentScene())->draw(graphicsSystem);
+}
 
 
 void SceneManager::moveCursorDown(SceneType scene, SoundID buttonMoveSound)

@@ -46,7 +46,7 @@ class Entity : public Trackable
 		void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 		void draw(GraphicsSystem *graphicsSystem);
 		
-		//Give mAnim a new sprite
+		//Turn on/off animating
 		void shouldAnimate(bool pause);
 
 		void setRotation(double roationAngle);

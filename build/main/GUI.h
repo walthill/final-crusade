@@ -75,6 +75,8 @@ class Gui : public Trackable
 		//string getTag();
 		int getX();
 		int getY();
+
+		void setTextColor(Color textColor);
 };
 
 #endif // !GUI_H

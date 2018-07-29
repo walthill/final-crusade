@@ -17,11 +17,11 @@ class Player : public Entity
 		bool mLeft, mRight, mUp, mDown;
 		int mPlayerFrameSpeed, mVelocity; 
 		int mXBound, mYBound;
-		int mScreenXSize, mScreenYSize;//TODO: data driven here
+		int mScreenXSize, mScreenYSize;
 
 		bool lastLife, hasRecovered = false;
 		double dtTime =0;
-		int tempInvulnerable = 5000;
+		int invulnerableTime;
 
 		bool collisionDetected = false;
 
@@ -50,6 +50,12 @@ class Player : public Entity
 
 		int getWidth();
 		int getHeight();
+
+		bool isLastLife();
+		void setLastLife(bool isLastLife);
+		void setCollisionDetected(bool collisionDetected);
+
+
 
 };
 
