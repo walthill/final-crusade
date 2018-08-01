@@ -69,9 +69,109 @@ bool Bullet::checkState(vector<Collider*> colliderList)//Collider* b)
 
 				b.getEntity()->destroy();
 			}
+			else if (b.getTag() == "mountain")
+			{
+				
+				double currRot = b.getEntity()->getRotation();
+				
+				//TODO: make single accesor call here
+				//int thisColliderX, thisColliderY;
+				//int bColliderX, bColliderY;
+				//int bColliderW, bColliderH;
+				
+				
+				if (currRot > 180)
+					currRot -= 360;
+
+				//45 deg to -45 deg
+				if ( (currRot > 0 && currRot <= 45) || (currRot < 0 && currRot >= -45) )
+				{
+					//deflect
+					if ((mThisCollider.getX() >= b.getX() && mThisCollider.getX() <= b.getX() + b.getW() - 4)) //&& mThisCollider.getY() >= b.getY())
+					{
+						cout << "ENEMY HIT" << endl;
+						mState.mLive.mInUse = false;
+						isDead = true;
+					}
+					//ded
+					else if ((mThisCollider.getX() >= b.getX() + b.getW() - 4 && mThisCollider.getX() <= b.getX() + b.getW()))
+					{
+						cout << "ENEMY HIT" << endl;
+						mState.mLive.mInUse = false;
+						isDead = true;
+
+						b.getEntity()->destroy();
+					}
+				}
+
+
+
+				//135 deg to -135 deg
+				else if (currRot > 135 && currRot <= 180 || (currRot < -135 && currRot >= -179))
+				{
+					//deflect
+					if (mThisCollider.getX() > b.getX() + 4 && mThisCollider.getX() <= b.getX() + b.getW())
+					{
+						cout << "ENEMY HIT" << endl;
+						mState.mLive.mInUse = false;
+						isDead = true;
+					}//ded
+					else if (mThisCollider.getX() > b.getX() && mThisCollider.getX() <= b.getX()+4)
+					{
+						cout << "ENEMY HIT" << endl;
+						mState.mLive.mInUse = false;
+						isDead = true;
+
+						b.getEntity()->destroy();
+					}
+				}
+
+
+				//45 deg to 135 deg
+				else if (currRot > 45 && currRot <= 90 || (currRot > 90 && currRot <= 135))
+				{
+					//deflect
+					if (mThisCollider.getY() > b.getY() && mThisCollider.getY() <= b.getY() + b.getH() - 4)
+					{
+						cout << "ENEMY HIT" << endl;
+						mState.mLive.mInUse = false;
+						isDead = true;
+					}
+					//ded
+					else if (mThisCollider.getY() > b.getY() + b.getH() - 4 && mThisCollider.getY() <= b.getY() + b.getH())
+					{
+						cout << "ENEMY HIT" << endl;
+						mState.mLive.mInUse = false;
+						isDead = true;
+
+						b.getEntity()->destroy();
+					}
+				}
+
+				//-45 deg to -135 deg
+				else if (currRot < -45 && currRot >= -90 || (currRot < -90 && currRot >= -135))
+				{
+					//deflect
+					if (mThisCollider.getY() > b.getY() + 4 && mThisCollider.getY() <= b.getY() + b.getH())
+					{
+						cout << "ENEMY HIT" << endl;
+						mState.mLive.mInUse = false;
+						isDead = true;
+
+					}
+					//ded
+					else if (mThisCollider.getY() < b.getY() && mThisCollider.getY() <= b.getY() + 4)
+					{
+						cout << "ENEMY HIT" << endl;
+						mState.mLive.mInUse = false;
+						isDead = true;
+
+						b.getEntity()->destroy();
+					}
+				}			
+			}
 		}
 	}
-
 
 	return isDead;
 }

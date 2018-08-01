@@ -66,7 +66,7 @@ void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeE
 
 		if (checkCollision(mThisCollider, b) && !collisionDetected)
 		{
-			if (b.getTag() == "ronin")
+			if (b.getTag() == "ronin" || b.getTag() == "mountain")
 			{
 				if (!lastLife) //first hit - send to near death
 				{

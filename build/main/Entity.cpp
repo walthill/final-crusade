@@ -38,7 +38,7 @@ void Entity::update(double timeElapsed)
 
 bool Entity::checkCollision(Collider a, Collider b)
 {
-	assert(mHasCollider);
+	assert(mHasCollider); //you're checking for collisions w/o a collider
 
 	if (b.getEntity()->isVisible())
 	{

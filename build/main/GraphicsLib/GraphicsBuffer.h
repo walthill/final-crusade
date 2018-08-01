@@ -31,7 +31,7 @@ class GraphicsBuffer : public Trackable
 		GraphicsBuffer(int width, int height, string filePath);
 		~GraphicsBuffer();
 
-		void initGraphicsBuffer(GraphicsBuffer *surface, int width, int height, string filePath);
+		void initGraphicsBuffer(GraphicsBuffer *surface, string filePath);
 
 
 		//Explicit destructor

@@ -51,7 +51,7 @@ GraphicsBuffer::~GraphicsBuffer()
 		SDL_DestroyTexture(mpBitmap);
 }
 
-void GraphicsBuffer::initGraphicsBuffer(GraphicsBuffer *surface, int width, int height, string filePath)
+void GraphicsBuffer::initGraphicsBuffer(GraphicsBuffer *surface, string filePath)
 {
 	//NOTE: mp surface gets width and height
 	mpSurface = IMG_Load(filePath.c_str());

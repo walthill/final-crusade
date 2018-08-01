@@ -16,6 +16,7 @@
 #include "View.h"
 #include "BulletPool.h"
 #include "RoninManager.h"
+#include "MountainManager.h"
 
 /*
 File I/O performed using brofield's SimpleIni
@@ -58,10 +59,10 @@ class Game : EventListener
 		//Visual Assets
 		GraphicsBuffer mButtonBuffer; // ui button
 		GraphicsBuffer mMenuBuffer, mLoadingScreen;
-		GraphicsBuffer mPlayerBuffer, mBulletBuffer, mRoninBuffer;
+		GraphicsBuffer mPlayerBuffer, mBulletBuffer, mRoninBuffer, mMountainBuffer;
 
 		Sprite mMenuSprite, mLoadingSprite;
-		Animation mPlayerAnim, mBulletAnim, mRoninAnim;
+		Animation mPlayerAnim, mBulletAnim, mRoninAnim, mMountainAnim;
 
 		const int mFONT_SIZE = 25;
 		const int mUI_SIZE = 20;
@@ -73,7 +74,9 @@ class Game : EventListener
 
 		//Managers
 		RoninManager mRoninManager;
+		MountainManager mMountainManager;
 		BulletPool mBulletManager;
+		vector<Collider*> mColliderCollection;
 
 		//Game Entities
 		Ronin mRonin;
@@ -87,20 +90,23 @@ class Game : EventListener
 
 		int mDisplayWidth, mDisplayHeight, mLevelWidth, mLevelHeight;
 
-		int mNumEnemies, mNumRonin;
+		int mNumEnemies, mNumRonin, mNumMountain;
 
 		int mouseX, mouseY;
-
+		int camX, camY;
+		int mPlayerSpriteSize, mRoninSpriteSize, mMountainSpriteSize, mBulletSpriteSize;
 		int bulletSpawnX, bulletSpawnY;
 
 
 		//Enemy Manager Tags
 		string mRoninManTag = "r";
+		string mMountainManTag = "m";
 
 		//Collider tags
 		const ColliderTag PLAYER_COL_TAG = "player";
 		const ColliderTag RONIN_COL_TAG = "ronin";
 		const ColliderTag BULLET_COL_TAG = "stdBullet";
+		const ColliderTag MOUNTAIN_COL_TAG = "mountain";
 
 		//External assets
 		const AssetString mLOCAL_ASSET_PATH = "assets\\";
@@ -113,10 +119,12 @@ class Game : EventListener
 		const AssetString mPLAYER_ASSET = "phplayer.png";
 		const AssetString mRONIN_ASSET = "phronin.png";
 		const AssetString mBULLET_ASSET = "bullet.png";
+		const AssetString mMOUNTAIN_ASSET = "phmountain.png";
 
 		//GraphicsBuffer tags
 		const BufferTag mPLAYER_ID = "player";
 		const BufferTag mRONIN_ID = "ronin";
+		const BufferTag mMOUNTAIN_ID = "mountain";
 		const BufferTag mBULLET_ID = "bullet";
 		const BufferTag mMAINMENU_BUFFER_ID = "spaceblue";
 		const BufferTag mSPACE_ID = "spacebase";

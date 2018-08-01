@@ -1,46 +1,44 @@
-#ifndef ENTITY_MAN
-#define ENTITY_MAN
+#ifndef MOUNTAIN_MAN_H
+#define MOUNTAIN_MAN_H
 
 #include <vector>
 #include "Trackable.h"
-#include "Ronin.h"
+#include "Mountain.h"
 
 typedef string EntityId;
 
-//#include "Ronin.h"
-
-class RoninManager : public Trackable
+class MountainManager : public Trackable
 {
 	private:
-		vector<Ronin*> mRoninList;
+		vector<Mountain*> mMountainList;
 		vector<Collider*> mColliderList;
 
 	public:
-		RoninManager();
-		~RoninManager();
+		MountainManager();
+		~MountainManager();
 
 		//Explicit destructor
 		void clearManager();
 
 		//Calls individual functions
-		void update(double elapsedTime);//, RoninManager *manager);
+		void update(double elapsedTime);//, MountainManager *manager);
 		void draw(GraphicsSystem *system);
 		void draw(GraphicsSystem *system, int camX, int camY);
 
 		//Create object and add to collection
 		void createAndAddEntity(EntityId key, int x, int y, Animation anim);
 		void createAndAddEntity(EntityId key, int x, int y, Animation anim, int amount);
-		void addEntity(EntityId key, Ronin *objToAdd);
+		void addEntity(EntityId key, Mountain *objToAdd);
 
 		//Remove from collection by key or object
 		void removeEntity(int index);
-		void removeEntity(Ronin *objToRemove);
+		void removeEntity(Mountain *objToRemove);
 
-		Ronin* getEntity(EntityId key);
+		Mountain* getEntity(EntityId key);
 		int getCount();
 
 		vector<Collider*> getColliderList();
 
 };
 
-#endif // !ENTITY_MAN
+#endif // !MOUNTAIN_MAN_H
