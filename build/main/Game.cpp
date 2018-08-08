@@ -384,7 +384,7 @@ void Game::update(double timeElapsed)
 		tickSurvivalTimer();
 
 		mRoninManager.update(timeElapsed);
-		mMountainManager.update(timeElapsed);
+		mMountainManager.update(timeElapsed, &mPlayer);
 
 		mBulletManager.update(timeElapsed, mColliderCollection);
 		mPlayer.update(timeElapsed, mColliderCollection, 

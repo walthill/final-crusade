@@ -4,7 +4,7 @@
 Player::Player()
 {
 	mPlayerFrameSpeed = 16;
-	mVelocity = 3;
+	mVelocity = 4;
 	mXBound = 0;
 	mYBound = 0; 
 	mScreenXSize = 0;

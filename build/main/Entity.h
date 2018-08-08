@@ -72,6 +72,7 @@ class Entity : public Trackable
 		double getRotation();
 
 		void setCollider(string colliderNameTag);
+		void setCollider(int w, int h, string colliderNameTag);
 		Collider* getCollider();
 
 };

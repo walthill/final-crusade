@@ -192,6 +192,13 @@ void Entity::setCollider(string colliderNameTag)
 							   colliderNameTag, this);
 }
 
+void Entity::setCollider(int w, int h, string colliderNameTag)
+{
+	mHasCollider = true;
+
+	mThisCollider.initCollider(0, 0, w, h, colliderNameTag, this);
+}
+
 Collider* Entity::getCollider()
 {
 	return &mThisCollider;

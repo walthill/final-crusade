@@ -21,7 +21,7 @@ class MountainManager : public Trackable
 		void clearManager();
 
 		//Calls individual functions
-		void update(double elapsedTime);//, MountainManager *manager);
+		void update(double elapsedTime, Player *playerObj);//, MountainManager *manager);
 		void draw(GraphicsSystem *system);
 		void draw(GraphicsSystem *system, int camX, int camY);
 

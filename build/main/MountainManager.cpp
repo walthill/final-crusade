@@ -42,12 +42,12 @@ void MountainManager::clearManager()
 }
 
 
-void MountainManager::update(double elapsedTime)
+void MountainManager::update(double elapsedTime, Player *playerObj)
 {
 
 	for (unsigned int i = 0; i < mMountainList.size(); i++)
 	{
-		mMountainList[i]->update(elapsedTime);
+		mMountainList[i]->update(elapsedTime, playerObj);
 	}
 	/*	map<EntityId, Mountain*>::iterator iter;
 
