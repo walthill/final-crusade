@@ -12,20 +12,21 @@ class Ronin : public Entity
 
 
 	private:
-		const double PI = 3.1416, DEGREE_CONVERSION_VALUE = 180.0000;
-		int mMapXBound = 1600, mMapYBound=1200;
-		double mXVelocity = 1, mYVelocity = 1, direction;
+		const float PI = 3.1416f, DEGREE_CONVERSION_VALUE = 180.0000f;
+		
+		int mMapXBound, mMapYBound;
+		float mXVelocity = 1, mYVelocity = 1, direction;
 		int mAngle;
 
 		int multiplier, mScoreValue;
 
-		double mSpeed;// = 2.1;
+		float mSpeed;// = 2.1;
 
 	public:
 		Ronin();
 		~Ronin();
 
-		void initEnemy(int levelW, int levelH);
+		void init();
 		void update(double timeElapsed);
 		
 		void checkBounds();

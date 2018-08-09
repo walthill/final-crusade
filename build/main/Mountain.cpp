@@ -1,12 +1,12 @@
 #include "Mountain.h"
 #include "Game.h"
 
+
 Mountain::Mountain()
 {
-	mSpeed = 2.5;
+	mSpeed = 2.0f;
 	multiplier = 1;
 	mScoreValue = 350;
-	stateChanged = false;
 	srand(unsigned(time(NULL)));
 
 	/*	random_device rd;
@@ -17,63 +17,31 @@ Mountain::Mountain()
 	rotate();
 }
 
-Mountain::~Mountain()
+void Mountain::init()
 {
-	//Game::getInstance()->mScore++;
+ 	mMapXBound = Game::getInstance()->_LevelWidth;
+	mMapYBound = Game::getInstance()->_LevelHeight;
 }
 
-/*void Mountain::destroy()
+Mountain::~Mountain()
 {
-
-}*/
+}
 
 void Mountain::update(double timeElapsed, Player *playerObj)
 {
 	if (mIsVisible)
 	{
 		Entity::update(timeElapsed); //animate
+		
 		checkBounds();
+		ai(playerObj);
 
-
-		//TODO: line of sight collision check
-		/*if (currentState == IDLE)
-		{
-			if (hasLineOfSight(playerObj))
-			{
-
-				dirToPlayer = directionToPlayer(playerObj->getX(), playerObj->getY());
-				relativeDirToPlayer = abs(mRotation - dirToPlayer);
-
-				if (relativeDirToPlayer < halfFOV || relativeDirToPlayer > 360 - halfFOV)
-				{
-					currentState = ALERT;
-			}
-			}
-		}
-		else if (currentState == ALERT)
-		*/ {
-		//mSpeed = 3;
-			if (hasLineOfSight(playerObj)) // has line of sight
-			{
-				{
-					rotateToPlayer(playerObj->getX(), playerObj->getY());
-				}
-			}
-			else
-			{
-				//currentState = IDLE;
-
-			}
-
-		}
-
-			mXLoc += (mXVelocity *mSpeed);
-			mYLoc += (mYVelocity *mSpeed);
+		mXLoc += (mXVelocity *mSpeed);
+		mYLoc += (mYVelocity * mSpeed);
 	}
 	else if (destroyedLastFrame)
 	{
-	//	cout << "ADD POINTS AND COMBO" << endl;
-
+		//scoring and combo handling
 		if (Game::getInstance()->_ComboCount > 5)
 			multiplier = 2;
 		else if (Game::getInstance()->_ComboCount > 15)
@@ -88,6 +56,36 @@ void Mountain::update(double timeElapsed, Player *playerObj)
 	}
 }
 
+void Mountain::ai(Player *playerObj)
+{
+	if (currentState == IDLE)
+	{
+		mSpeed = 2.0f;
+		if (hasLineOfSight(playerObj))
+		{
+			dirToPlayer = (int)directionToPlayer(playerObj->getX(), playerObj->getY());
+			relativeDirToPlayer = (int)abs(mRotation - dirToPlayer);
+
+			if (relativeDirToPlayer < HALF_FOV || relativeDirToPlayer > 360 - HALF_FOV)
+			{
+				currentState = ALERT;
+			}
+		}
+	}
+	else if (currentState == ALERT)
+	{
+		mSpeed = 3.0f;
+		if (hasLineOfSight(playerObj)) // has line of sight
+		{
+			rotateToPlayer(playerObj->getX(), playerObj->getY());
+		}
+		else
+		{
+			currentState = IDLE;
+		}
+	}
+}
+
 bool Mountain::hasLineOfSight(Player *playerObj)
 {
 	bool result = false;
@@ -95,11 +93,9 @@ bool Mountain::hasLineOfSight(Player *playerObj)
 	//see dist between player and enemy and check the value
 	xDistance = abs(mXLoc - playerObj->getX());
 	yDistance = abs(mYLoc - playerObj->getY());
-	int lineOfSiteLength = 175;
 
-	if (xDistance <= lineOfSiteLength && yDistance <= lineOfSiteLength)
+	if (xDistance <= LINE_SIGHT_LENGTH && yDistance <= LINE_SIGHT_LENGTH)
 	{
-	//	cout << "LINE COLLISION" << endl;
 		result = true;
 	}
 
@@ -111,7 +107,7 @@ void Mountain::checkBounds()
 	//this enemy roams the map 
 	//when it reaches an edge, it rotates away and moves in a new direction
 
-	if (mXLoc < 0 || mXLoc > mMapXBound || mYLoc < 0 || mYLoc > mMapYBound)
+	if (mXLoc < 5 || mXLoc > mMapXBound - 12 || mYLoc < 5 || mYLoc > mMapYBound -12)
 	{
 		rotate();
 	}
@@ -121,7 +117,7 @@ void Mountain::rotate()
 {
 	mAngle = rand() % 360;
 
-	double direction = mAngle;
+	direction = mAngle;
 
 	direction *= (PI / DEGREE_CONVERSION_VALUE);
 
@@ -131,24 +127,24 @@ void Mountain::rotate()
 	setRotation(mAngle);
 }
 
-void Mountain::rotateToPlayer(int playerX, int playerY)
+void Mountain::rotateToPlayer(float playerX, float playerY)
 {
-
 	direction = directionToPlayer(playerX, playerY);
-
-	mXVelocity = -cos(direction);
-	mYVelocity = -sin(direction);
+	
+	//trig functions return in radians
+	mXVelocity = -cos(direction* PI/DEGREE_CONVERSION_VALUE);
+	mYVelocity = -sin(direction* PI / DEGREE_CONVERSION_VALUE);
 
 	setRotation(direction);
 }
 
 
-double Mountain::directionToPlayer(int playerX, int playerY)
+float Mountain::directionToPlayer(float playerX, float playerY)
 {
-	dx = (mXLoc-playerX);
-	dy = (/*+ 8*/ mYLoc- playerY);
+	dx = (mXLoc- playerX);
+	dy = (mYLoc- playerY);
 
-	angle = (atan2(dy, dx)*DEGREE_CONVERSION_VALUE) / PI;
-	
+	angle = (float)(atan2(dy, dx)*DEGREE_CONVERSION_VALUE) / PI;
+
 	return angle;
 }

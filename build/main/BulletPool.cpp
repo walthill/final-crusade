@@ -90,7 +90,7 @@ void BulletPool::draw(GraphicsSystem *graphicsSystem, int camX, int camY)
 }
 
 
-void BulletPool::fireProjectile(double deltaTime, int playerX, int playerY, 
+void BulletPool::fireProjectile(double deltaTime, float playerX, float playerY, 
 								float direction)
 {
 	//make sure pool isn't full

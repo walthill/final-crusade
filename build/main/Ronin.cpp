@@ -3,7 +3,7 @@
 
 Ronin::Ronin()
 {
-	mSpeed = 2.1;
+	mSpeed = 2.1f;
 	multiplier = 1;
 	mScoreValue = 250;
 	srand(unsigned(time(NULL)));
@@ -15,6 +15,13 @@ Ronin::Ronin()
 
 	rotate();
 }
+
+void Ronin::init()
+{
+	mMapXBound = Game::getInstance()->_LevelWidth;
+	mMapYBound = Game::getInstance()->_LevelHeight;
+}
+
 
 Ronin::~Ronin()
 {

@@ -26,15 +26,15 @@ class MountainManager : public Trackable
 		void draw(GraphicsSystem *system, int camX, int camY);
 
 		//Create object and add to collection
-		void createAndAddEntity(EntityId key, int x, int y, Animation anim);
-		void createAndAddEntity(EntityId key, int x, int y, Animation anim, int amount);
+		void createAndAddEntity(EntityId key, float x, float y, Animation anim);
+		void createAndAddEntity(EntityId key, float x, float y, Animation anim, int amount);
 		void addEntity(EntityId key, Mountain *objToAdd);
 
 		//Remove from collection by key or object
 		void removeEntity(int index);
 		void removeEntity(Mountain *objToRemove);
 
-		Mountain* getEntity(EntityId key);
+		Mountain* getEntity(int index);
 		int getCount();
 
 		vector<Collider*> getColliderList();

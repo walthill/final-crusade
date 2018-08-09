@@ -13,10 +13,6 @@ Game* Game::mGameInstance = NULL;
 //creating exe
 //https://discourse.libsdl.org/t/creating-an-easily-distributable-executable-file/24413
 
-
-//collisions
-//https://www.gamedev.net/articles/programming/general-and-gameplay-programming/intelligent-2d-collision-and-pixel-perfect-precision-r3311/
-
 Game::Game()
 	:EventListener(nullptr) //Null because Event System is static
 {
@@ -70,7 +66,7 @@ bool Game::initGame()
 	loadLocalization();
 
 	//Initialize graphics, controls, and event system
-	if (!mSystem.initSystem(GAME_TITLE, mDisplayWidth, mDisplayHeight, mGameView.getCamera()))
+	if (!mSystem.initSystem(GAME_TITLE, _DisplayWidth, _DisplayHeight, mGameView.getCamera()))
 		return false;
 
 	cout << "*******Initialized system*******" << endl;
@@ -84,61 +80,22 @@ bool Game::initGame()
 	cout << "~~| Applying duct tape and elbow grease |~~" << endl;
 
 	installListeners();
+	
 	loadBackgrounds();
+	initAnimations();
+	
 	initUI();
 	loadScenes();
 	initAudio();
-
 	
-	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 2, 16, 16);
-		
-	mPlayer.init(mLevelWidth, mLevelHeight, mDisplayWidth, mDisplayHeight);
-	mPlayer.setAnimation(mPlayerAnim);
-	mPlayer.shouldAnimate(false);
-	mPlayer.setCollider(PLAYER_COL_TAG);
-	mPlayer.setLoc(450,200);
-
-	mRoninAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mRONIN_ID), 1, 1, 32, 32);
-	mMountainAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mMOUNTAIN_ID), 1, 1, 24, 24);
-	//mRonin.setAnimation(mRoninAnim);
-	//mRonin.setCollider(RONIN_COL_TAG);
-	//mRonin.setLoc(200, 200);
-	//int randX, randY;
-
-	random_device rd1,rd2;
-	uniform_int_distribution<int> randGenX(1, 1500);
-	uniform_int_distribution<int> randGenY(1, 1100);
-	int randX, randY;
-
-	for (int i = 0; i < mNumRonin; i++)
-	{
-		randX = randGenX(rd1);
-		//rand() % 1500;
-		randY = randGenY(rd2);
-		//rand() % 1100;
-
-		mRoninManager.createAndAddEntity(mRoninManTag + to_string(i), randX, randY, mRoninAnim);
-		mColliderCollection.push_back( mRoninManager.getColliderList().at(i));
-	}
-
-	for (int i = 0; i < mNumMountain; i++)
-	{
-		randX = randGenX(rd1);
-		//rand() % 1500;
-		randY = randGenY(rd2);
-		//rand() % 1100;
-
-		mMountainManager.createAndAddEntity(mMountainManTag + to_string(i), randX, randY, mMountainAnim);
-		mColliderCollection.push_back(mMountainManager.getColliderList().at(i));
-	}
-
-
+	initPlayer();
+	initEnemies();
 
 	//set player bullet sprite
 	mBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mBULLET_ID), 1, 1, 15, 15);
-	mBulletManager.initBulletData(mBulletAnim, mLevelWidth, mLevelHeight, true, BULLET_COL_TAG);
+	mBulletManager.initBulletData(mBulletAnim, _LevelWidth, _LevelHeight, true, BULLET_COL_TAG);
 
-  	mGameView.initView(&mPlayer, mDisplayWidth, mDisplayHeight, mLevelWidth, mLevelHeight);
+  	mGameView.initView(&mPlayer, _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight);
 
  	mIsRunning = true;
 
@@ -150,6 +107,7 @@ bool Game::initGame()
 	return true;
 }
 
+#pragma region Initilizations
 
 void Game::loadGameData()
 {
@@ -166,18 +124,18 @@ void Game::loadGameData()
 	const char * iniNumEnemies = ini.GetValue("LEVELDATA", "numEnemies", "defualt");
 	const char * iniNumMountain = ini.GetValue("LEVELDATA", "numMt", "defualt");
 	const char * iniNumRonin = ini.GetValue("LEVELDATA", "numRonin", "defualt");
-	
+
 	const char * iniPlayerSpriteSize = ini.GetValue("VIEW", "pTileSize", "default");
 	const char * iniRoninSpriteSize = ini.GetValue("VIEW", "rTileSize", "default");
 	const char * iniMountainSpriteSize = ini.GetValue("VIEW", "mTileSize", "default");
 	const char * iniBulletSpriteSize = ini.GetValue("VIEW", "bTileSize", "default");
 
+	_DisplayWidth = atoi(iniWidth);
+	_DisplayHeight = atoi(iniHeight);
 
-	mDisplayWidth = atoi(iniWidth);
-	mDisplayHeight = atoi(iniHeight);
-	
-	mLevelWidth = atoi(iniLevelWidth);
-	mLevelHeight = atoi(iniLevelHeight);
+	//using higher value than the bg image causes cool stretching
+	_LevelWidth = atoi(iniLevelWidth);//2400; 
+	_LevelHeight = atoi(iniLevelHeight);//1800;
 
 	mPlayerSpriteSize = atoi(iniPlayerSpriteSize);
 	mRoninSpriteSize = atoi(iniRoninSpriteSize);
@@ -191,9 +149,16 @@ void Game::loadGameData()
 	cout << "*******Loaded game data*******" << endl;
 }
 
-void Game::initAudio()
+void Game::loadLocalization()
 {
-	
+	//load in translations from file, store in memory, and assign to manager
+
+	mLocalization.loadLanguage(ENGLISH);
+
+
+	mSceneManager.initLanguages(&mLocalization);
+
+	cout << "*******Loaded languages*******" << endl;
 }
 
 void Game::loadBackgrounds()
@@ -220,16 +185,52 @@ void Game::loadBackgrounds()
 	cout << "*******Initialized buffers*******" << endl;
 }
 
-void Game::loadLocalization()
+void Game::initAnimations()
 {
-	//load in translations from file, store in memory, and assign to manager
+	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 2, 16, 16);
+	mRoninAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mRONIN_ID), 1, 1, 32, 32);
+	mMountainAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mMOUNTAIN_ID), 1, 1, 24, 24);
 
-	mLocalization.loadLanguage(ENGLISH);
-	
+}
 
-	mSceneManager.initLanguages(&mLocalization);
+void Game::initPlayer()
+{
+	mPlayer.init(_LevelWidth, _LevelHeight);
+	mPlayer.setAnimation(mPlayerAnim);
+	mPlayer.shouldAnimate(false);
+	mPlayer.setCollider(PLAYER_COL_TAG);
+	mPlayer.setLoc(450, 200);
 
-	cout << "*******Loaded languages*******" << endl;
+}
+
+void Game::initEnemies()
+{
+	random_device rd1, rd2;
+	uniform_int_distribution<int> randGenX(1, _LevelWidth - 100);
+	uniform_int_distribution<int> randGenY(1, _LevelHeight - 100);
+	int randX, randY;
+
+	for (int i = 0; i < 0; i++)
+	{
+		randX = randGenX(rd1);
+		randY = randGenY(rd2);
+
+		mRoninManager.createAndAddEntity(mRoninManTag + to_string(i), randX, randY, mRoninAnim);
+		mRoninManager.getEntity(i)->init();
+
+		mColliderCollection.push_back(mRoninManager.getColliderList().at(i));
+	}
+
+	for (int i = 0; i < 1; i++)
+	{
+		randX = randGenX(rd1);
+		randY = randGenY(rd2);
+
+		mMountainManager.createAndAddEntity(mMountainManTag + to_string(i), randX, randY, mMountainAnim);
+		mMountainManager.getEntity(i)->init();
+
+		mColliderCollection.push_back(mMountainManager.getColliderList().at(i));
+	}
 }
 
 void Game::initUI()
@@ -254,8 +255,8 @@ void Game::initUI()
 	mGameCombo.initGuiElementWithText(745, 550, mUI_SIZE, mWhiteText, to_string(_ComboCount));
 	mGameScore.initGuiElementWithText(745, 30, mUI_SIZE, mWhiteText, to_string(_Score));
 	mGameTime.initGuiElementWithText(745, 5, mUI_SIZE, mWhiteText, to_string(_TimeSurvived));
-	
-	
+
+
 	/*** add ui objects to manager ***/
 
 
@@ -284,15 +285,18 @@ void Game::loadScenes()
 	//add to manager
 	mSceneManager.addScene("a", &mMainMenuScene);
 	mSceneManager.addScene("b", &mGameScene);
-	
+
 	mSceneManager.setCurrentScene(SC_MAIN);
 
 	cout << "~~| Twisting loose screws |~~" << endl;
 	cout << "*******Scenes Loaded*******" << endl;
 }
 
+void Game::initAudio()
+{
 
-
+}
+#pragma endregion
 
 bool Game::saveGame()
 {
@@ -335,6 +339,7 @@ void Game::cleanupGame()
 	mBufferManager.clearManager();
 	mSystem.cleanupSystem();
 	EventSystem::cleanupInstance();
+//	CossinTable::cleanupInstance();
 }
 
 
@@ -384,12 +389,12 @@ void Game::update(double timeElapsed)
 		tickSurvivalTimer();
 
 		mRoninManager.update(timeElapsed);
-		mMountainManager.update(timeElapsed, &mPlayer);
 
 		mBulletManager.update(timeElapsed, mColliderCollection);
 		mPlayer.update(timeElapsed, mColliderCollection, 
 					   mouseX, mouseY, mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
-		
+		mMountainManager.update(timeElapsed, &mPlayer);
+
 		comboUpdate(timeElapsed);
 		
 		mGameView.update(timeElapsed);

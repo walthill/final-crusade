@@ -40,7 +40,7 @@ class Bullet : public Entity
 		//void draw(GraphicsSystem *graphicsSystem);
 
 		bool checkState(vector<Collider*> colliderList);//Collider* b);
-		void fire(int spawnX, int spawnY, float xVelocity, float yVelocity);
+		void fire(float spawnX, float spawnY, float xVelocity, float yVelocity);
 
 		void setInUse(bool isInUse);
 		bool isInUse();

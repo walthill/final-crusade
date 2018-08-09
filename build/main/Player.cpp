@@ -6,12 +6,10 @@ Player::Player()
 	mPlayerFrameSpeed = 16;
 	mVelocity = 4;
 	mXBound = 0;
-	mYBound = 0; 
-	mScreenXSize = 0;
-	mScreenYSize = 0; //screen sizes 
+	mYBound = 0;  //map size
 	lastLife = false;
-
-	invulnerableTime = 30000;
+	dtTime = 0;
+	invulnerableTime = 4000;
 }
 
 Player::~Player()
@@ -19,12 +17,10 @@ Player::~Player()
 
 }
 
-void Player::init(int xBounds, int yBounds, int screenXSize, int screenYSize)
+void Player::init(int xBounds, int yBounds)
 {
 	mXBound = xBounds;
 	mYBound = yBounds;
-	mScreenXSize = screenXSize;
-	mScreenYSize = screenYSize;
 }
 
 void Player::update(double timeElapsed, vector<Collider*> colliderList, int mouseX, int mouseY, int camX, int camY)
@@ -50,11 +46,11 @@ void Player::checkBounds()
  	if (mXLoc < 0)
 		mXLoc = 1;
 	if (mXLoc > mXBound)
-		mXLoc = mXBound-5;
+		mXLoc = (float)mXBound-5;
 	if (mYLoc < 0)
 		mYLoc = 1;
 	if (mYLoc > mYBound)
-		mYLoc = mYBound-5;
+		mYLoc = (float)mYBound-5;
 }
 
 void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeElapsed)

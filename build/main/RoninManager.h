@@ -36,7 +36,7 @@ class RoninManager : public Trackable
 		void removeEntity(int index);
 		void removeEntity(Ronin *objToRemove);
 
-		Ronin* getEntity(EntityId key);
+		Ronin* getEntity(int index);
 		int getCount();
 
 		vector<Collider*> getColliderList();

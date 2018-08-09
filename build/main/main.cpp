@@ -16,11 +16,10 @@
 
 #include "Game.h"
 
-
 int main(int argc, char* argv[])
 {
 	Game::initInstance();
-	
+
 	if (!Game::getInstance()->initGame())
 	{
 		cout << "ERROR: DISPLAY CREATION FAILED." << endl;
@@ -31,7 +30,7 @@ int main(int argc, char* argv[])
 	{
 		Game::getInstance()->cleanupGame();
 		Game::getInstance()->cleanupInstance();
-
+		
 		gMemoryTracker.reportAllocations(cout);
 		system("pause");
 
