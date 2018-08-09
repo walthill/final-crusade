@@ -88,14 +88,12 @@ class Game : EventListener
 		int mSpriteSize;
 		int mGridW, mGridH;
 
-		int mDisplayWidth, mDisplayHeight, mLevelWidth, mLevelHeight;
-
 		int mNumEnemies, mNumRonin, mNumMountain;
 
 		int mouseX, mouseY;
 		int camX, camY;
 		int mPlayerSpriteSize, mRoninSpriteSize, mMountainSpriteSize, mBulletSpriteSize;
-		int bulletSpawnX, bulletSpawnY;
+		float bulletSpawnX, bulletSpawnY;
 
 
 		//Enemy Manager Tags
@@ -154,7 +152,7 @@ class Game : EventListener
 
 		double mFPS;
 		bool mIsRunning;
-		int dtTime;	int sec = 0, millisec, min = 0;
+		double dtTime;	int sec = 0, millisec, min = 0;
 		const int mCOMBO_WINDOW = 2500;
 		const int mCOMBO_NUM_TO_REGEN = 3;
 
@@ -162,6 +160,7 @@ class Game : EventListener
 	public:
 
 		//gloabl vars
+		int _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight;
 		int _Score, _ComboCount, _TimeSurvived;
 		bool _CanCombo;
 
@@ -191,7 +190,9 @@ class Game : EventListener
 		//Open window and init graphics
 		bool initGame();
 		void displayLoadingScreen();
-
+		void initEnemies();
+		void initAnimations();
+		void initPlayer();
 		void loadLocalization();
 		void initAudio();
 		void loadBackgrounds();

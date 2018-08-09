@@ -1,28 +1,43 @@
 #ifndef MOUNTAIN_H
 #define MOUNTAIN_H
 
-#include "Entity.h"
+//#include "CossinTable.h"
+#include "Player.h"
 
 class Mountain : public Entity
 {
-		const double PI = 3.1416, DEGREE_CONVERSION_VALUE = 180.0000;
+	private:
+		enum State { IDLE, ALERT };
+		int currentState = IDLE;
+	
+		const int HALF_FOV = 50;
+		const int LINE_SIGHT_LENGTH = 150;
+		const float PI = 3.1416f, DEGREE_CONVERSION_VALUE = 180.0000f;
 		int mMapXBound = 1600, mMapYBound = 1200;
-		double mXVelocity = 1, mYVelocity = 1, direction;
+		
+		float direction, angle;
+		float mXVelocity, mYVelocity;
+		float xDistance, yDistance;
+		int dirToPlayer, relativeDirToPlayer;
+		float dx, dy;
 		int mAngle;
-
 		int multiplier, mScoreValue;
-
-		double mSpeed;
+		float mSpeed;
 
 	public:
 		Mountain();
 		~Mountain();
 
-//		void initEnemy(int levelW, int levelH);
-		void update(double timeElapsed);
+		void init();
+		void update(double timeElapsed, Player *playerObj);
+		void ai(Player *playerObj);
+		bool hasLineOfSight(Player *player);
 
 		void checkBounds();
+		
 		void rotate();
+		void rotateToPlayer(float playerX, float playerY);
+		float directionToPlayer(float playerX, float playerY);
 };
 
 #endif // !MOUNTAIN_H

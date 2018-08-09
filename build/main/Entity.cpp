@@ -31,8 +31,8 @@ void Entity::update(double timeElapsed)
 
 	if (mHasCollider)
 	{
-		mThisCollider.setX(mXLoc);
-		mThisCollider.setY(mYLoc);
+		mThisCollider.setX((int)mXLoc);
+		mThisCollider.setY((int)mYLoc);
 	}
 }
 
@@ -73,7 +73,7 @@ bool Entity::checkCollision(Collider a, Collider b)
 		}
 
 		return true;
-//		mHasCollided = true;
+
 	}
 	
 	return false;
@@ -86,7 +86,7 @@ void Entity::draw(GraphicsSystem *graphicsSystem, int camX, int camY)
 	if (mIsVisible)
 	{
 		Sprite curSpr = mAnim.getCurrentSprite();
-		graphicsSystem->draw(mXLoc-camX, mYLoc-camY, curSpr, mXScale, mYScale, mRotation);
+		graphicsSystem->draw((int)mXLoc-camX, (int)mYLoc-camY, curSpr, mXScale, mYScale, mRotation);
 	}
 }
 
@@ -96,7 +96,7 @@ void Entity::draw(GraphicsSystem *graphicsSystem)
 	if (mIsVisible)
 	{
 		Sprite curSpr = mAnim.getCurrentSprite();
-		graphicsSystem->draw(mXLoc, mYLoc, curSpr, mXScale, mYScale, mRotation);
+		graphicsSystem->draw((int)mXLoc, (int)mYLoc, curSpr, mXScale, mYScale, mRotation);
 	}
 }
 
@@ -136,20 +136,20 @@ void Entity::setVisible(bool setVisibilty)
 }
 
 
-void Entity::setLoc(int x, int y)
+void Entity::setLoc(float x, float y)
 {
 	mXLoc = x;
 	mYLoc = y;
 }
 
 
-double Entity::getX()
+float Entity::getX()
 {
 	return mXLoc;
 }
 
 
-double Entity::getY()
+float Entity::getY()
 {
 	return mYLoc;
 }
@@ -174,12 +174,12 @@ float Entity::getYScale()
 }
 
 
-void Entity::setRotation(double rot)
+void Entity::setRotation(float rot)
 {
 	mRotation = rot;
 }
 
-double Entity::getRotation()
+float Entity::getRotation()
 {
 	return mRotation;
 }
@@ -190,6 +190,13 @@ void Entity::setCollider(string colliderNameTag)
 
 	mThisCollider.initCollider(0, 0, mAnim.getCurrentSprite().getSpriteWidth(), mAnim.getCurrentSprite().getSpriteHeight(),
 							   colliderNameTag, this);
+}
+
+void Entity::setCollider(int w, int h, string colliderNameTag)
+{
+	mHasCollider = true;
+
+	mThisCollider.initCollider(0, 0, w, h, colliderNameTag, this);
 }
 
 Collider* Entity::getCollider()

@@ -72,26 +72,30 @@ bool Bullet::checkState(vector<Collider*> colliderList)//Collider* b)
 			else if (b.getTag() == "mountain")
 			{
 				
-				double currRot = b.getEntity()->getRotation();
+				float currRot = b.getEntity()->getRotation();
 				
-				//TODO: make single accesor call here
+				if (currRot > 180.0f)
+					currRot -= 360.0f;
+
+				//make single accesor calls here?
 				//int thisColliderX, thisColliderY;
 				//int bColliderX, bColliderY;
 				//int bColliderW, bColliderH;
-				
-				
-				if (currRot > 180)
-					currRot -= 360;
 
 				//45 deg to -45 deg
 				if ( (currRot > 0 && currRot <= 45) || (currRot < 0 && currRot >= -45) )
 				{
 					//deflect
+					//TODO: add deflect/block sound here
 					if ((mThisCollider.getX() >= b.getX() && mThisCollider.getX() <= b.getX() + b.getW() - 4)) //&& mThisCollider.getY() >= b.getY())
 					{
 						cout << "ENEMY HIT" << endl;
 						mState.mLive.mInUse = false;
 						isDead = true;
+						
+						//knockback
+						b.getEntity()->setLoc(b.getEntity()->getX() + (mState.mLive.mXVelocity*2.0f), b.getEntity()->getY());
+
 					}
 					//ded
 					else if ((mThisCollider.getX() >= b.getX() + b.getW() - 4 && mThisCollider.getX() <= b.getX() + b.getW()))
@@ -115,6 +119,9 @@ bool Bullet::checkState(vector<Collider*> colliderList)//Collider* b)
 						cout << "ENEMY HIT" << endl;
 						mState.mLive.mInUse = false;
 						isDead = true;
+
+						//knockback - velocity will be negative
+						b.getEntity()->setLoc(b.getEntity()->getX() + (mState.mLive.mXVelocity*2.0f), b.getEntity()->getY());
 					}//ded
 					else if (mThisCollider.getX() > b.getX() && mThisCollider.getX() <= b.getX()+4)
 					{
@@ -136,6 +143,10 @@ bool Bullet::checkState(vector<Collider*> colliderList)//Collider* b)
 						cout << "ENEMY HIT" << endl;
 						mState.mLive.mInUse = false;
 						isDead = true;
+
+						//knockback
+						b.getEntity()->setLoc(b.getEntity()->getX(), b.getEntity()->getY() + (mState.mLive.mYVelocity*2.0f));
+
 					}
 					//ded
 					else if (mThisCollider.getY() > b.getY() + b.getH() - 4 && mThisCollider.getY() <= b.getY() + b.getH())
@@ -158,6 +169,8 @@ bool Bullet::checkState(vector<Collider*> colliderList)//Collider* b)
 						mState.mLive.mInUse = false;
 						isDead = true;
 
+						//knockback- velocity will be negative
+						b.getEntity()->setLoc(b.getEntity()->getX(), b.getEntity()->getY() + (mState.mLive.mYVelocity*2.0f));
 					}
 					//ded
 					else if (mThisCollider.getY() < b.getY() && mThisCollider.getY() <= b.getY() + 4)
@@ -177,7 +190,7 @@ bool Bullet::checkState(vector<Collider*> colliderList)//Collider* b)
 }
 
 
-void Bullet::fire(int spawnX, int spawnY, float xVelocity, float yVelocity)
+void Bullet::fire(float spawnX, float spawnY, float xVelocity, float yVelocity)
 {
 	mState.mLive.mInUse = true;
 	mXLoc = spawnX;

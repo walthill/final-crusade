@@ -15,9 +15,9 @@ class Entity : public Trackable
 	private:
 		
 	protected:
-		double mXLoc, mYLoc;	//world-space location
+		float mXLoc, mYLoc;	//world-space location
 		float mXScale, mYScale;
-		double mRotation;
+		float mRotation;
 		Animation mAnim;
 		bool mIsVisible, mShouldAnimate, mHasCollider;
 
@@ -49,7 +49,7 @@ class Entity : public Trackable
 		//Turn on/off animating
 		void shouldAnimate(bool pause);
 
-		void setRotation(double roationAngle);
+		void setRotation(float roationAngle);
 
 		void setAnimation(Animation targetAnim);
 		Animation* getAnimation();
@@ -61,17 +61,18 @@ class Entity : public Trackable
 		bool isVisible();
 
 		//Location fucntions
-		void setLoc(int x, int y);
-		double getX();
-		double getY();
+		void setLoc(float x, float y);
+		float getX();
+		float getY();
 
 		//Scale functions
 		void setScale(float x, float y);
 		float getXScale();
 		float getYScale();
-		double getRotation();
+		float getRotation();
 
 		void setCollider(string colliderNameTag);
+		void setCollider(int w, int h, string colliderNameTag);
 		Collider* getCollider();
 
 };

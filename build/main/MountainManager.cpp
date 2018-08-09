@@ -42,12 +42,12 @@ void MountainManager::clearManager()
 }
 
 
-void MountainManager::update(double elapsedTime)
+void MountainManager::update(double elapsedTime, Player *playerObj)
 {
 
 	for (unsigned int i = 0; i < mMountainList.size(); i++)
 	{
-		mMountainList[i]->update(elapsedTime);
+		mMountainList[i]->update(elapsedTime, playerObj);
 	}
 	/*	map<EntityId, Mountain*>::iterator iter;
 
@@ -83,7 +83,7 @@ void MountainManager::draw(GraphicsSystem *system, int camX, int camY)
 }
 
 
-void MountainManager::createAndAddEntity(EntityId key, int x, int y, Animation anim)
+void MountainManager::createAndAddEntity(EntityId key, float x, float y, Animation anim)
 {
 	//pass in the animation, location
 	//	map<EntityId, Mountain*>::iterator iter = mEntityMap.find(key);
@@ -107,7 +107,7 @@ void MountainManager::createAndAddEntity(EntityId key, int x, int y, Animation a
 }
 
 
-void MountainManager::createAndAddEntity(EntityId key, int x, int y, Animation anim, int amount)
+void MountainManager::createAndAddEntity(EntityId key, float x, float y, Animation anim, int amount)
 {
 	/*//pass in the animation, location
 	map<EntityId, Mountain*>::iterator iter = mEntityMap.find(key);
@@ -176,19 +176,9 @@ void MountainManager::removeEntity(Mountain *objToRemove)
 }
 
 
-Mountain* MountainManager::getEntity(EntityId key)
+Mountain* MountainManager::getEntity(int index)
 {
-	/*map<EntityId, Mountain*>::iterator iter = mEntityMap.find(key);
-
-	if (iter != mEntityMap.end())
-	{
-	return iter->second;
-	}
-	else
-	{
-	return NULL;
-	}*/
-	return nullptr;
+	return mMountainList[index];
 }
 
 

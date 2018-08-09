@@ -176,19 +176,9 @@ void RoninManager::removeEntity(Ronin *objToRemove)
 }
 
 
-Ronin* RoninManager::getEntity(EntityId key)
+Ronin* RoninManager::getEntity(int index)
 {
-	/*map<EntityId, Ronin*>::iterator iter = mEntityMap.find(key);
-
-	if (iter != mEntityMap.end())
-	{
-		return iter->second;
-	}
-	else
-	{
-		return NULL;
-	}*/
-	return nullptr;
+	return mRoninList[index];
 }
 
 
