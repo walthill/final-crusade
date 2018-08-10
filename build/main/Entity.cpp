@@ -31,8 +31,8 @@ void Entity::update(double timeElapsed)
 
 	if (mHasCollider)
 	{
-		mThisCollider.setX((int)mXLoc);
-		mThisCollider.setY((int)mYLoc);
+		mThisCollider.setX(mXLoc);
+		mThisCollider.setY(mYLoc);
 	}
 }
 

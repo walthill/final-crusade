@@ -7,11 +7,11 @@
 class Bullet : public Entity
 {
 	private:
+		const int DELETE_BOUNDS = 24;
+
 		int mLiveBoundX, mLiveBoundY;
 		int mBulletSpeed;
-
-		//TODO: smaller bullet sprites
-
+		
 		union //used for a free list
 		{
 			//state when in use
@@ -31,13 +31,10 @@ class Bullet : public Entity
 		Bullet();
 		~Bullet();
 
-		//void initBullet(int x, int y, int xVelocity, int yVelocity, bool isPlayers);
-
 		Bullet* getNext() const { return mState.nextBullet;  }
 		void setNext(Bullet* next) { mState.nextBullet = next;  }
 
 		bool update(double timeElapsed, vector<Collider*> colliderList);//Collider* b);
-		//void draw(GraphicsSystem *graphicsSystem);
 
 		bool checkState(vector<Collider*> colliderList);//Collider* b);
 		void fire(float spawnX, float spawnY, float xVelocity, float yVelocity);

@@ -35,6 +35,7 @@ void Player::update(double timeElapsed, vector<Collider*> colliderList, int mous
 
 			checkBounds();
 			checkForEnemyCollision(colliderList, timeElapsed);
+			//checkForFragmentCollision(colliderList);
 
 			move(mouseX, mouseY, camX, camY);
 		}
@@ -46,11 +47,11 @@ void Player::checkBounds()
  	if (mXLoc < 0)
 		mXLoc = 1;
 	if (mXLoc > mXBound)
-		mXLoc = (float)mXBound-5;
+		mXLoc = mXBound-5;
 	if (mYLoc < 0)
 		mYLoc = 1;
 	if (mYLoc > mYBound)
-		mYLoc = (float)mYBound-5;
+		mYLoc = mYBound-5;
 }
 
 void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeElapsed)
@@ -79,6 +80,10 @@ void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeE
 					lastLife = false;
 				}
 			}
+/*			else if (b.getTag() == "fragment")
+			{
+				cout << "COLLISION" << endl;
+			}*/
 		}
 		else
 		{
@@ -103,6 +108,23 @@ void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeE
 	}
 
 }
+
+/*
+void Player::checkForFragmentCollision(vector<Collider*> colliderList)
+{
+	for (unsigned int i = 0; i < colliderList.size(); i++)
+	{
+		Collider b = *colliderList[i];
+
+		if (checkCollision(mThisCollider, b))
+		{
+			if (b.getTag() == "ronin" || b.getTag() == "mountain")
+			{
+			}
+		}
+	}
+
+}*/
 
 
 /*bool Player::checkCollision(Collider a, Collider b)

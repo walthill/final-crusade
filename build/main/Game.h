@@ -10,6 +10,7 @@
 #include "View.h"
 #include "GraphicsBufferManager.h"
 #include "SceneManager.h"
+#include "FragmentManager.h"
 #include "BulletPool.h"
 #include "RoninManager.h"
 #include "MountainManager.h"
@@ -60,10 +61,10 @@ class Game : EventListener
 		GraphicsBuffer mButtonBuffer; // ui button
 		GraphicsBuffer mMenuBuffer, mLoadingScreen, mGameScreenBuffer, mLoseScreenBuffer, 
 					   mWinScreenBuffer; //backgrounds
-		GraphicsBuffer mPlayerBuffer, mBulletBuffer, mRoninBuffer, mMountainBuffer;
+		GraphicsBuffer mPlayerBuffer, mBulletBuffer, mFragmentBuffer, mRoninBuffer, mMountainBuffer;
 
 		Sprite mMenuSprite, mGameScreenSprite, mLoadingSprite, mLoseScreenSprite, mWinScreenSprite;
-		Animation mPlayerAnim, mBulletAnim, mRoninAnim, mMountainAnim;
+		Animation mPlayerAnim, mBulletAnim, mFragmentAnim, mRoninAnim, mMountainAnim;
 
 		const int mFONT_SIZE = 25;
 		const int mUI_SIZE = 20;
@@ -76,6 +77,8 @@ class Game : EventListener
 		RoninManager mRoninManager;
 		MountainManager mMountainManager;
 		BulletPool mBulletManager;
+		FragmentManager mFragmentList;
+
 		vector<Collider*> mColliderCollection;
 
 		//Game Entities
@@ -92,7 +95,8 @@ class Game : EventListener
 
 		int mouseX, mouseY;
 		int camX, camY;
-		int mPlayerSpriteSize, mRoninSpriteSize, mMountainSpriteSize, mBulletSpriteSize;
+		int mPlayerSpriteSize, mRoninSpriteSize, mFragmentSpriteSize,
+			mMountainSpriteSize, mBulletSpriteSize;
 		float bulletSpawnX, bulletSpawnY;
 
 		//gameplay variables
@@ -104,6 +108,7 @@ class Game : EventListener
 		//Enemy Manager Tags
 		string mRoninManTag = "r";
 		string mMountainManTag = "m";
+		string mFragmentManTag = "f";
 
 		//Collider tags
 		const ColliderTag PLAYER_COL_TAG = "player";
@@ -117,7 +122,7 @@ class Game : EventListener
 
 		AssetString mButtonAsset, mMainBgAsset, mLoseBgAsset, mGameBgAsset, mWinBgAsset,
 		mLoadBgAsset, mFontAsset, mPlayerAsset, mRoninAsset, mBulletAsset,
-		mMountainAsset;
+		mMountainAsset, mFragmentAsset;
 
 		//GraphicsBuffer tags
 		const BufferTag mPLAYER_ID = "player";
@@ -130,6 +135,7 @@ class Game : EventListener
 		const BufferTag mSPACE_ID = "spacebase";
 		const BufferTag mCREDIT_ID, mLOAD_ID = "loading";
 		const BufferTag mGAME_ID = "game";
+		const BufferTag mFRAGMENT_ID = "fragmnt";
 
 		//UI tags
 		const string mGEN_TAG = "general";
@@ -157,7 +163,7 @@ class Game : EventListener
 
 		//gloabl vars
 		int _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight;
-		int _Score, _ComboCount, _TimeSurvived;
+		int _Score, _ComboCount, _TimeSurvived, _NumFragments, _FragmentsToCollect;
 		bool _CanCombo;
 
 		//Static class functions
@@ -191,7 +197,7 @@ class Game : EventListener
 		void initPlayer();
 		void loadLocalization();
 		void initAudio();
-		void loadBackgrounds();
+		void loadBackgroundsAndBuffers();
 		void initUI();
 		void loadScenes();
 

@@ -18,13 +18,14 @@ class Player : public Entity
 		int mPlayerFrameSpeed, mVelocity; 
 		int mXBound, mYBound;
 
-		bool lastLife, hasRecovered = false;
+		//collision vars
+		bool lastLife, hasRecovered = false, collisionDetected = false;
 		double dtTime;
 		int invulnerableTime;
-
-		bool collisionDetected = false;
-
-	//	Collider mCollider;
+		
+		//gameplay vars
+		const int FRAGMENTS_TO_COLLECT = 4;
+		int numFragments;
 
 	public:
 		Player();
@@ -37,6 +38,8 @@ class Player : public Entity
 
 		void checkBounds();
 		void checkForEnemyCollision(vector<Collider*> colliderList, double timeElapsed);
+//		void checkForFragmentCollision(vector<Collider*> colliderList);
+
 //		bool checkCollision(Collider a, Collider b);
 
 		void move(int mouseX, int mouseY, int camX, int camY);

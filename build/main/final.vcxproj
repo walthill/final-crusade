@@ -171,6 +171,8 @@
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="BulletPool.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Fragment.cpp" />
+    <ClCompile Include="FragmentManager.cpp" />
     <ClCompile Include="Mountain.cpp" />
     <ClCompile Include="MountainManager.cpp" />
     <ClCompile Include="RoninManager.cpp" />
@@ -191,6 +193,8 @@
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="BulletPool.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="Fragment.h" />
+    <ClInclude Include="FragmentManager.h" />
     <ClInclude Include="Mountain.h" />
     <ClInclude Include="MountainManager.h" />
     <ClInclude Include="RoninManager.h" />

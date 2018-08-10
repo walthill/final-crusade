@@ -14,17 +14,6 @@ Bullet::~Bullet()
 {
 }
 
-/*void Bullet::initBullet(int x, int y, int xVelocity, int yVelocity, bool isPlayers)
-{
-	mState.mLive.mInUse = false;
-	mState.mLive.mBelongsToPlayer = isPlayers;
-	
-	mXLoc = x;
-	mYLoc = y;
-	mState.mLive.mXVelocity = xVelocity;
-	mState.mLive.mYVelocity = yVelocity;
-}*/
-
 bool Bullet::update(double timeElapsed, vector<Collider*> colliderList)
 {
 	if (!mState.mLive.mInUse)
@@ -43,12 +32,12 @@ bool Bullet::checkState(vector<Collider*> colliderList)//Collider* b)
 {
 	bool isDead = false;
 
-	if (mXLoc < 0 || mXLoc > mLiveBoundX)
+	if (mXLoc < -DELETE_BOUNDS || mXLoc > mLiveBoundX+ DELETE_BOUNDS)
 	{
 		mState.mLive.mInUse = false;
 		isDead = true;
 	}
-	if (mYLoc < 0 || mYLoc >mLiveBoundY)
+	if (mYLoc < -DELETE_BOUNDS || mYLoc > mLiveBoundY + DELETE_BOUNDS)
 	{
 		mState.mLive.mInUse = false;
 		isDead = true;

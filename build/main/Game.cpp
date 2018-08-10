@@ -79,7 +79,7 @@ bool Game::initGame()
 
 	installListeners();
 	
-	loadBackgrounds();
+	loadBackgroundsAndBuffers();
 	initAnimations();
 	
 	initUI();
@@ -89,8 +89,26 @@ bool Game::initGame()
 	initPlayer();
 	initEnemies();
 
+	mFragmentAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mFRAGMENT_ID), 1, 1, mFragmentSpriteSize, mFragmentSpriteSize);
+
+	random_device rd1, rd2;
+	uniform_int_distribution<int> randGenX(1, _LevelWidth - 100);
+	uniform_int_distribution<int> randGenY(1, _LevelHeight - 100);
+	
+	int randX=0, randY=0;
+
+	for (int i = 0; i < _FragmentsToCollect; i++)
+	{
+		randX = randGenX(rd1);
+		randY = randGenY(rd2);
+
+		mFragmentList.createAndAddEntity(mFragmentManTag + to_string(i), randX, randY, mFragmentAnim);
+
+	//	mColliderCollection.push_back(mFragmentList.getColliderList().at(i));
+	}
+
 	//set player bullet sprite
-	mBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mBULLET_ID), 1, 1, 15, 15);
+	mBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mBULLET_ID), 1, 1, mBulletSpriteSize, mBulletSpriteSize);
 	mBulletManager.initBulletData(mBulletAnim, _LevelWidth, _LevelHeight, true, BULLET_COL_TAG);
 
   	mGameView.initView(&mPlayer, _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight);
@@ -126,20 +144,22 @@ void Game::loadGameData()
 	const char * iniMountainAsset = ini.GetValue("ASSETS", "mtn", "default");
 	const char * iniBulletAsset = ini.GetValue("ASSETS", "bullet", "default");
 	const char * iniLoadBG = ini.GetValue("ASSETS", "loadbg", "default");
+	const char * iniFragmentAsset = ini.GetValue("ASSETS", "frgmnt", "default");
 
 	const char * iniWidth = ini.GetValue("VIEW", "windowW", "default");
 	const char * iniHeight = ini.GetValue("VIEW", "windowH", "default");
 	const char * iniLevelWidth = ini.GetValue("VIEW", "levelW", "default");
 	const char * iniLevelHeight = ini.GetValue("VIEW", "levelH", "default");
-
-	const char * iniNumEnemies = ini.GetValue("LEVELDATA", "numEnemies", "defualt");
-	const char * iniNumMountain = ini.GetValue("LEVELDATA", "numMt", "defualt");
-	const char * iniNumRonin = ini.GetValue("LEVELDATA", "numRonin", "defualt");
-
 	const char * iniPlayerSpriteSize = ini.GetValue("VIEW", "pTileSize", "default");
 	const char * iniRoninSpriteSize = ini.GetValue("VIEW", "rTileSize", "default");
 	const char * iniMountainSpriteSize = ini.GetValue("VIEW", "mTileSize", "default");
 	const char * iniBulletSpriteSize = ini.GetValue("VIEW", "bTileSize", "default");
+	const char * iniFragmentSpriteSize = ini.GetValue("VIEW", "fTileSize", "default");
+
+	const char * iniNumEnemies = ini.GetValue("LEVELDATA", "numEnemies", "defualt");
+	const char * iniNumMountain = ini.GetValue("LEVELDATA", "numMt", "defualt");
+	const char * iniNumRonin = ini.GetValue("LEVELDATA", "numRonin", "defualt");
+	const char * iniFragmentsToCollect = ini.GetValue("LEVELDATA", "fragmentsToCollect", "default");
 
 	mButtonAsset = iniButtonAsset; 
 	mMainBgAsset = iniMainMenuBG;
@@ -152,6 +172,7 @@ void Game::loadGameData()
 	mRoninAsset = iniRoninAsset;
 	mBulletAsset = iniBulletAsset;
 	mMountainAsset = iniMountainAsset;
+	mFragmentAsset = iniFragmentAsset;
 
 	_DisplayWidth = atoi(iniWidth);
 	_DisplayHeight = atoi(iniHeight);
@@ -164,10 +185,12 @@ void Game::loadGameData()
 	mRoninSpriteSize = atoi(iniRoninSpriteSize);
 	mMountainSpriteSize = atoi(iniMountainSpriteSize);
 	mBulletSpriteSize = atoi(iniBulletSpriteSize);
+	mFragmentSpriteSize = atoi(iniFragmentSpriteSize);
 
 	mNumEnemies = atoi(iniNumEnemies);
 	mNumRonin = atoi(iniNumRonin);
 	mNumMountain = atoi(iniNumMountain);
+	_FragmentsToCollect = atoi(iniFragmentsToCollect);
 
 	cout << "*******Loaded game data*******" << endl;
 }
@@ -184,13 +207,14 @@ void Game::loadLocalization()
 	cout << "*******Loaded languages*******" << endl;
 }
 
-void Game::loadBackgrounds()
+void Game::loadBackgroundsAndBuffers()
 {
 	//Initialize bitmaps using initGraphicsBuffer()
 	mPlayerBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mPlayerAsset);
 	mBulletBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mBulletAsset);
 	mRoninBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mRoninAsset);
 	mMountainBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mMountainAsset);
+	mFragmentBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mFragmentAsset);
 
 	mGameScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mGameBgAsset);
 	mMenuBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mMainBgAsset);
@@ -202,6 +226,7 @@ void Game::loadBackgrounds()
 	mBufferManager.addGraphicsBuffer(mBULLET_ID, &mBulletBuffer);
 	mBufferManager.addGraphicsBuffer(mRONIN_ID, &mRoninBuffer);
 	mBufferManager.addGraphicsBuffer(mMOUNTAIN_ID, &mMountainBuffer);
+	mBufferManager.addGraphicsBuffer(mFRAGMENT_ID, &mFragmentBuffer);
 
 	mBufferManager.addGraphicsBuffer(mMAINMENU_BUFFER_ID, &mMenuBuffer);
 	mBufferManager.addGraphicsBuffer(mLOSE_SCREEN_ID, &mLoseScreenBuffer);
@@ -353,7 +378,7 @@ void Game::loadScenes()
 	mSceneManager.addScene("c", &mLoseScene);
 	mSceneManager.addScene("d", &mWinScene);
 
-	mSceneManager.setCurrentScene(SC_WIN);
+	mSceneManager.setCurrentScene(SC_MAIN);
 
 	cout << "~~| Twisting loose screws |~~" << endl;
 	cout << "*******Scenes Loaded*******" << endl;
@@ -454,6 +479,7 @@ void Game::update(double timeElapsed)
 	{
 		tickSurvivalTimer();
 
+		mFragmentList.update(timeElapsed, &mPlayer);
 		mRoninManager.update(timeElapsed);
 		mMountainManager.update(timeElapsed, &mPlayer);
 
@@ -461,9 +487,15 @@ void Game::update(double timeElapsed)
 		
 		mPlayer.update(timeElapsed, mColliderCollection, mouseX, mouseY,
 					   mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
+		
+		//check lose condition
 		if (!mPlayer.isVisible())
 			mSceneManager.setCurrentScene(SC_LOSE);
 		
+		//check win condition
+		if (_NumFragments == _FragmentsToCollect)
+			mSceneManager.setCurrentScene(SC_WIN);
+
 		comboUpdate(timeElapsed);
 		
 		mGameView.update(timeElapsed);
@@ -539,6 +571,7 @@ void Game::render()
 		mBulletManager.draw(mSystem.getGraphicsSystem(), camX, camY);
 		mRoninManager.draw(mSystem.getGraphicsSystem(), camX, camY);
 		mMountainManager.draw(mSystem.getGraphicsSystem(), camX, camY);
+		mFragmentList.draw(mSystem.getGraphicsSystem(), camX, camY);
 	}
 
 	//draw gui last so that it exists over the rest of the game
