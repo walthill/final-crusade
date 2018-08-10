@@ -14,6 +14,7 @@
 #include "BulletPool.h"
 #include "RoninManager.h"
 #include "MountainManager.h"
+#include "HiveManager.h"
 
 /*
 File I/O performed using brofield's SimpleIni
@@ -61,10 +62,12 @@ class Game : EventListener
 		GraphicsBuffer mButtonBuffer; // ui button
 		GraphicsBuffer mMenuBuffer, mLoadingScreen, mGameScreenBuffer, mLoseScreenBuffer, 
 					   mWinScreenBuffer; //backgrounds
-		GraphicsBuffer mPlayerBuffer, mBulletBuffer, mFragmentBuffer, mRoninBuffer, mMountainBuffer;
+		GraphicsBuffer mPlayerBuffer, mBulletBuffer, mEnemyBulletBuffer, mFragmentBuffer,
+					   mRoninBuffer, mMountainBuffer, mHiveBuffer;
 
 		Sprite mMenuSprite, mGameScreenSprite, mLoadingSprite, mLoseScreenSprite, mWinScreenSprite;
-		Animation mPlayerAnim, mBulletAnim, mFragmentAnim, mRoninAnim, mMountainAnim;
+		Animation mPlayerAnim, mBulletAnim, mEnemyBulletAnim, mFragmentAnim, mHiveAnim, 
+				  mRoninAnim, mMountainAnim;
 
 		const int mFONT_SIZE = 25;
 		const int mUI_SIZE = 20;
@@ -76,13 +79,15 @@ class Game : EventListener
 		//Managers
 		RoninManager mRoninManager;
 		MountainManager mMountainManager;
+		HiveManager mHiveManager;
 		BulletPool mBulletManager;
+		BulletPool mEnemyBulletManager;
 		FragmentManager mFragmentList;
 
 		vector<Collider*> mColliderCollection;
 
 		//Game Entities
-		Ronin mRonin;
+		//Ronin mRonin;
 		Player mPlayer;
 
 		unsigned int mEventType;
@@ -91,12 +96,13 @@ class Game : EventListener
 		int mSpriteSize;
 		int mGridW, mGridH;
 
-		int mNumEnemies, mNumRonin, mNumMountain;
+		int mNumEnemies, mNumRonin, mNumMountain, mNumHive;
 
 		int mouseX, mouseY;
 		int camX, camY;
-		int mPlayerSpriteSize, mRoninSpriteSize, mFragmentSpriteSize,
-			mMountainSpriteSize, mBulletSpriteSize;
+		int mPlayerSpriteSize, mRoninSpriteSize, mEnemyBulletSpriteSize, mFragmentSpriteSize,
+			mMountainSpriteSize, mBulletSpriteSize, mHiveSpriteSize;
+		int mRoninScoreValue, mHiveScoreValue, mMountainScoreValue;
 		float bulletSpawnX, bulletSpawnY;
 
 		//gameplay variables
@@ -109,20 +115,20 @@ class Game : EventListener
 		string mRoninManTag = "r";
 		string mMountainManTag = "m";
 		string mFragmentManTag = "f";
+		string mHiveManTag = "h";
 
 		//Collider tags
 		const ColliderTag PLAYER_COL_TAG = "player";
-		const ColliderTag RONIN_COL_TAG = "ronin";
 		const ColliderTag BULLET_COL_TAG = "stdBullet";
-		const ColliderTag MOUNTAIN_COL_TAG = "mountain";
+		const ColliderTag ENEMEY_BULLET_COL_TAG = "enemyBullet";
 
 		//External assets
 		const AssetString mLOCAL_ASSET_PATH = "assets\\";
 		const AssetString mINI_FILE = "data.ini";
 
 		AssetString mButtonAsset, mMainBgAsset, mLoseBgAsset, mGameBgAsset, mWinBgAsset,
-		mLoadBgAsset, mFontAsset, mPlayerAsset, mRoninAsset, mBulletAsset,
-		mMountainAsset, mFragmentAsset;
+		mLoadBgAsset, mFontAsset, mPlayerAsset, mEnemyBulletAsset, mRoninAsset, mBulletAsset,
+		mMountainAsset, mFragmentAsset, mHiveAsset;
 
 		//GraphicsBuffer tags
 		const BufferTag mPLAYER_ID = "player";
@@ -131,11 +137,13 @@ class Game : EventListener
 		const BufferTag mLOSE_SCREEN_ID = "lose";
 		const BufferTag mWIN_SCREEN_ID = "win";
 		const BufferTag mBULLET_ID = "bullet";
+		const BufferTag mENEMY_BULLET_ID = "ebullet";
 		const BufferTag mMAINMENU_BUFFER_ID = "spaceblue";
 		const BufferTag mSPACE_ID = "spacebase";
 		const BufferTag mCREDIT_ID, mLOAD_ID = "loading";
 		const BufferTag mGAME_ID = "game";
 		const BufferTag mFRAGMENT_ID = "fragmnt";
+		const BufferTag mHIVE_ID = "hive";
 
 		//UI tags
 		const string mGEN_TAG = "general";

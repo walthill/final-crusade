@@ -6,7 +6,7 @@ Mountain::Mountain()
 {
 	mSpeed = 2.0f;
 	multiplier = 1;
-	mScoreValue = 350;
+	//mScoreValue = 350;
 	srand(unsigned(time(NULL)));
 
 	/*	random_device rd;
@@ -17,8 +17,10 @@ Mountain::Mountain()
 	rotate();
 }
 
-void Mountain::init()
+void Mountain::init(int scoreValue)
 {
+	mScoreValue = scoreValue;
+
  	mMapXBound = Game::getInstance()->_LevelWidth;
 	mMapYBound = Game::getInstance()->_LevelHeight;
 }

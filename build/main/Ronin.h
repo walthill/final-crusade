@@ -26,7 +26,7 @@ class Ronin : public Entity
 		Ronin();
 		~Ronin();
 
-		void init();
+		void init(int scoreValue);
 		void update(double timeElapsed);
 		
 		void checkBounds();

@@ -173,6 +173,8 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Fragment.cpp" />
     <ClCompile Include="FragmentManager.cpp" />
+    <ClCompile Include="Hive.cpp" />
+    <ClCompile Include="HiveManager.cpp" />
     <ClCompile Include="Mountain.cpp" />
     <ClCompile Include="MountainManager.cpp" />
     <ClCompile Include="RoninManager.cpp" />
@@ -195,6 +197,8 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Fragment.h" />
     <ClInclude Include="FragmentManager.h" />
+    <ClInclude Include="Hive.h" />
+    <ClInclude Include="HiveManager.h" />
     <ClInclude Include="Mountain.h" />
     <ClInclude Include="MountainManager.h" />
     <ClInclude Include="RoninManager.h" />

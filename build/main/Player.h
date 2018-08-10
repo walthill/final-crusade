@@ -31,7 +31,7 @@ class Player : public Entity
 		Player();
 		~Player();
 
-		void init(int xBounds, int yBounds);
+		void init(int xBounds, int yBound);
 
 		void update(double timeElapsed, vector<Collider*> colliderList, int mouseX, int mouseY, int camX, int camY);
 		//void draw(GraphicsSystem *graphicsSystem, int camX, int camY);

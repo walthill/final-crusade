@@ -16,8 +16,10 @@ Ronin::Ronin()
 	rotate();
 }
 
-void Ronin::init()
+void Ronin::init(int scoreValue)
 {
+	mScoreValue = scoreValue;
+
 	mMapXBound = Game::getInstance()->_LevelWidth;
 	mMapYBound = Game::getInstance()->_LevelHeight;
 }

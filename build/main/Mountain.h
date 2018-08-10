@@ -28,7 +28,7 @@ class Mountain : public Entity
 		Mountain();
 		~Mountain();
 
-		void init();
+		void init(int scoreValue);
 		void update(double timeElapsed, Player *playerObj);
 		void ai(Player *playerObj);
 		bool hasLineOfSight(Player *player);

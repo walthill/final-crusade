@@ -15,8 +15,8 @@ class BulletPool
 	
 		float bulletX, bulletY;
 
-		static const int mPOOL_SIZE = 100;
-		Bullet bullets[mPOOL_SIZE];
+		int mPoolSize;
+		Bullet *bullets;// [mPOOL_SIZE];
 
 		Bullet *mFirstAvailable;
 	
@@ -24,7 +24,8 @@ class BulletPool
 		BulletPool();
 		~BulletPool();
 
-		void initBulletData(Animation bulletSpriteData, int windowW, int windowH, bool isOwnerPlayer, string colliderTag);
+		void initBulletData(int poolSize, int bulletSpeed, Animation bulletSpriteData,
+							int levelW, int levelH, string colliderTag);
 
 
 		void create(int x, int y, int xVelocity, int yVeloctity, bool isPlayerBullet);
@@ -36,6 +37,9 @@ class BulletPool
 		void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
 
 		void fireProjectile(double deltaTime, float playerX, float playerY, float direction);
+
+		Collider* getBulletCollider(int index);
+		int getPoolSize();
 };
 
 #endif // !BULLET_POOL_H

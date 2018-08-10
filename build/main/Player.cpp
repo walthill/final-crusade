@@ -9,7 +9,7 @@ Player::Player()
 	mYBound = 0;  //map size
 	lastLife = false;
 	dtTime = 0;
-	invulnerableTime = 4000;
+	invulnerableTime = 3000;
 }
 
 Player::~Player()
@@ -63,8 +63,10 @@ void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeE
 
 		if (checkCollision(mThisCollider, b) && !collisionDetected)
 		{
-			if (b.getTag() == "ronin" || b.getTag() == "mountain")
+			if (b.getTag() == "ronin" || b.getTag() == "mountain" || 
+				b.getTag() == "enemyBullet" || b.getTag() == "hive")
 			{
+				//b.getEntity()->setVisible(false);
 				if (!lastLife) //first hit - send to near death
 				{
 					collisionDetected = true;
@@ -89,24 +91,22 @@ void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeE
 		{
 			mHasCollided = false;
 		}
-
-		if (lastLife && dtTime < invulnerableTime)
-		{
-			dtTime += timeElapsed;
-			if (dtTime > invulnerableTime)
-			{
-				hasRecovered = true;
-				collisionDetected = false;
-
-				mAnim.setSpriteIndex(1);
-				mAnim.setLooping(false);
-
-				dtTime = 0;
-			}
-		}
-
 	}
 
+	if (lastLife && dtTime < invulnerableTime)
+	{
+		dtTime += timeElapsed;
+		if (dtTime > invulnerableTime)
+		{
+			hasRecovered = true;
+			collisionDetected = false;
+
+			mAnim.setSpriteIndex(1);
+			mAnim.setLooping(false);
+
+			dtTime = 0;
+		}
+	}
 }
 
 /*

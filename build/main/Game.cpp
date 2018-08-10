@@ -1,8 +1,11 @@
-#include "Game.h"
+#include "Game.h" 
 
 Game* Game::mGameInstance = NULL;
 
 //TODO: work on resetting game - enemies, score, timer
+//TODO: ui for fragment collection - percetage?
+
+//6 fragments
 
 //TODO: add in localization code - eng & fr
 
@@ -107,9 +110,7 @@ bool Game::initGame()
 	//	mColliderCollection.push_back(mFragmentList.getColliderList().at(i));
 	}
 
-	//set player bullet sprite
-	mBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mBULLET_ID), 1, 1, mBulletSpriteSize, mBulletSpriteSize);
-	mBulletManager.initBulletData(mBulletAnim, _LevelWidth, _LevelHeight, true, BULLET_COL_TAG);
+	mBulletManager.initBulletData(75, 5, mBulletAnim, _LevelWidth, _LevelHeight, BULLET_COL_TAG);
 
   	mGameView.initView(&mPlayer, _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight);
 
@@ -145,6 +146,9 @@ void Game::loadGameData()
 	const char * iniBulletAsset = ini.GetValue("ASSETS", "bullet", "default");
 	const char * iniLoadBG = ini.GetValue("ASSETS", "loadbg", "default");
 	const char * iniFragmentAsset = ini.GetValue("ASSETS", "frgmnt", "default");
+	const char * iniHiveAsset = ini.GetValue("ASSETS", "hive", "default");
+	const char * iniEnemyBulletAsset = ini.GetValue("ASSETS", "enemybullet", "default");
+
 
 	const char * iniWidth = ini.GetValue("VIEW", "windowW", "default");
 	const char * iniHeight = ini.GetValue("VIEW", "windowH", "default");
@@ -155,10 +159,18 @@ void Game::loadGameData()
 	const char * iniMountainSpriteSize = ini.GetValue("VIEW", "mTileSize", "default");
 	const char * iniBulletSpriteSize = ini.GetValue("VIEW", "bTileSize", "default");
 	const char * iniFragmentSpriteSize = ini.GetValue("VIEW", "fTileSize", "default");
+	const char * iniHiveSpriteSize = ini.GetValue("VIEW", "hTileSize", "default");
+	const char * iniEnemyBulletSpriteSize = ini.GetValue("VIEW", "ebTileSize", "default");
+	
+	const char * iniRoninScoreValue = ini.GetValue("STATE", "roninScoreVal", "default");
+	const char * iniMountainScoreValue = ini.GetValue("STATE", "mtnScoreVal", "default");
+	const char * iniHiveScoreValue = ini.GetValue("STATE", "hiveScoreVal", "default");
+
 
 	const char * iniNumEnemies = ini.GetValue("LEVELDATA", "numEnemies", "defualt");
 	const char * iniNumMountain = ini.GetValue("LEVELDATA", "numMt", "defualt");
 	const char * iniNumRonin = ini.GetValue("LEVELDATA", "numRonin", "defualt");
+	const char * inimNumHive = ini.GetValue("LEVELDATA", "numHive", "defualt");
 	const char * iniFragmentsToCollect = ini.GetValue("LEVELDATA", "fragmentsToCollect", "default");
 
 	mButtonAsset = iniButtonAsset; 
@@ -171,8 +183,10 @@ void Game::loadGameData()
 	mPlayerAsset = iniPlayerAsset;
 	mRoninAsset = iniRoninAsset;
 	mBulletAsset = iniBulletAsset;
+	mEnemyBulletAsset = iniEnemyBulletAsset;
 	mMountainAsset = iniMountainAsset;
 	mFragmentAsset = iniFragmentAsset;
+	mHiveAsset = iniHiveAsset;
 
 	_DisplayWidth = atoi(iniWidth);
 	_DisplayHeight = atoi(iniHeight);
@@ -185,11 +199,18 @@ void Game::loadGameData()
 	mRoninSpriteSize = atoi(iniRoninSpriteSize);
 	mMountainSpriteSize = atoi(iniMountainSpriteSize);
 	mBulletSpriteSize = atoi(iniBulletSpriteSize);
+	mEnemyBulletSpriteSize = atoi(iniEnemyBulletSpriteSize);
 	mFragmentSpriteSize = atoi(iniFragmentSpriteSize);
+	mHiveSpriteSize = atoi(iniHiveSpriteSize);
+
+	mRoninScoreValue = atoi(iniRoninScoreValue);
+	mMountainScoreValue = atoi(iniMountainScoreValue);
+	mHiveScoreValue = atoi(iniHiveScoreValue);
 
 	mNumEnemies = atoi(iniNumEnemies);
 	mNumRonin = atoi(iniNumRonin);
 	mNumMountain = atoi(iniNumMountain);
+	mNumHive = atoi(inimNumHive);
 	_FragmentsToCollect = atoi(iniFragmentsToCollect);
 
 	cout << "*******Loaded game data*******" << endl;
@@ -212,9 +233,11 @@ void Game::loadBackgroundsAndBuffers()
 	//Initialize bitmaps using initGraphicsBuffer()
 	mPlayerBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mPlayerAsset);
 	mBulletBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mBulletAsset);
+	mEnemyBulletBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mEnemyBulletAsset);
 	mRoninBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mRoninAsset);
 	mMountainBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mMountainAsset);
 	mFragmentBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mFragmentAsset);
+	mHiveBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mHiveAsset);
 
 	mGameScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mGameBgAsset);
 	mMenuBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mMainBgAsset);
@@ -224,9 +247,11 @@ void Game::loadBackgroundsAndBuffers()
 	//Add buffers to buffer manager
 	mBufferManager.addGraphicsBuffer(mPLAYER_ID, &mPlayerBuffer);
 	mBufferManager.addGraphicsBuffer(mBULLET_ID, &mBulletBuffer);
+	mBufferManager.addGraphicsBuffer(mENEMY_BULLET_ID, &mEnemyBulletBuffer);
 	mBufferManager.addGraphicsBuffer(mRONIN_ID, &mRoninBuffer);
 	mBufferManager.addGraphicsBuffer(mMOUNTAIN_ID, &mMountainBuffer);
 	mBufferManager.addGraphicsBuffer(mFRAGMENT_ID, &mFragmentBuffer);
+	mBufferManager.addGraphicsBuffer(mHIVE_ID, &mHiveBuffer);
 
 	mBufferManager.addGraphicsBuffer(mMAINMENU_BUFFER_ID, &mMenuBuffer);
 	mBufferManager.addGraphicsBuffer(mLOSE_SCREEN_ID, &mLoseScreenBuffer);
@@ -244,10 +269,14 @@ void Game::loadBackgroundsAndBuffers()
 
 void Game::initAnimations()
 {
-	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 2, 16, 16);
-	mRoninAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mRONIN_ID), 1, 1, 32, 32);
-	mMountainAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mMOUNTAIN_ID), 1, 1, 24, 24);
+	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 2, mPlayerSpriteSize, mPlayerSpriteSize);
+	mRoninAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mRONIN_ID), 1, 1, mRoninSpriteSize, mRoninSpriteSize);
+	mMountainAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mMOUNTAIN_ID), 1, 1, mMountainSpriteSize, mMountainSpriteSize);
+	mHiveAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mHIVE_ID), 1, 1, mHiveSpriteSize, mHiveSpriteSize);
 
+	//set player bullet sprite
+	mBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mBULLET_ID), 1, 1, mBulletSpriteSize, mBulletSpriteSize);
+	mEnemyBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mENEMY_BULLET_ID), 1, 1, mEnemyBulletSpriteSize, mEnemyBulletSpriteSize);
 }
 
 void Game::initPlayer()
@@ -262,32 +291,54 @@ void Game::initPlayer()
 
 void Game::initEnemies()
 {
+	//initialize enemy values, locations, and colliders
+
 	random_device rd1, rd2;
 	uniform_int_distribution<int> randGenX(1, _LevelWidth - 100);
 	uniform_int_distribution<int> randGenY(1, _LevelHeight - 100);
 	int randX, randY;
 
-	for (int i = 0; i < 0; i++)
+	for (int i = 0; i < mNumRonin; i++)
 	{
 		randX = randGenX(rd1);
 		randY = randGenY(rd2);
 
 		mRoninManager.createAndAddEntity(mRoninManTag + to_string(i), randX, randY, mRoninAnim);
-		mRoninManager.getEntity(i)->init();
+		mRoninManager.getEntity(i)->init(mRoninScoreValue);
 
 		mColliderCollection.push_back(mRoninManager.getColliderList().at(i));
 	}
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < mNumMountain; i++)
 	{
 		randX = randGenX(rd1);
 		randY = randGenY(rd2);
 
 		mMountainManager.createAndAddEntity(mMountainManTag + to_string(i), randX, randY, mMountainAnim);
-		mMountainManager.getEntity(i)->init();
+		mMountainManager.getEntity(i)->init(mMountainScoreValue);
 
 		mColliderCollection.push_back(mMountainManager.getColliderList().at(i));
 	}
+
+	for (int i = 0; i < mNumHive; i++)
+	{
+		randX = randGenX(rd1);
+		randY = randGenY(rd2);
+
+		mHiveManager.createAndAddEntity(mHiveManTag + to_string(i), randX, randY, mHiveAnim);
+		mHiveManager.getEntity(i)->init(&mEnemyBulletManager, mHiveScoreValue);
+
+		mColliderCollection.push_back(mHiveManager.getColliderList().at(i));
+	} 
+
+	mEnemyBulletManager.initBulletData(200, 4, mEnemyBulletAnim, _LevelWidth, _LevelHeight, ENEMEY_BULLET_COL_TAG);
+	for (int i = 0; i < mEnemyBulletManager.getPoolSize(); i++)
+	{
+		mColliderCollection.push_back(mEnemyBulletManager.getBulletCollider(i));
+	}
+
+	mColliderCollection.push_back(mPlayer.getCollider());
+
 }
 
 void Game::initUI()
@@ -482,8 +533,10 @@ void Game::update(double timeElapsed)
 		mFragmentList.update(timeElapsed, &mPlayer);
 		mRoninManager.update(timeElapsed);
 		mMountainManager.update(timeElapsed, &mPlayer);
+		mHiveManager.update(timeElapsed, &mPlayer);
 
 		mBulletManager.update(timeElapsed, mColliderCollection);
+		mEnemyBulletManager.update(timeElapsed, mColliderCollection);
 		
 		mPlayer.update(timeElapsed, mColliderCollection, mouseX, mouseY,
 					   mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
@@ -571,6 +624,8 @@ void Game::render()
 		mBulletManager.draw(mSystem.getGraphicsSystem(), camX, camY);
 		mRoninManager.draw(mSystem.getGraphicsSystem(), camX, camY);
 		mMountainManager.draw(mSystem.getGraphicsSystem(), camX, camY);
+		mHiveManager.draw(mSystem.getGraphicsSystem(), camX, camY);
+		mEnemyBulletManager.draw(mSystem.getGraphicsSystem(), camX, camY);
 		mFragmentList.draw(mSystem.getGraphicsSystem(), camX, camY);
 	}
 

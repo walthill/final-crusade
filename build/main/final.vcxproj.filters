@@ -61,6 +61,12 @@
     <ClCompile Include="FragmentManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="Hive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HiveManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUIManager.h">
@@ -118,6 +124,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FragmentManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HiveManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

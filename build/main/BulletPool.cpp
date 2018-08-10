@@ -7,12 +7,18 @@ BulletPool::BulletPool()
 
 BulletPool::~BulletPool()
 {
+	delete[] bullets;
 }
 
-void BulletPool::initBulletData(Animation bulletSpriteData, int levelW, int levelH, bool isOwnerPlayer, string colliderTag)
+void BulletPool::initBulletData(int poolSize, int bulletSpeed, Animation bulletSpriteData, 
+								int levelW, int levelH, string colliderTag)
 {
-	for (int i = 0; i < mPOOL_SIZE; i++)
+	mPoolSize = poolSize;
+	bullets = new Bullet[mPoolSize];
+
+	for (int i = 0; i < mPoolSize; i++)
 	{
+		bullets[i].setBulletSpeed(bulletSpeed);
 		bullets[i].setXBound(levelW);
 		bullets[i].setYBound(levelH);
 
@@ -49,18 +55,18 @@ void BulletPool::initPool()
 {
 	mFirstAvailable = &bullets[0];
 
-	for (int i = 0; i < mPOOL_SIZE - 1; i++)
+	for (int i = 0; i < mPoolSize - 1; i++)
 	{
 		bullets[i].setNext(&bullets[i] + 1);
 	}
 
-	bullets[mPOOL_SIZE - 1].setNext(NULL);
+	bullets[mPoolSize - 1].setNext(NULL);
 }
 
 
 void BulletPool::resetPool()
 {
-	for (int i = 0; i < mPOOL_SIZE - 1; i++)
+	for (int i = 0; i < mPoolSize - 1; i++)
 	{
 		bullets[i].setInUse(false);
 		initPool();
@@ -70,9 +76,9 @@ void BulletPool::resetPool()
 
 void BulletPool::update(double timeElapsed, vector<Collider*> colliderList)//Collider* b)
 {
-	for (int i = 0; i < mPOOL_SIZE; i++)
+	for (int i = 0; i < mPoolSize; i++)
 	{
-		if (bullets[i].update(timeElapsed, colliderList)) //returns true if bullet is not in use
+		if (bullets[i].update(timeElapsed, colliderList, mPoolSize)) //returns true if bullet is not in use
 		{
  			bullets[i].setNext(mFirstAvailable);
 			mFirstAvailable = &bullets[i];
@@ -82,7 +88,7 @@ void BulletPool::update(double timeElapsed, vector<Collider*> colliderList)//Col
 
 void BulletPool::draw(GraphicsSystem *graphicsSystem, int camX, int camY)
 {
-	for (int i = 0; i < mPOOL_SIZE; i++)
+	for (int i = 0; i < mPoolSize; i++)
 	{
 		if(bullets[i].isInUse())
 			bullets[i].draw(graphicsSystem, camX, camY);
@@ -115,4 +121,12 @@ void BulletPool::fireProjectile(double deltaTime, float playerX, float playerY,
 }
 
 
+Collider* BulletPool::getBulletCollider(int index)
+{
+	return bullets[index].getCollider();
+}
 
+int BulletPool::getPoolSize()
+{
+	return mPoolSize;
+}
