@@ -41,18 +41,16 @@ enum EventType
 	SCREENCAP,
 	
 	UNDEFINED, //menu button events
+	
 	NEW_GAME,
 	LOAD_GAME,
 	OPTIONS,
 	RETURN_MAIN,
 	RETURN_OPTIONS,
 	STATS,
-	RETURN_MAIN_CREDITS,
 	RESUME,
-	QUIT_LOSE,
 	CREDITS,
 	LANG_CHANGE,
-	CHANGE_DIFFICULTY,
 	CHANGE_AUDIO,
 
 	QUIT, //Game events, in game actions based on input

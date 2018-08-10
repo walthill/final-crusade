@@ -12,6 +12,7 @@ enum SceneType
 	SC_GAME,
 	SC_PAUSE,
 	SC_LOSE,
+	SC_WIN,
 	SC_OPTIONS,
 	SC_CREDITS,
 	SC_STATS
@@ -30,7 +31,7 @@ public:
 	Scene();
 	~Scene();
 
-	void initScene(SceneType type, GUIManager *gManager, Sprite *spr, bool isActive = false);
+	void initScene(SceneType type, GUIManager *gManager, Sprite *spr);
 
 	void update(double timeElapsed);
 	void draw(GraphicsSystem *graphicsSystem);

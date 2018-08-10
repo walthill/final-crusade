@@ -47,6 +47,7 @@ void GUIManager::setNumButtons(int amount)
 	mNumButtons = amount;
 }
 
+//NOTE: order matters for buttons in the mangers
 void GUIManager::updateButtons(double timeElapsed)
 {
 	int maxNumUpdated = mCurrentButton+1;

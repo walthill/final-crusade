@@ -36,7 +36,7 @@ class Game : EventListener
 {
 	private:
 		static Game* mGameInstance; 
-		const string GAME_TITLE = "Final Crusade";
+		const string mGAME_TITLE = "Final Crusade";
 		
 		System mSystem; //Gives access to window and graphics
 		GraphicsBufferManager mBufferManager; 
@@ -47,21 +47,24 @@ class Game : EventListener
 		
 		//each scene has a manager
 		GUIManager mGuiManagerMain, mGuiManagerGame, mGuiManagerOptions, mGuiManagerStats,
-				   mGuiManagerPause, mGuiManagerLose, mGuiManagerCredits;
+				   mGuiManagerPause, mGuiManagerLose, mGuiManagerWin, mGuiManagerCredits;
 
-		Scene mMainMenuScene, mGameScene, mOptionsScene, mPauseScene, mLoseScene, mStatsScene, mCreditScene;
+		Scene mMainMenuScene, mGameScene, mOptionsScene, mPauseScene, 
+			  mLoseScene, mWinScene, mStatsScene, mCreditScene;
+		
 		SceneManager mSceneManager;
 
-		Gui mFpscounter, 
+		Gui mFpscounter, mLoseRetry, mLoseQuit, mLoseText,
+			mWinTitle, mWinPlayAgain, mWinQuit,
 			mMainStart, mMainQuit, mMainTitle,
 			mGameScore, mGameCombo, mGameTime;
 
 		//Visual Assets
 		GraphicsBuffer mButtonBuffer; // ui button
-		GraphicsBuffer mMenuBuffer, mLoadingScreen;
+		GraphicsBuffer mMenuBuffer, mLoadingScreen, mLoseScreenBuffer, mWinScreenBuffer; //backgrounds
 		GraphicsBuffer mPlayerBuffer, mBulletBuffer, mRoninBuffer, mMountainBuffer;
 
-		Sprite mMenuSprite, mLoadingSprite;
+		Sprite mMenuSprite, mLoadingSprite, mLoseScreenSprite, mWinScreenSprite;
 		Animation mPlayerAnim, mBulletAnim, mRoninAnim, mMountainAnim;
 
 		const int mFONT_SIZE = 25;
@@ -110,6 +113,8 @@ class Game : EventListener
 		const AssetString mLOCAL_ASSET_PATH = "assets\\";
 		const AssetString mBUTTON_ASSET = "button.bmp";
 		const AssetString mMAINMENU_BG_ASSET = "spaceblue.png";
+		const AssetString mLOSE_BG_ASSET = "spaceblue.png"; //TODO: make art asset strings data driven
+		const AssetString mWIN_BG_ASSET = "spaceblue.png";
 		const AssetString mLOADING_IMG = "bigspace.png";
 		const AssetString mCOUR_FONT = "cour.ttf";
 		const AssetString mINI_FILE = "data.ini";
@@ -123,6 +128,8 @@ class Game : EventListener
 		const BufferTag mPLAYER_ID = "player";
 		const BufferTag mRONIN_ID = "ronin";
 		const BufferTag mMOUNTAIN_ID = "mountain";
+		const BufferTag mLOSE_SCREEN_ID = "lose";
+		const BufferTag mWIN_SCREEN_ID = "win";
 		const BufferTag mBULLET_ID = "bullet";
 		const BufferTag mMAINMENU_BUFFER_ID = "spaceblue";
 		const BufferTag mSPACE_ID = "spacebase";

@@ -143,6 +143,11 @@ void SceneManager::update(double timeElapsed, int &combo, int &score, int const 
 				
 				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 			}
+			else if (iter->second->getSceneType() == SC_WIN)
+			{
+
+				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
+			}
 			else if (iter->second->getSceneType() == SC_CREDITS)
 			{
 				
