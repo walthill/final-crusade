@@ -2,18 +2,14 @@
 #define GAME_H
 
 #include <random>
-#include <chrono>
-#include <iomanip>
-#include "Timer.h"
 #include "MemoryTracker.h"
 #include "PerformanceTracker.h"
 
 #include "InputTranslator.h"
-#include "Player.h"
 #include "simpleini-4.17\SimpleIni.h"
+#include "View.h"
 #include "GraphicsBufferManager.h"
 #include "SceneManager.h"
-#include "View.h"
 #include "BulletPool.h"
 #include "RoninManager.h"
 #include "MountainManager.h"
@@ -53,6 +49,7 @@ class Game : EventListener
 			  mLoseScene, mWinScene, mStatsScene, mCreditScene;
 		
 		SceneManager mSceneManager;
+		
 
 		Gui mFpscounter, mLoseRetry, mLoseQuit, mLoseText,
 			mWinTitle, mWinPlayAgain, mWinQuit,
@@ -61,10 +58,11 @@ class Game : EventListener
 
 		//Visual Assets
 		GraphicsBuffer mButtonBuffer; // ui button
-		GraphicsBuffer mMenuBuffer, mLoadingScreen, mLoseScreenBuffer, mWinScreenBuffer; //backgrounds
+		GraphicsBuffer mMenuBuffer, mLoadingScreen, mGameScreenBuffer, mLoseScreenBuffer, 
+					   mWinScreenBuffer; //backgrounds
 		GraphicsBuffer mPlayerBuffer, mBulletBuffer, mRoninBuffer, mMountainBuffer;
 
-		Sprite mMenuSprite, mLoadingSprite, mLoseScreenSprite, mWinScreenSprite;
+		Sprite mMenuSprite, mGameScreenSprite, mLoadingSprite, mLoseScreenSprite, mWinScreenSprite;
 		Animation mPlayerAnim, mBulletAnim, mRoninAnim, mMountainAnim;
 
 		const int mFONT_SIZE = 25;
@@ -73,7 +71,6 @@ class Game : EventListener
 		const int mBUTTON_SPRSHEET_ROWS = 1, mBUTTON_SPRSHEET_COLS = 2;
 		Font *mFont, *mGameUI;
 		Color mWhiteText;
-
 
 		//Managers
 		RoninManager mRoninManager;
@@ -98,6 +95,11 @@ class Game : EventListener
 		int mPlayerSpriteSize, mRoninSpriteSize, mMountainSpriteSize, mBulletSpriteSize;
 		float bulletSpawnX, bulletSpawnY;
 
+		//gameplay variables
+		Timer *survivalTimer;
+		double dtTime;	int sec = 0, millisec, min = 0;
+		const int mCOMBO_WINDOW = 2500;
+		const int mCOMBO_NUM_TO_REGEN = 3;
 
 		//Enemy Manager Tags
 		string mRoninManTag = "r";
@@ -111,18 +113,11 @@ class Game : EventListener
 
 		//External assets
 		const AssetString mLOCAL_ASSET_PATH = "assets\\";
-		const AssetString mBUTTON_ASSET = "button.bmp";
-		const AssetString mMAINMENU_BG_ASSET = "spaceblue.png";
-		const AssetString mLOSE_BG_ASSET = "spaceblue.png"; //TODO: make art asset strings data driven
-		const AssetString mWIN_BG_ASSET = "spaceblue.png";
-		const AssetString mLOADING_IMG = "bigspace.png";
-		const AssetString mCOUR_FONT = "cour.ttf";
 		const AssetString mINI_FILE = "data.ini";
-		const AssetString mSPACE_PURPLE = "spacepurple.bmp";
-		const AssetString mPLAYER_ASSET = "phplayer.png";
-		const AssetString mRONIN_ASSET = "phronin.png";
-		const AssetString mBULLET_ASSET = "bullet.png";
-		const AssetString mMOUNTAIN_ASSET = "phmountain.png";
+
+		AssetString mButtonAsset, mMainBgAsset, mLoseBgAsset, mGameBgAsset, mWinBgAsset,
+		mLoadBgAsset, mFontAsset, mPlayerAsset, mRoninAsset, mBulletAsset,
+		mMountainAsset;
 
 		//GraphicsBuffer tags
 		const BufferTag mPLAYER_ID = "player";
@@ -134,6 +129,7 @@ class Game : EventListener
 		const BufferTag mMAINMENU_BUFFER_ID = "spaceblue";
 		const BufferTag mSPACE_ID = "spacebase";
 		const BufferTag mCREDIT_ID, mLOAD_ID = "loading";
+		const BufferTag mGAME_ID = "game";
 
 		//UI tags
 		const string mGEN_TAG = "general";
@@ -155,15 +151,8 @@ class Game : EventListener
 		//screenshot var
 		bool takeScreenshot;
 		
-		Timer *survivalTimer;
-
 		double mFPS;
 		bool mIsRunning;
-		double dtTime;	int sec = 0, millisec, min = 0;
-		const int mCOMBO_WINDOW = 2500;
-		const int mCOMBO_NUM_TO_REGEN = 3;
-
-		
 	public:
 
 		//gloabl vars

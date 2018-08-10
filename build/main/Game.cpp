@@ -2,14 +2,11 @@
 
 Game* Game::mGameInstance = NULL;
 
-//TODO:(low) implement save/load thru sdl
 //TODO: work on resetting game - enemies, score, timer
 
 //TODO: add in localization code - eng & fr
 
 //TODO: ememy death audio
-
-//Including in .h vs .cpp https://stackoverflow.com/questions/3002110/include-in-h-or-c-cpp 
 
 //creating exe
 //https://discourse.libsdl.org/t/creating-an-easily-distributable-executable-file/24413
@@ -48,7 +45,7 @@ void Game::installListeners()
 void Game::displayLoadingScreen()
 {
 	//show image while game data & assets load in
-	mLoadingScreen.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mLOADING_IMG);
+	mLoadingScreen.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mLoadBgAsset);
 	mBufferManager.addGraphicsBuffer(mLOAD_ID, &mLoadingScreen);
 
 	mLoadingSprite.initSprite(&mLoadingScreen, 0, 0, mLoadingScreen.getBitmapWidth(),
@@ -112,10 +109,23 @@ bool Game::initGame()
 
 void Game::loadGameData()
 {
+
 	//"section", "key",	default, "filename"
 	CSimpleIniA ini;
 	ini.SetUnicode();
 	ini.LoadFile(mINI_FILE.c_str());
+
+	const char * iniButtonAsset = ini.GetValue("ASSETS", "button", "default");
+	const char * iniMainMenuBG = ini.GetValue("ASSETS", "mainmenubg", "default");
+	const char * iniLoseBG = ini.GetValue("ASSETS", "losebg", "default");
+	const char * iniWinBG = ini.GetValue("ASSETS", "winbg", "default");
+	const char * iniGameBG = ini.GetValue("ASSETS", "gamebg", "default");
+	const char * iniFontAsset = ini.GetValue("ASSETS", "fnt", "default");
+	const char * iniPlayerAsset = ini.GetValue("ASSETS", "player", "default");
+	const char * iniRoninAsset = ini.GetValue("ASSETS", "ronin", "default");
+	const char * iniMountainAsset = ini.GetValue("ASSETS", "mtn", "default");
+	const char * iniBulletAsset = ini.GetValue("ASSETS", "bullet", "default");
+	const char * iniLoadBG = ini.GetValue("ASSETS", "loadbg", "default");
 
 	const char * iniWidth = ini.GetValue("VIEW", "windowW", "default");
 	const char * iniHeight = ini.GetValue("VIEW", "windowH", "default");
@@ -130,6 +140,18 @@ void Game::loadGameData()
 	const char * iniRoninSpriteSize = ini.GetValue("VIEW", "rTileSize", "default");
 	const char * iniMountainSpriteSize = ini.GetValue("VIEW", "mTileSize", "default");
 	const char * iniBulletSpriteSize = ini.GetValue("VIEW", "bTileSize", "default");
+
+	mButtonAsset = iniButtonAsset; 
+	mMainBgAsset = iniMainMenuBG;
+	mGameBgAsset = iniGameBG;
+	mLoseBgAsset = iniLoseBG;
+	mWinBgAsset = iniWinBG;
+	mLoadBgAsset = iniLoadBG;
+	mFontAsset = iniFontAsset;
+	mPlayerAsset = iniPlayerAsset;
+	mRoninAsset = iniRoninAsset;
+	mBulletAsset = iniBulletAsset;
+	mMountainAsset = iniMountainAsset;
 
 	_DisplayWidth = atoi(iniWidth);
 	_DisplayHeight = atoi(iniHeight);
@@ -165,14 +187,15 @@ void Game::loadLocalization()
 void Game::loadBackgrounds()
 {
 	//Initialize bitmaps using initGraphicsBuffer()
-	mPlayerBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mPLAYER_ASSET);
-	mBulletBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mBULLET_ASSET);
-	mRoninBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mRONIN_ASSET);
-	mMountainBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mMOUNTAIN_ASSET);
+	mPlayerBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mPlayerAsset);
+	mBulletBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mBulletAsset);
+	mRoninBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mRoninAsset);
+	mMountainBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mMountainAsset);
 
-	mMenuBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mMAINMENU_BG_ASSET);
-	mLoseScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mLOSE_BG_ASSET);
-	mWinScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mWIN_BG_ASSET);
+	mGameScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mGameBgAsset);
+	mMenuBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mMainBgAsset);
+	mLoseScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mLoseBgAsset);
+	mWinScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mWinBgAsset);
 
 	//Add buffers to buffer manager
 	mBufferManager.addGraphicsBuffer(mPLAYER_ID, &mPlayerBuffer);
@@ -183,8 +206,10 @@ void Game::loadBackgrounds()
 	mBufferManager.addGraphicsBuffer(mMAINMENU_BUFFER_ID, &mMenuBuffer);
 	mBufferManager.addGraphicsBuffer(mLOSE_SCREEN_ID, &mLoseScreenBuffer);
 	mBufferManager.addGraphicsBuffer(mWIN_SCREEN_ID, &mWinScreenBuffer);
+	mBufferManager.addGraphicsBuffer(mGAME_ID, &mGameScreenBuffer);
 
 	//init Background sprites using initSprite()
+	mGameScreenSprite.initSprite(&mGameScreenBuffer, 0, 0, mGameScreenBuffer.getBitmapWidth(), mGameScreenBuffer.getBitmapHeight());
 	mMenuSprite.initSprite(&mMenuBuffer, 0, 0, mMenuBuffer.getBitmapWidth(), mMenuBuffer.getBitmapHeight());
 	mWinScreenSprite.initSprite(&mWinScreenBuffer, 0, 0, mWinScreenBuffer.getBitmapWidth(), mWinScreenBuffer.getBitmapHeight());
 	mLoseScreenSprite.initSprite(&mLoseScreenBuffer, 0, 0, mLoseScreenBuffer.getBitmapWidth(), mLoseScreenBuffer.getBitmapHeight());
@@ -243,7 +268,7 @@ void Game::initEnemies()
 void Game::initUI()
 {
 	mWhiteText.setColor(255);
-	mButtonBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mBUTTON_ASSET);
+	mButtonBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mButtonAsset);
 
 	//FPS UI
 	mFpscounter.initGuiElement(10, 10);
@@ -318,9 +343,9 @@ void Game::initUI()
 void Game::loadScenes()
 {
 	mMainMenuScene.initScene(SC_MAIN, &mGuiManagerMain, &mMenuSprite);
-	mGameScene.initScene(SC_GAME, &mGuiManagerGame, &mLoadingSprite);
+	mGameScene.initScene(SC_GAME, &mGuiManagerGame, &mGameScreenSprite);
 	mLoseScene.initScene(SC_LOSE, &mGuiManagerLose, &mLoseScreenSprite);
-	mWinScene.initScene(SC_WIN, &mGuiManagerWin, &mLoadingSprite);
+	mWinScene.initScene(SC_WIN, &mGuiManagerWin, &mWinScreenSprite);
 
 	//add to manager
 	mSceneManager.addScene("a", &mMainMenuScene);
@@ -336,7 +361,6 @@ void Game::loadScenes()
 
 void Game::initAudio()
 {
-
 }
 #pragma endregion
 
@@ -573,6 +597,14 @@ void Game::handleEvent(const Event& theEvent)
 			if (mGuiManagerLose.getButtonEventPressed(NEW_GAME))
 			{
 				//restart game & set scene to game
+				
+				//initEnemies();
+				//loop thru all enemies. make them visible and randomize their locations again
+
+				//mPlayer.setVisible(true);
+				//mPlayer.setLastLife(false);
+
+				//mSceneManager.setCurrentScene(SC_GAME);
 			}
 			else if (mGuiManagerLose.getButtonEventPressed(RETURN_MAIN))
 			{
@@ -584,6 +616,7 @@ void Game::handleEvent(const Event& theEvent)
 			if (mGuiManagerWin.getButtonEventPressed(NEW_GAME))
 			{
 				//restart game & set scene to game
+				
 			}
 			else if (mGuiManagerWin.getButtonEventPressed(RETURN_MAIN))
 			{
