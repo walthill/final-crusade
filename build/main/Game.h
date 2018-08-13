@@ -201,6 +201,7 @@ class Game : EventListener
 		bool initGame();
 		void displayLoadingScreen();
 		void initEnemies();
+		void initFragments();
 		void initAnimations();
 		void initPlayer();
 		void loadLocalization();
@@ -221,6 +222,7 @@ class Game : EventListener
 		void tickSurvivalTimer();
 		void comboUpdate(double timeElapsed);
 		void endCombo();
+		void resetGameState();
 
 		//Draw to the screen
 		void render();

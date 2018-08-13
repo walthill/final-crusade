@@ -2,10 +2,7 @@
 
 Game* Game::mGameInstance = NULL;
 
-//TODO: work on resetting game - enemies, score, timer
-//TODO: ui for fragment collection - percetage?
-
-//6 fragments
+//TODO(high): ui for fragment collection - percetage?
 
 //TODO: add in localization code - eng & fr
 
@@ -62,6 +59,8 @@ bool Game::initGame()
 {
 	PerformanceTracker* pPerformanceTracker = new PerformanceTracker;
 	pPerformanceTracker->startTracking(mINIT_TRACKER_NAME);
+	
+	gMemoryTracker.reportAllocations(cout);
 
 	loadGameData();
 	loadLocalization();
@@ -72,8 +71,8 @@ bool Game::initGame()
 
 	cout << "*******Initialized system*******" << endl;
 
-	displayLoadingScreen();
-
+	//displayLoadingScreen();
+	
 	//Initialize game-side input translation from event system
 	mInputTranslator.initInputTranslator();
 	
@@ -84,35 +83,18 @@ bool Game::initGame()
 	
 	loadBackgroundsAndBuffers();
 	initAnimations();
-	
+
 	initUI();
 	loadScenes();
 	initAudio();
-	
+
 	initPlayer();
+
+	mEnemyBulletManager.initBulletData(200, 4, mEnemyBulletAnim, _LevelWidth, _LevelHeight, ENEMEY_BULLET_COL_TAG);
 	initEnemies();
+	initFragments();
 
-	mFragmentAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mFRAGMENT_ID), 1, 1, mFragmentSpriteSize, mFragmentSpriteSize);
-
-	random_device rd1, rd2;
-	uniform_int_distribution<int> randGenX(1, _LevelWidth - 100);
-	uniform_int_distribution<int> randGenY(1, _LevelHeight - 100);
-	
-	int randX=0, randY=0;
-
-	for (int i = 0; i < _FragmentsToCollect; i++)
-	{
-		randX = randGenX(rd1);
-		randY = randGenY(rd2);
-
-		mFragmentList.createAndAddEntity(mFragmentManTag + to_string(i), randX, randY, mFragmentAnim);
-
-	//	mColliderCollection.push_back(mFragmentList.getColliderList().at(i));
-	}
-
-	mBulletManager.initBulletData(75, 5, mBulletAnim, _LevelWidth, _LevelHeight, BULLET_COL_TAG);
-
-  	mGameView.initView(&mPlayer, _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight);
+	mGameView.initView(&mPlayer, _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight);
 
  	mIsRunning = true;
 
@@ -271,8 +253,11 @@ void Game::initAnimations()
 {
 	mPlayerAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mPLAYER_ID), 1, 2, mPlayerSpriteSize, mPlayerSpriteSize);
 	mRoninAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mRONIN_ID), 1, 1, mRoninSpriteSize, mRoninSpriteSize);
-	mMountainAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mMOUNTAIN_ID), 1, 1, mMountainSpriteSize, mMountainSpriteSize);
+	mMountainAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mMOUNTAIN_ID), 1, 2, mMountainSpriteSize, mMountainSpriteSize);
 	mHiveAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mHIVE_ID), 1, 1, mHiveSpriteSize, mHiveSpriteSize);
+	
+	mFragmentAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mFRAGMENT_ID), 1, 4, mFragmentSpriteSize, mFragmentSpriteSize);
+	//mFragmentAnim.setLooping(true);
 
 	//set player bullet sprite
 	mBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mBULLET_ID), 1, 1, mBulletSpriteSize, mBulletSpriteSize);
@@ -287,10 +272,40 @@ void Game::initPlayer()
 	mPlayer.setCollider(PLAYER_COL_TAG);
 	mPlayer.setLoc(450, 200);
 
+	//player bullet init
+	mBulletManager.initBulletData(75, 5, mBulletAnim, _LevelWidth, _LevelHeight, BULLET_COL_TAG);
+
+}
+
+void Game::initFragments()
+{
+	mFragmentList.clearManager();
+
+	random_device rd1, rd2;
+	uniform_int_distribution<int> randGenX(1, _LevelWidth - 100);
+	uniform_int_distribution<int> randGenY(1, _LevelHeight - 100);
+
+	int randX = 0, randY = 0;
+
+	for (int i = 0; i < _FragmentsToCollect; i++)
+	{
+		randX = randGenX(rd1);
+		randY = randGenY(rd2);
+
+		mFragmentList.createAndAddEntity(mFragmentManTag + to_string(i), randX, randY, mFragmentAnim);
+
+		//	mColliderCollection.push_back(mFragmentList.getColliderList().at(i));
+	}
+
 }
 
 void Game::initEnemies()
 {
+	mRoninManager.clearManager();
+	mMountainManager.clearManager();
+	mHiveManager.clearManager();
+
+	mColliderCollection.clear();
 	//initialize enemy values, locations, and colliders
 
 	random_device rd1, rd2;
@@ -331,14 +346,12 @@ void Game::initEnemies()
 		mColliderCollection.push_back(mHiveManager.getColliderList().at(i));
 	} 
 
-	mEnemyBulletManager.initBulletData(200, 4, mEnemyBulletAnim, _LevelWidth, _LevelHeight, ENEMEY_BULLET_COL_TAG);
 	for (int i = 0; i < mEnemyBulletManager.getPoolSize(); i++)
 	{
 		mColliderCollection.push_back(mEnemyBulletManager.getBulletCollider(i));
 	}
 
 	mColliderCollection.push_back(mPlayer.getCollider());
-
 }
 
 void Game::initUI()
@@ -360,9 +373,10 @@ void Game::initUI()
 	mMainQuit.addGuiButton(mButtonBuffer, QUIT, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mWhiteText, "Quit");
 
 	//IN GAME UI
-	mGameCombo.initGuiElementWithText(745, 550, mUI_SIZE, mWhiteText, to_string(_ComboCount));
-	mGameScore.initGuiElementWithText(745, 30, mUI_SIZE, mWhiteText, to_string(_Score));
-	mGameTime.initGuiElementWithText(745, 5, mUI_SIZE, mWhiteText, to_string(_TimeSurvived));
+	mGameCombo.initGuiElementWithText(725, 15, mUI_SIZE, mWhiteText, to_string(_ComboCount));
+	mGameScore.initGuiElementWithText(740, 30, mUI_SIZE, mWhiteText, to_string(_Score));
+	mGameTime.initGuiElementWithText(740, 5, mUI_SIZE, mWhiteText, to_string(_TimeSurvived));
+//	mGameFragmentsCollected.initGuiElementWithText(740, 45, mUI_SIZE, mWhiteText, ""to_string(_NumFragments));
 
 	//LOSE SCREEN UI
 	mLoseText.initGuiElementWithText(200, 75, mUI_SIZE, mWhiteText, "You've Been Caught");
@@ -478,6 +492,8 @@ void Game::cleanupGame()
 	delete mGameUI;
 	mGameUI = NULL;
 
+
+	mColliderCollection.clear();
 	mBufferManager.clearManager();
 	mSystem.cleanupSystem();
 	EventSystem::cleanupInstance();
@@ -610,6 +626,36 @@ void Game::endCombo()
 	mGuiManagerGame.getGuiObject("combo")->setTextColor(mWhiteText);
 }
 
+void Game::resetGameState()
+{
+	//reset enemies and bullets
+	initEnemies();
+	initFragments();
+
+	mBulletManager.resetPool();
+	mEnemyBulletManager.resetPool();
+
+	//reset player
+	mPlayer.getAnimation()->setSpriteIndex(0);
+	mPlayer.setVisible(true); 
+	mPlayer.shouldAnimate(false);
+	mPlayer.setDown(false);
+	mPlayer.setUp(false);
+	mPlayer.setLeft(false);
+	mPlayer.setRight(false);
+	mPlayer.setLoc(450, 200);
+
+	//reset gameplay data
+	_ComboCount = 0;
+	_Score = 0;
+	_NumFragments = 0;
+	dtTime = 0;
+
+	delete survivalTimer;
+	survivalTimer = new Timer;
+	survivalTimer->start();
+}
+
 void Game::render()
 {
 	//draw scene background
@@ -684,15 +730,8 @@ void Game::handleEvent(const Event& theEvent)
 		{
 			if (mGuiManagerLose.getButtonEventPressed(NEW_GAME))
 			{
-				//restart game & set scene to game
-				
-				//initEnemies();
-				//loop thru all enemies. make them visible and randomize their locations again
-
-				//mPlayer.setVisible(true);
-				//mPlayer.setLastLife(false);
-
-				//mSceneManager.setCurrentScene(SC_GAME);
+				resetGameState();
+				mSceneManager.setCurrentScene(SC_GAME);
 			}
 			else if (mGuiManagerLose.getButtonEventPressed(RETURN_MAIN))
 			{
@@ -704,7 +743,8 @@ void Game::handleEvent(const Event& theEvent)
 			if (mGuiManagerWin.getButtonEventPressed(NEW_GAME))
 			{
 				//restart game & set scene to game
-				
+				resetGameState();
+				mSceneManager.setCurrentScene(SC_GAME);
 			}
 			else if (mGuiManagerWin.getButtonEventPressed(RETURN_MAIN))
 			{

@@ -93,6 +93,10 @@ void MountainManager::createAndAddEntity(EntityId key, float x, float y, Animati
 	Mountain *newEntity = new Mountain;
 
 	newEntity->setAnimation(anim);
+	newEntity->shouldAnimate(false);
+	newEntity->getAnimation()->setLooping(false);
+
+
 	newEntity->setLoc(x, y);
 
 	newEntity->setCollider("mountain");

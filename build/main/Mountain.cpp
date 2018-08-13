@@ -62,6 +62,7 @@ void Mountain::ai(Player *playerObj)
 {
 	if (currentState == IDLE)
 	{
+		mAnim.setSpriteIndex(0);
 		mSpeed = 2.0f;
 		if (hasLineOfSight(playerObj))
 		{
@@ -76,7 +77,9 @@ void Mountain::ai(Player *playerObj)
 	}
 	else if (currentState == ALERT)
 	{
-		mSpeed = 3.0f;
+		mSpeed = 2.5f;
+		mAnim.setSpriteIndex(1);
+
 		if (hasLineOfSight(playerObj)) // has line of sight
 		{
 			rotateToPlayer(playerObj->getX(), playerObj->getY());

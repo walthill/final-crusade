@@ -8,6 +8,7 @@ class Bullet : public Entity
 {
 	private:
 		const int DELETE_BOUNDS = 24;
+		const float KNOCKBACK_VALUE = 2.5f;
 		const string PLAYER_BULLET_TAG = "stdBullet";
 		const string ENEMY_BULLET_TAG = "enemyBullet";
 		

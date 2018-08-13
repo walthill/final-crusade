@@ -90,7 +90,7 @@ bool Bullet::checkState(vector<Collider*> colliderList, int sizeOfBulletPool)//C
 
 								freeBullet();
 								//knockback
-								b.getEntity()->setLoc(b.getEntity()->getX() + (mState.mLive.mXVelocity*2.0f), b.getEntity()->getY());
+								b.getEntity()->setLoc(b.getEntity()->getX() + (mState.mLive.mXVelocity*KNOCKBACK_VALUE), b.getEntity()->getY());
 								break;
 							}
 							//ded
@@ -111,7 +111,7 @@ bool Bullet::checkState(vector<Collider*> colliderList, int sizeOfBulletPool)//C
 							{
 								freeBullet();
 								//knockback - velocity will be negative
-								b.getEntity()->setLoc(b.getEntity()->getX() + (mState.mLive.mXVelocity*2.0f), b.getEntity()->getY());
+								b.getEntity()->setLoc(b.getEntity()->getX() + (mState.mLive.mXVelocity*KNOCKBACK_VALUE), b.getEntity()->getY());
 								break;
 							}//ded
 							else if (mThisCollider.getX() > b.getX() && mThisCollider.getX() <= b.getX() + 4)
@@ -131,7 +131,7 @@ bool Bullet::checkState(vector<Collider*> colliderList, int sizeOfBulletPool)//C
 							{
 								freeBullet();
 								//knockback
-								b.getEntity()->setLoc(b.getEntity()->getX(), b.getEntity()->getY() + (mState.mLive.mYVelocity*2.0f));
+								b.getEntity()->setLoc(b.getEntity()->getX(), b.getEntity()->getY() + (mState.mLive.mYVelocity*KNOCKBACK_VALUE));
 								break;
 							}
 							//ded
@@ -151,7 +151,7 @@ bool Bullet::checkState(vector<Collider*> colliderList, int sizeOfBulletPool)//C
 							{
 								freeBullet();
 								//knockback- velocity will be negative
-								b.getEntity()->setLoc(b.getEntity()->getX(), b.getEntity()->getY() + (mState.mLive.mYVelocity*2.0f));
+								b.getEntity()->setLoc(b.getEntity()->getX(), b.getEntity()->getY() + (mState.mLive.mYVelocity*KNOCKBACK_VALUE));
 								break;
 							}
 							//ded
@@ -172,7 +172,7 @@ bool Bullet::checkState(vector<Collider*> colliderList, int sizeOfBulletPool)//C
 			b = *colliderList.back(); //NOTE: last index should be player
 			if (checkCollision(mThisCollider, b))
 			{
-				freeBullet();
+					freeBullet();
 			}
 	}
 

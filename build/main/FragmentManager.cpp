@@ -65,6 +65,9 @@ void FragmentManager::createAndAddEntity(EntityId key, int x, int y, Animation a
 	Fragment *newEntity = new Fragment;
 
 	newEntity->setAnimation(anim);
+	newEntity->shouldAnimate(true);
+	newEntity->getAnimation()->setLooping(true);
+	
 	newEntity->setLoc(x, y);
 
 	newEntity->setCollider(anim.getCurrentSprite().getSpriteWidth()+32, anim.getCurrentSprite().getSpriteHeight()+32, "fragment");

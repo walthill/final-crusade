@@ -14,6 +14,9 @@ void BulletPool::initBulletData(int poolSize, int bulletSpeed, Animation bulletS
 								int levelW, int levelH, string colliderTag)
 {
 	mPoolSize = poolSize;
+
+	delete[] bullets;
+	bullets = nullptr;
 	bullets = new Bullet[mPoolSize];
 
 	for (int i = 0; i < mPoolSize; i++)

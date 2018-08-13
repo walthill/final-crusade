@@ -20,14 +20,14 @@ class Player : public Entity
 
 		//collision vars
 		bool lastLife, hasRecovered = false, collisionDetected = false;
-		double dtTime;
+		
 		int invulnerableTime;
 		
 		//gameplay vars
 		const int FRAGMENTS_TO_COLLECT = 4;
 		int numFragments;
 
-	public:
+	public:double dtTime;
 		Player();
 		~Player();
 

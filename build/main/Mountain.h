@@ -11,7 +11,7 @@ class Mountain : public Entity
 		int currentState = IDLE;
 	
 		const int HALF_FOV = 50;
-		const int LINE_SIGHT_LENGTH = 150;
+		const int LINE_SIGHT_LENGTH = 110;
 		const float PI = 3.1416f, DEGREE_CONVERSION_VALUE = 180.0000f;
 		int mMapXBound = 1600, mMapYBound = 1200;
 		
