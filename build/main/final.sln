@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeanLib", "..\..\shared\DeanLib\DeanLib.vcxproj", "{DB900E08-5331-46D6-B450-6775A2C7C856}"
 EndProject
@@ -19,6 +19,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleIni", "simpleini-4.17\SimpleIni.vcxproj", "{C23240A6-AA9D-4827-AF06-C98E97CA6DFB}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Unicode|ARM = Debug Unicode|ARM
 		Debug Unicode|x64 = Debug Unicode|x64

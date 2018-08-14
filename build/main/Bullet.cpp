@@ -57,7 +57,7 @@ bool Bullet::checkState(vector<Collider*> colliderList, int sizeOfBulletPool)//C
 		{
 			b = *colliderList[i];
 
-			if (checkCollision(mThisCollider, b))
+			if (checkCollision(mThisCollider, b)) //TODO(low): use pointers for this function?
 			{
 				if (mThisCollider.getTag() == PLAYER_BULLET_TAG)
 				{

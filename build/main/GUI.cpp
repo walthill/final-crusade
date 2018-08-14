@@ -28,27 +28,27 @@ void Gui::initGuiElement(/*string tag, */int x, int y)
 }
 
 
-void Gui::addGuiText(int fontSize, Color fontColor, string msg)
+void Gui::addGuiText(int fontSize, string fontFilename, Color fontColor, string msg)
 {
-	mTextUI.mFontObj = new Font(mLOCAL_ASSET_PATH + mCOUR_FONT, fontSize);
+	mTextUI.mFontObj = new Font(mLOCAL_ASSET_PATH + fontFilename, fontSize);
 	mTextUI.mFontColor = fontColor;
 	mTextUI.mText = msg;
 }
 
 
-void Gui::initGuiElementWithText(/*string tag, */int x, int y, int fontSize, Color fontColor, string msg)
+void Gui::initGuiElementWithText(/*string tag, */int x, int y, int fontSize, string fontFilename, Color fontColor, string msg)
 {
 	mRenderX = x;
 	mRenderY = y;
 	//mTag = tag;
 
-	mTextUI.mFontObj = new Font(mLOCAL_ASSET_PATH + mCOUR_FONT, fontSize);
+	mTextUI.mFontObj = new Font(mLOCAL_ASSET_PATH + fontFilename, fontSize);
 	mTextUI.mFontColor = fontColor;
 	mTextUI.mText = msg;
 }
 
 void Gui::addGuiButton(GraphicsBuffer buttonBuffer, EventType type, int sheetRows, int sheetCols,
-					   int spriteW, int spriteH, int fontSize, Color fontColor, string msg)
+					   int spriteW, int spriteH, int fontSize, string fontFilename, Color fontColor, string msg)
 {
 	mHasButton = true;
 	mButtonUI.mButtonType = type;
@@ -57,7 +57,7 @@ void Gui::addGuiButton(GraphicsBuffer buttonBuffer, EventType type, int sheetRow
 	mButtonUI.mButtonTextX = mRenderX + 10;
 	mButtonUI.mButtonTextY = mRenderY + 10;
 
-	addGuiText(fontSize, fontColor, msg);
+	addGuiText(fontSize, fontFilename, fontColor, msg);
 
 	mButtonUI.mButtonBuffer = buttonBuffer;
 

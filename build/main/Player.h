@@ -20,7 +20,8 @@ class Player : public Entity
 
 		//collision vars
 		bool lastLife, hasRecovered = false, collisionDetected = false;
-		
+		Collider b;
+
 		int invulnerableTime;
 		
 		//gameplay vars

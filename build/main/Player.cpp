@@ -59,7 +59,7 @@ void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeE
 
 	for (unsigned int i = 0; i < colliderList.size(); i++)
 	{
-		Collider b = *colliderList[i];
+		b = *colliderList[i];
 
 		if (checkCollision(mThisCollider, b) && !collisionDetected)
 		{

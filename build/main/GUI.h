@@ -13,7 +13,7 @@ class Gui : public Trackable
 {
 	private:
 		const string mLOCAL_ASSET_PATH = "assets\\"; 
-		const string mCOUR_FONT = "cour.ttf"; //see game.h variables
+	//	const string mCOUR_FONT = "cour.ttf"; //see game.h variables
 
 		int mRenderX, mRenderY;
 		//string mTag;
@@ -44,18 +44,18 @@ class Gui : public Trackable
 		void initGuiElement(/*string tag,*/ int x, int y);
 
 		//Sets text for GUI element
-		void addGuiText(int fontSize, Color fontColor, string msg);
+		void addGuiText(int fontSize, string fontFilename, Color fontColor, string msg);
 		
 		//Inits GUI element and creates text
 		void initGuiElementWithText(/*string tag,*/ int x, int y, 
-								   int fontSize, Color fontColor, string msg);
+								   int fontSize, string fontFilename, Color fontColor, string msg);
 
 
 		//Sets button w/ text for gui element
 		void addGuiButton(GraphicsBuffer buttonBuffer, EventType type, 
 			              int sheetRows, int sheetCols, 
 						  int spriteW, int spriteH, int fontSize, 
-						  Color fontColor, string msg);
+						  string fontFilename, Color fontColor, string msg);
 
 		//used for scores/timers etc
 		void updateText(double timeElapsed, string strUpdate);

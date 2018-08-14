@@ -52,11 +52,14 @@ class Game : EventListener
 		
 		SceneManager mSceneManager;
 		
+		Sound mButtonMove, mButtonSelect, mPlayerShoot, mEnemyShoot, 
+			  mPlayerHit, mEnemyHit, mMountainBlock,
+			  mMenuMusic, mGameMusic;
 
-		Gui mFpscounter, mLoseRetry, mLoseQuit, mLoseText,
-			mWinTitle, mWinPlayAgain, mWinQuit,
-			mMainStart, mMainQuit, mMainTitle,
-			mGameScore, mGameCombo, mGameTime;
+		Gui mFpscounter, mLoseRetry, mLoseQuit, mLoseText, mPauseText,
+			mWinTitle, mWinPlayAgain, mWinQuit, mPausePlay,
+			mMainStart, mMainQuit, mMainTitle, mPauseQuit,
+			mGameScore, mGameCombo, mGameTime, mGameFragmentsCollected;
 
 		//Visual Assets
 		GraphicsBuffer mButtonBuffer; // ui button
@@ -70,7 +73,7 @@ class Game : EventListener
 				  mRoninAnim, mMountainAnim;
 
 		const int mFONT_SIZE = 25;
-		const int mUI_SIZE = 20;
+		const int mUI_SIZE = 18;
 		const int mUI_TXT_SIZE = 12;
 		const int mBUTTON_SPRSHEET_ROWS = 1, mBUTTON_SPRSHEET_COLS = 2;
 		Font *mFont, *mGameUI;
@@ -110,6 +113,7 @@ class Game : EventListener
 		double dtTime;	int sec = 0, millisec, min = 0;
 		const int mCOMBO_WINDOW = 2500;
 		const int mCOMBO_NUM_TO_REGEN = 3;
+		int mCollectedPercentage;
 
 		//Enemy Manager Tags
 		string mRoninManTag = "r";
@@ -166,12 +170,13 @@ class Game : EventListener
 		bool takeScreenshot;
 		
 		double mFPS;
-		bool mIsRunning;
+		bool mIsRunning, firstPlay;
 	public:
 
 		//gloabl vars
 		int _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight;
-		int _Score, _ComboCount, _TimeSurvived, _NumFragments, _FragmentsToCollect;
+		int _Score, _ComboCount, _TimeSurvived;
+		double _NumFragments, _FragmentsToCollect;
 		bool _CanCombo;
 
 		//Static class functions

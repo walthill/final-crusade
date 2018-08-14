@@ -11,7 +11,7 @@ Font::Font(string filename, int size)
 {
 	mFontSize = size;
 
-	TTF_Font *fnt = TTF_OpenFont("assets\\cour.ttf", mFontSize);
+	TTF_Font *fnt = TTF_OpenFont(filename.c_str(), mFontSize);
 	mFont = fnt;
 	fnt = NULL;
 }

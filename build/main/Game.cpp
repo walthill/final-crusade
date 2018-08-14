@@ -2,11 +2,13 @@
 
 Game* Game::mGameInstance = NULL;
 
-//TODO(high): ui for fragment collection - percetage?
 
 //TODO: add in localization code - eng & fr
 
+//AUDIO - enemy hit, player hit, player shoot, enemy shoot, enemy block
 //TODO: ememy death audio
+
+//TODO(low): stats & options
 
 //creating exe
 //https://discourse.libsdl.org/t/creating-an-easily-distributable-executable-file/24413
@@ -51,16 +53,18 @@ void Game::displayLoadingScreen()
 	mLoadingSprite.initSprite(&mLoadingScreen, 0, 0, mLoadingScreen.getBitmapWidth(),
 							  mLoadingScreen.getBitmapHeight());
 
-	//mSystem.getGraphicsSystem()->draw(0, 0, mLoadingSprite, 1.0f, 1.0f);
-	//mSystem.getGraphicsSystem()->flip();
+	mSystem.getGraphicsSystem()->draw(0, 0, mLoadingSprite, 1.0f, 1.0f);
+	mSystem.getGraphicsSystem()->flip();
+
+	Sleep(2000);
 }
 
 bool Game::initGame()
 {
 	PerformanceTracker* pPerformanceTracker = new PerformanceTracker;
 	pPerformanceTracker->startTracking(mINIT_TRACKER_NAME);
-	
-	gMemoryTracker.reportAllocations(cout);
+
+	firstPlay = true;
 
 	loadGameData();
 	loadLocalization();
@@ -136,18 +140,17 @@ void Game::loadGameData()
 	const char * iniHeight = ini.GetValue("VIEW", "windowH", "default");
 	const char * iniLevelWidth = ini.GetValue("VIEW", "levelW", "default");
 	const char * iniLevelHeight = ini.GetValue("VIEW", "levelH", "default");
-	const char * iniPlayerSpriteSize = ini.GetValue("VIEW", "pTileSize", "default");
-	const char * iniRoninSpriteSize = ini.GetValue("VIEW", "rTileSize", "default");
-	const char * iniMountainSpriteSize = ini.GetValue("VIEW", "mTileSize", "default");
-	const char * iniBulletSpriteSize = ini.GetValue("VIEW", "bTileSize", "default");
-	const char * iniFragmentSpriteSize = ini.GetValue("VIEW", "fTileSize", "default");
-	const char * iniHiveSpriteSize = ini.GetValue("VIEW", "hTileSize", "default");
-	const char * iniEnemyBulletSpriteSize = ini.GetValue("VIEW", "ebTileSize", "default");
+	const char * iniPlayerSpriteSize = ini.GetValue("VIEW", "playerTileSize", "default");
+	const char * iniRoninSpriteSize = ini.GetValue("VIEW", "roninTileSize", "default");
+	const char * iniMountainSpriteSize = ini.GetValue("VIEW", "mtnTileSize", "default");
+	const char * iniBulletSpriteSize = ini.GetValue("VIEW", "bulletTileSize", "default");
+	const char * iniFragmentSpriteSize = ini.GetValue("VIEW", "fragmentTileSize", "default");
+	const char * iniHiveSpriteSize = ini.GetValue("VIEW", "hiveTileSize", "default");
+	const char * iniEnemyBulletSpriteSize = ini.GetValue("VIEW", "enemybulletTileSize", "default");
 	
 	const char * iniRoninScoreValue = ini.GetValue("STATE", "roninScoreVal", "default");
 	const char * iniMountainScoreValue = ini.GetValue("STATE", "mtnScoreVal", "default");
 	const char * iniHiveScoreValue = ini.GetValue("STATE", "hiveScoreVal", "default");
-
 
 	const char * iniNumEnemies = ini.GetValue("LEVELDATA", "numEnemies", "defualt");
 	const char * iniNumMountain = ini.GetValue("LEVELDATA", "numMt", "defualt");
@@ -356,45 +359,56 @@ void Game::initEnemies()
 
 void Game::initUI()
 {
+
+
 	mWhiteText.setColor(255);
 	mButtonBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mButtonAsset);
 
 	//FPS UI
 	mFpscounter.initGuiElement(10, 10);
-	mFpscounter.addGuiText(12, mWhiteText, to_string(mFPS));
+	mFpscounter.addGuiText(12, mFontAsset, mWhiteText, to_string(mFPS));
 
 	//MAIN MENU UI
-	mMainTitle.initGuiElementWithText(345, 80, mFONT_SIZE, mWhiteText, mGAME_TITLE);
+	mMainTitle.initGuiElementWithText(_DisplayWidth/2 - 75, _DisplayHeight/8, mFONT_SIZE, mFontAsset, mWhiteText, mGAME_TITLE);
 
-	mMainStart.initGuiElement(270, 115);
-	mMainStart.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mWhiteText, "Play");
+	mMainStart.initGuiElement(_DisplayWidth / 2 - 75, 155);
+	mMainStart.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Play");
 
-	mMainQuit.initGuiElement(270, 155);
-	mMainQuit.addGuiButton(mButtonBuffer, QUIT, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mWhiteText, "Quit");
+	mMainQuit.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mMainQuit.addGuiButton(mButtonBuffer, QUIT, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Quit");
 
 	//IN GAME UI
-	mGameCombo.initGuiElementWithText(725, 15, mUI_SIZE, mWhiteText, to_string(_ComboCount));
-	mGameScore.initGuiElementWithText(740, 30, mUI_SIZE, mWhiteText, to_string(_Score));
-	mGameTime.initGuiElementWithText(740, 5, mUI_SIZE, mWhiteText, to_string(_TimeSurvived));
-//	mGameFragmentsCollected.initGuiElementWithText(740, 45, mUI_SIZE, mWhiteText, ""to_string(_NumFragments));
+	mGameCombo.initGuiElementWithText(550, 5, mUI_SIZE, mFontAsset, mWhiteText, to_string(_ComboCount));
+	mGameScore.initGuiElementWithText(738, 30, mUI_SIZE, mFontAsset, mWhiteText, to_string(_Score));
+	mGameTime.initGuiElementWithText(738, 5, mUI_SIZE, mFontAsset, mWhiteText, to_string(_TimeSurvived));
+	mGameFragmentsCollected.initGuiElementWithText(550, 30, mUI_SIZE, mFontAsset, mWhiteText, "File %: " + to_string(_NumFragments/_FragmentsToCollect));
+
+	//PAUSE SCREEN UI
+	mPauseText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, "PAUSED");
+
+	mPausePlay.initGuiElement(_DisplayWidth / 2 - 75, 155);
+	mPausePlay.addGuiButton(mButtonBuffer, RESUME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Resume");
+	
+	mPauseQuit.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mPauseQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Return to Main Menu");
 
 	//LOSE SCREEN UI
-	mLoseText.initGuiElementWithText(200, 75, mUI_SIZE, mWhiteText, "You've Been Caught");
+	mLoseText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, "You've Been Caught");
 
-	mLoseRetry.initGuiElement(270, 115);
-	mLoseRetry.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mWhiteText, "Retry");
+	mLoseRetry.initGuiElement(_DisplayWidth / 2 - 75, 155);
+	mLoseRetry.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Retry");
 
-	mLoseQuit.initGuiElement(270, 155);
-	mLoseQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mWhiteText, "Return to Main Menu");
+	mLoseQuit.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mLoseQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Return to Main Menu");
 
 	//WIN SCREEN UI
-	mWinTitle.initGuiElementWithText(200, 75, mUI_SIZE, mWhiteText, "Success: Data Stolen!");
+	mWinTitle.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, "Success: Data Stolen!");
 
-	mWinPlayAgain.initGuiElement(270, 115);
-	mWinPlayAgain.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mWhiteText, "Play Again");
+	mWinPlayAgain.initGuiElement(_DisplayWidth / 2 - 75, 155);
+	mWinPlayAgain.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset,   mWhiteText, "Play Again");
 
-	mWinQuit.initGuiElement(270, 155);
-	mWinQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mWhiteText, "Return to Main Menu");
+	mWinQuit.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mWinQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Return to Main Menu");
 
 
 	/*** add ui objects to manager ***/
@@ -411,7 +425,15 @@ void Game::initUI()
 	mGuiManagerGame.addToManager("combo", &mGameCombo);
 	mGuiManagerGame.addToManager("score", &mGameScore);
 	mGuiManagerGame.addToManager("time", &mGameTime);
+	mGuiManagerGame.addToManager("fragments", &mGameFragmentsCollected);
 	mGuiManagerGame.addToManager("fps", &mFpscounter);
+
+	//PAUSE UI MANAGER
+	mGuiManagerPause.setNumButtons(2);
+	mGuiManagerPause.addToManager("1", &mPausePlay);
+	mGuiManagerPause.addToManager("2", &mPauseQuit);
+	mGuiManagerPause.addToManager("text", &mPauseText);
+	mGuiManagerPause.addToManager("fps", &mFpscounter);
 
 	//LOSE SCREEN UI MANAGER
 	mGuiManagerLose.setNumButtons(2);
@@ -436,12 +458,14 @@ void Game::loadScenes()
 	mGameScene.initScene(SC_GAME, &mGuiManagerGame, &mGameScreenSprite);
 	mLoseScene.initScene(SC_LOSE, &mGuiManagerLose, &mLoseScreenSprite);
 	mWinScene.initScene(SC_WIN, &mGuiManagerWin, &mWinScreenSprite);
+	mPauseScene.initScene(SC_PAUSE, &mGuiManagerPause, &mGameScreenSprite);
 
 	//add to manager
 	mSceneManager.addScene("a", &mMainMenuScene);
 	mSceneManager.addScene("b", &mGameScene);
 	mSceneManager.addScene("c", &mLoseScene);
 	mSceneManager.addScene("d", &mWinScene);
+	mSceneManager.addScene("e", &mPauseScene);
 
 	mSceneManager.setCurrentScene(SC_MAIN);
 
@@ -451,6 +475,8 @@ void Game::loadScenes()
 
 void Game::initAudio()
 {
+	//mPlayerShoot.initSound
+	//mSceneManager.addAudio();
 }
 #pragma endregion
 
@@ -540,7 +566,7 @@ void Game::update(double timeElapsed)
 
 	//update displays
 
-	mSceneManager.update(timeElapsed, _ComboCount, _Score, min, sec, mFPS);
+	mSceneManager.update(timeElapsed, _ComboCount, _Score, mCollectedPercentage, min, sec, mFPS);
 	
 	if (mSceneManager.getCurrentScene() == SC_GAME)
 	{
@@ -556,7 +582,8 @@ void Game::update(double timeElapsed)
 		
 		mPlayer.update(timeElapsed, mColliderCollection, mouseX, mouseY,
 					   mGameView.getCamera()->getX(), mGameView.getCamera()->getY());
-		
+		mCollectedPercentage = 100*(_NumFragments / _FragmentsToCollect);
+
 		//check lose condition
 		if (!mPlayer.isVisible())
 			mSceneManager.setCurrentScene(SC_LOSE);
@@ -661,7 +688,7 @@ void Game::render()
 	//draw scene background
 	mSceneManager.draw(mSystem.getGraphicsSystem());
 
-	if (mSceneManager.getCurrentScene() == SC_GAME)
+	if (mSceneManager.getCurrentScene() == SC_GAME || mSceneManager.getCurrentScene() == SC_PAUSE)
 	{
 		camX = mGameView.getCamera()->getX();
 		camY = mGameView.getCamera()->getY();
@@ -695,11 +722,11 @@ void Game::handleEvent(const Event& theEvent)
 	switch (mEventType)
 	{
 	case PAUSE_GAME:
-		/*if (mSceneManager.getCurrentScene() == SC_GAME)
+		if (mSceneManager.getCurrentScene() == SC_GAME)
 			mSceneManager.setCurrentScene(SC_PAUSE);
 		else if(mSceneManager.getCurrentScene() == SC_PAUSE)
-			mSceneManager.setCurrentScene(SC_GAME);*/
-		mIsRunning = false; //temp
+			mSceneManager.setCurrentScene(SC_GAME);
+		//mIsRunning = false; //temp
 		break;
 
 	case BUTTON_SELECT:
@@ -708,10 +735,16 @@ void Game::handleEvent(const Event& theEvent)
 		{
 			if (mGuiManagerMain.getButtonEventPressed(NEW_GAME))
 			{
-				mSceneManager.setCurrentScene(SC_GAME);
-				
-				survivalTimer = new Timer;
-				survivalTimer->start();
+				if(!firstPlay)
+					resetGameState();
+				else
+				{
+					firstPlay = false;
+					survivalTimer = new Timer;
+					survivalTimer->start();
+				}
+
+				mSceneManager.setCurrentScene(SC_GAME);				
 			}
 			else if (mGuiManagerMain.getButtonEventPressed(QUIT))
 			{
@@ -724,7 +757,14 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
 		{
-
+			if (mGuiManagerPause.getButtonEventPressed(RESUME))
+			{
+				mSceneManager.setCurrentScene(SC_GAME);
+			}
+			else if (mGuiManagerPause.getButtonEventPressed(RETURN_MAIN))
+			{
+				mSceneManager.setCurrentScene(SC_MAIN);
+			}
 		}
 		else if (mSceneManager.getCurrentScene() == SC_LOSE)
 		{
@@ -774,7 +814,6 @@ void Game::handleEvent(const Event& theEvent)
 		}
 
 		//TODO: shooting audio
-		//cout << "SHOOT SHOOT SHOOP" << endl;
 		break;
 	case ROTATION:
 	{
@@ -803,8 +842,7 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
 		{
-			
-
+			mSceneManager.moveCursorDown(SC_PAUSE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_LOSE)
 		{			
@@ -831,7 +869,7 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
 		{
-			
+			mSceneManager.moveCursorUp(SC_PAUSE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_LOSE)
 		{

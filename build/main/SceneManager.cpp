@@ -3,6 +3,7 @@
 
 SceneManager::SceneManager()
 {
+	//setprecision(4);
 }
 
 SceneManager::~SceneManager()
@@ -101,7 +102,7 @@ void SceneManager::clearManager()
 }
 
 
-void SceneManager::update(double timeElapsed, int &combo, int &score, int const &minutes, int const &timeSurvived, double &fps)
+void SceneManager::update(double timeElapsed, int &combo, int &score, int &fragmentsCollectedPercentage, int const &minutes, int const &timeSurvived, double &fps)
 {
 	map<SceneID, Scene*>::iterator iter;
 
@@ -122,8 +123,9 @@ void SceneManager::update(double timeElapsed, int &combo, int &score, int const 
 				else
 					timeStr = ":";
 
+				iter->second->getGuiManager()->getGuiObject("fragments")->updateText(timeElapsed, "File Stolen %" + to_string(fragmentsCollectedPercentage));
 				iter->second->getGuiManager()->getGuiObject("time")->updateText(timeElapsed, to_string(minutes) + timeStr + to_string(timeSurvived));
-				iter->second->getGuiManager()->getGuiObject("combo")->updateText(timeElapsed, to_string(combo));
+				iter->second->getGuiManager()->getGuiObject("combo")->updateText(timeElapsed, "Combo: " + to_string(combo));
 				iter->second->getGuiManager()->getGuiObject("score")->updateText(timeElapsed, to_string(score));
 				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 			}
