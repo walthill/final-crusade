@@ -2,6 +2,7 @@
 #define SOUND_H
 
 #include <string>
+#include <cassert>
 #include "SDL_mixer.h"
 #include "Trackable.h"
 

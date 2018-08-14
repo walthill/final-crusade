@@ -2,7 +2,7 @@
 
 View::View()
 {
-	originalShakeValue = 2.0f;
+	originalShakeValue = 3.0f;
 	screenShakeIntensity = originalShakeValue;
 }
 

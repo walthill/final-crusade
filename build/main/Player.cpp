@@ -17,8 +17,10 @@ Player::~Player()
 
 }
 
-void Player::init(int xBounds, int yBounds)
+void Player::init(int xBounds, int yBounds, string hitAudioId)
 {
+	playerHit = hitAudioId;
+
 	mXBound = xBounds;
 	mYBound = yBounds;
 }
@@ -69,6 +71,8 @@ void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeE
 				//b.getEntity()->setVisible(false);
 				if (!lastLife) //first hit - send to near death
 				{
+					Game::getInstance()->_Scene->playSfx(playerHit);
+
 					collisionDetected = true;
 					mShouldAnimate = true;
 					mAnim.setLooping(true); //death should go to lose screen    //cout << "ENEMY COLLISION" << endl; //TODO(high): player death
@@ -213,4 +217,10 @@ void Player::setLastLife(bool isLastLife)
 void Player::setCollisionDetected(bool colDetected)
 {
 	collisionDetected = colDetected;
+}
+
+
+bool Player::isCollisionDetected()
+{
+	return collisionDetected;
 }

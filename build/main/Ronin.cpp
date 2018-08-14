@@ -16,8 +16,9 @@ Ronin::Ronin()
 	rotate();
 }
 
-void Ronin::init(int scoreValue)
+void Ronin::init(int scoreValue, string hitAudioId)
 {
+	enemyHit = hitAudioId;
 	mScoreValue = scoreValue;
 
 	mMapXBound = Game::getInstance()->_LevelWidth;
@@ -48,7 +49,7 @@ void Ronin::update(double timeElapsed)
 	}
 	else if(destroyedLastFrame)
 	{
-		cout << "ADD POINTS AND COMBO" << endl;
+		Game::getInstance()->_Scene->playSfx(enemyHit);
 
 		if (Game::getInstance()->_ComboCount > 5)
 			multiplier = 2;

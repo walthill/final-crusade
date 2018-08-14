@@ -17,8 +17,9 @@ Mountain::Mountain()
 	rotate();
 }
 
-void Mountain::init(int scoreValue)
+void Mountain::init(int scoreValue, string hitAudioId)
 {
+	enemyHit = hitAudioId;
 	mScoreValue = scoreValue;
 
  	mMapXBound = Game::getInstance()->_LevelWidth;
@@ -43,6 +44,8 @@ void Mountain::update(double timeElapsed, Player *playerObj)
 	}
 	else if (destroyedLastFrame)
 	{
+		Game::getInstance()->_Scene->playSfx(enemyHit);
+
 		//scoring and combo handling
 		if (Game::getInstance()->_ComboCount > 5)
 			multiplier = 2;

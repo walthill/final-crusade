@@ -7,6 +7,9 @@
 class Hive : public Entity
 {
 	private:
+		string enemyShoot, enemyHit;
+
+
 		enum State { IDLE, ALERT };
 		int mCurrentState;
 
@@ -27,7 +30,7 @@ class Hive : public Entity
 		Hive();
 		~Hive();
 
-		void init(BulletPool* bp, int scoreValue);
+		void init(BulletPool* bp, int scoreValue, string hitAudioId, string shootAudioId);
 
 		void update(double timeElpased, Player *playerObj);
 		bool hasLineOfSight(Player *playerObj);

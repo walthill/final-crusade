@@ -17,8 +17,11 @@ Hive::~Hive()
 }
 
 
-void Hive::init(BulletPool* bp, int scoreValue)
+void Hive::init(BulletPool* bp, int scoreValue, string hitAudioId, string shootAudioId)
 {
+	enemyHit = hitAudioId;
+	enemyShoot = shootAudioId;
+
 	mBulletPool = bp;
 	mScoreValue = scoreValue;
 
@@ -57,6 +60,7 @@ void Hive::update(double timeElapsed, Player *playerObj)
 
 				mBulletPool->fireProjectile(timeElapsed, mBulletSpawnX1, mBulletSpawnY1, mRotation);
 				mBulletPool->fireProjectile(timeElapsed, mBulletSpawnX2, mBulletSpawnY2, mRotation + 180);
+				Game::getInstance()->_Scene->playSfx(enemyShoot);
 			}
 		}
 		else
@@ -71,6 +75,8 @@ void Hive::update(double timeElapsed, Player *playerObj)
 	}
 	else if (destroyedLastFrame)
 	{
+		Game::getInstance()->_Scene->playSfx(enemyHit);
+
 		//scoring and combo handling
 		if (Game::getInstance()->_ComboCount > 5)
 			multiplier = 2;

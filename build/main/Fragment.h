@@ -6,6 +6,8 @@
 class Fragment : public Entity
 {
 	private:
+		string fragmentPickup;
+
 		const float PI = 3.1416f, DEGREE_CONVERSION_VALUE = 180.0000f;
 		const int LINE_SIGHT_LENGTH = 48;
 		bool collisionDetected, lineOfSightTriggered, addPoints;
@@ -16,7 +18,7 @@ class Fragment : public Entity
 		Fragment();
 		~Fragment();
 
-		void initFragment();
+		void init(string pickupAudioId);
 
 		void update(double timeElapsed, Player *playerObj);
 

@@ -13,6 +13,11 @@ Fragment::~Fragment()
 
 }
 
+void Fragment::init(string pickupAudioId)
+{
+	fragmentPickup = pickupAudioId;
+}
+
 void Fragment::update(double timeElapsed, Player *playerObj)
 {
 	if (mIsVisible)
@@ -46,6 +51,7 @@ void Fragment::update(double timeElapsed, Player *playerObj)
 	{
 		if (addPoints)
 		{
+			Game::getInstance()->_Scene->playSfx(fragmentPickup);
 			Game::getInstance()->_NumFragments++; 
 			//play sound
 			addPoints = false;

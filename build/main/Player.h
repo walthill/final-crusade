@@ -7,6 +7,8 @@
 class Player : public Entity
 {
 	private:
+		string playerHit;
+
 		//rotation math vars
 		float dX, dY, angle;
 		const float PI = 3.1416f, DEGREE_CONVERSION_VAL = 180.0000f;
@@ -32,7 +34,7 @@ class Player : public Entity
 		Player();
 		~Player();
 
-		void init(int xBounds, int yBound);
+		void init(int xBounds, int yBound, string hitAudioId);
 
 		void update(double timeElapsed, vector<Collider*> colliderList, int mouseX, int mouseY, int camX, int camY);
 		//void draw(GraphicsSystem *graphicsSystem, int camX, int camY);
@@ -57,9 +59,7 @@ class Player : public Entity
 		bool isLastLife();
 		void setLastLife(bool isLastLife);
 		void setCollisionDetected(bool collisionDetected);
-
-
-
+		bool isCollisionDetected();
 };
 
 #endif //!PLAYER_H

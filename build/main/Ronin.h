@@ -12,6 +12,7 @@ class Ronin : public Entity
 
 
 	private:
+		string enemyHit;
 		const float PI = 3.1416f, DEGREE_CONVERSION_VALUE = 180.0000f;
 		
 		int mMapXBound, mMapYBound;
@@ -26,7 +27,7 @@ class Ronin : public Entity
 		Ronin();
 		~Ronin();
 
-		void init(int scoreValue);
+		void init(int scoreValue, string  hitAudioId);
 		void update(double timeElapsed);
 		
 		void checkBounds();

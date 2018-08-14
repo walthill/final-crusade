@@ -5,8 +5,9 @@ Game* Game::mGameInstance = NULL;
 
 //TODO: add in localization code - eng & fr
 
-//AUDIO - enemy hit, player hit, player shoot, enemy shoot, enemy block
-//TODO: ememy death audio
+//TODO(low - bug fixing) - randomized enemy rotations
+
+//TODO: music
 
 //TODO(low): stats & options
 
@@ -135,6 +136,15 @@ void Game::loadGameData()
 	const char * iniHiveAsset = ini.GetValue("ASSETS", "hive", "default");
 	const char * iniEnemyBulletAsset = ini.GetValue("ASSETS", "enemybullet", "default");
 
+	const char * iniPlayerShootSound = ini.GetValue("ASSETS", "playershoot", "default");
+	const char * iniEnemyShootSound = ini.GetValue("ASSETS", "enemyshoot", "default");
+	const char * iniPlayerHitSound = ini.GetValue("ASSETS", "playerhit", "default");
+	const char * iniEnemyHitSound = ini.GetValue("ASSETS", "enemyhit", "default");
+	const char * iniPlayerDiedSound = ini.GetValue("ASSETS", "playerdied", "default");
+	const char * iniFragmentPickupSound = ini.GetValue("ASSETS", "fragmentpickup", "default");
+	const char * iniButtonMoveSound = ini.GetValue("ASSETS", "buttonmove", "default");
+	const char * iniButtonSelectSound = ini.GetValue("ASSETS", "buttonselect", "default");
+
 
 	const char * iniWidth = ini.GetValue("VIEW", "windowW", "default");
 	const char * iniHeight = ini.GetValue("VIEW", "windowH", "default");
@@ -172,6 +182,15 @@ void Game::loadGameData()
 	mMountainAsset = iniMountainAsset;
 	mFragmentAsset = iniFragmentAsset;
 	mHiveAsset = iniHiveAsset;
+
+	mPlayerHitSound = iniPlayerHitSound;
+	mPlayerShootSound = iniPlayerShootSound;
+	mPlayerLoseSound = iniPlayerDiedSound;
+	mEnemyHitSound = iniEnemyHitSound;
+	mEnemyShootSound = iniEnemyShootSound;
+	mButtonSelectSound = iniButtonSelectSound;
+	mButtonMoveSound = iniButtonMoveSound;
+	mFragmentPickupSound = iniFragmentPickupSound;
 
 	_DisplayWidth = atoi(iniWidth);
 	_DisplayHeight = atoi(iniHeight);
@@ -269,7 +288,7 @@ void Game::initAnimations()
 
 void Game::initPlayer()
 {
-	mPlayer.init(_LevelWidth, _LevelHeight);
+	mPlayer.init(_LevelWidth, _LevelHeight, PLAYER_HIT);
 	mPlayer.setAnimation(mPlayerAnim);
 	mPlayer.shouldAnimate(false);
 	mPlayer.setCollider(PLAYER_COL_TAG);
@@ -296,7 +315,7 @@ void Game::initFragments()
 		randY = randGenY(rd2);
 
 		mFragmentList.createAndAddEntity(mFragmentManTag + to_string(i), randX, randY, mFragmentAnim);
-
+		mFragmentList.getEntity(i)->init(FRAG_PICKUP);
 		//	mColliderCollection.push_back(mFragmentList.getColliderList().at(i));
 	}
 
@@ -322,7 +341,7 @@ void Game::initEnemies()
 		randY = randGenY(rd2);
 
 		mRoninManager.createAndAddEntity(mRoninManTag + to_string(i), randX, randY, mRoninAnim);
-		mRoninManager.getEntity(i)->init(mRoninScoreValue);
+		mRoninManager.getEntity(i)->init(mRoninScoreValue, ENEMY_HIT);
 
 		mColliderCollection.push_back(mRoninManager.getColliderList().at(i));
 	}
@@ -333,7 +352,7 @@ void Game::initEnemies()
 		randY = randGenY(rd2);
 
 		mMountainManager.createAndAddEntity(mMountainManTag + to_string(i), randX, randY, mMountainAnim);
-		mMountainManager.getEntity(i)->init(mMountainScoreValue);
+		mMountainManager.getEntity(i)->init(mMountainScoreValue, ENEMY_HIT);
 
 		mColliderCollection.push_back(mMountainManager.getColliderList().at(i));
 	}
@@ -344,7 +363,7 @@ void Game::initEnemies()
 		randY = randGenY(rd2);
 
 		mHiveManager.createAndAddEntity(mHiveManTag + to_string(i), randX, randY, mHiveAnim);
-		mHiveManager.getEntity(i)->init(&mEnemyBulletManager, mHiveScoreValue);
+		mHiveManager.getEntity(i)->init(&mEnemyBulletManager, mHiveScoreValue, ENEMY_HIT, ENEMY_SHOOT);
 
 		mColliderCollection.push_back(mHiveManager.getColliderList().at(i));
 	} 
@@ -469,14 +488,31 @@ void Game::loadScenes()
 
 	mSceneManager.setCurrentScene(SC_MAIN);
 
+	_Scene = &mSceneManager;
+
 	cout << "~~| Twisting loose screws |~~" << endl;
 	cout << "*******Scenes Loaded*******" << endl;
 }
 
 void Game::initAudio()
 {
-	//mPlayerShoot.initSound
-	//mSceneManager.addAudio();
+	mPlayerShoot.initSound(true, mLOCAL_ASSET_PATH+mPlayerShootSound, false);
+	mPlayerHit.initSound(true, mLOCAL_ASSET_PATH + mPlayerHitSound, false);
+	mEnemyShoot.initSound(true, mLOCAL_ASSET_PATH + mEnemyShootSound, false);
+	mEnemyHit.initSound(true, mLOCAL_ASSET_PATH + mEnemyHitSound, false);
+	mButtonMove.initSound(true, mLOCAL_ASSET_PATH + mButtonMoveSound, false);
+	mButtonSelect.initSound(true, mLOCAL_ASSET_PATH + mButtonSelectSound, false);
+	mFragmentPickup.initSound(true, mLOCAL_ASSET_PATH + mFragmentPickupSound, false);
+	mPlayerLose.initSound(true, mLOCAL_ASSET_PATH + mPlayerLoseSound, false);
+
+	mSceneManager.addAudio(PLAYER_HIT, &mPlayerHit);
+	mSceneManager.addAudio(PLAYER_SHOOT, &mPlayerShoot);
+	mSceneManager.addAudio(ENEMY_HIT, &mEnemyHit);
+	mSceneManager.addAudio(ENEMY_SHOOT, &mEnemyShoot);
+	mSceneManager.addAudio(BUTTON_MOVE, &mButtonMove);
+	mSceneManager.addAudio(BUTTON_SEL, &mButtonSelect);
+	mSceneManager.addAudio(FRAG_PICKUP, &mFragmentPickup);
+	mSceneManager.addAudio(PLAYER_LOSE, &mPlayerLose);
 }
 #pragma endregion
 
@@ -586,8 +622,10 @@ void Game::update(double timeElapsed)
 
 		//check lose condition
 		if (!mPlayer.isVisible())
+		{
+			mSceneManager.playSfx(PLAYER_LOSE);
 			mSceneManager.setCurrentScene(SC_LOSE);
-		
+		}
 		//check win condition
 		if (_NumFragments == _FragmentsToCollect)
 			mSceneManager.setCurrentScene(SC_WIN);
@@ -800,6 +838,7 @@ void Game::handleEvent(const Event& theEvent)
 		{
 
 		}
+		mSceneManager.playSfx(BUTTON_SEL);
 		break;
 	case SHOOT:
 		
@@ -809,11 +848,10 @@ void Game::handleEvent(const Event& theEvent)
 			bulletSpawnY = mPlayer.getY();
 
 			mBulletManager.fireProjectile(mFRAME_TIME_60FPS, bulletSpawnX, bulletSpawnY, mPlayer.getRotation());
+			mSceneManager.playSfx(PLAYER_SHOOT);
 
 			mGameView.toggleScreenShake(true);
 		}
-
-		//TODO: shooting audio
 		break;
 	case ROTATION:
 	{
@@ -834,22 +872,26 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_MAIN)
 		{
+			mSceneManager.playSfx(BUTTON_MOVE);
 			mSceneManager.moveCursorDown(SC_MAIN);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
 		{
-			
+			mSceneManager.playSfx(BUTTON_MOVE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
 		{
+			mSceneManager.playSfx(BUTTON_MOVE);
 			mSceneManager.moveCursorDown(SC_PAUSE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_LOSE)
 		{			
+			mSceneManager.playSfx(BUTTON_MOVE);
 			mSceneManager.moveCursorDown(SC_LOSE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_WIN)
 		{
+			mSceneManager.playSfx(BUTTON_MOVE);
 			mSceneManager.moveCursorDown(SC_WIN);
 		}
 
@@ -862,21 +904,26 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_MAIN)
 		{
+			mSceneManager.playSfx(BUTTON_MOVE);
 			mSceneManager.moveCursorUp(SC_MAIN);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
 		{
+			mSceneManager.playSfx(BUTTON_MOVE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
 		{
+			mSceneManager.playSfx(BUTTON_MOVE);
 			mSceneManager.moveCursorUp(SC_PAUSE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_LOSE)
 		{
+			mSceneManager.playSfx(BUTTON_MOVE);
 			mSceneManager.moveCursorUp(SC_LOSE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_WIN)
 		{
+			mSceneManager.playSfx(BUTTON_MOVE);
 			mSceneManager.moveCursorUp(SC_WIN);
 		}
 		break;

@@ -7,6 +7,8 @@
 class Mountain : public Entity
 {
 	private:
+		string enemyHit;
+
 		enum State { IDLE, ALERT };
 		int currentState = IDLE;
 	
@@ -28,7 +30,7 @@ class Mountain : public Entity
 		Mountain();
 		~Mountain();
 
-		void init(int scoreValue);
+		void init(int scoreValue, string hitAudioId);
 		void update(double timeElapsed, Player *playerObj);
 		void ai(Player *playerObj);
 		bool hasLineOfSight(Player *player);

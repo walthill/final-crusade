@@ -32,6 +32,7 @@ void Sound::initSound(bool isSFX, string audioFile, bool isLooping)
 		{
 			printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
 		}
+		assert(mSfx != NULL);
 	}
 	else
 	{

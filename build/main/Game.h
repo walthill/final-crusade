@@ -52,9 +52,9 @@ class Game : EventListener
 		
 		SceneManager mSceneManager;
 		
-		Sound mButtonMove, mButtonSelect, mPlayerShoot, mEnemyShoot, 
+		Sound mButtonMove, mButtonSelect, mPlayerLose, mPlayerShoot, mEnemyShoot, 
 			  mPlayerHit, mEnemyHit, mMountainBlock,
-			  mMenuMusic, mGameMusic;
+			  mMenuMusic, mGameMusic, mFragmentPickup;
 
 		Gui mFpscounter, mLoseRetry, mLoseQuit, mLoseText, mPauseText,
 			mWinTitle, mWinPlayAgain, mWinQuit, mPausePlay,
@@ -114,6 +114,7 @@ class Game : EventListener
 		const int mCOMBO_WINDOW = 2500;
 		const int mCOMBO_NUM_TO_REGEN = 3;
 		int mCollectedPercentage;
+		bool playerHit;// = true;
 
 		//Enemy Manager Tags
 		string mRoninManTag = "r";
@@ -132,7 +133,9 @@ class Game : EventListener
 
 		AssetString mButtonAsset, mMainBgAsset, mLoseBgAsset, mGameBgAsset, mWinBgAsset,
 		mLoadBgAsset, mFontAsset, mPlayerAsset, mEnemyBulletAsset, mRoninAsset, mBulletAsset,
-		mMountainAsset, mFragmentAsset, mHiveAsset;
+		mMountainAsset, mFragmentAsset, mHiveAsset, mPlayerShootSound, mPlayerHitSound, 
+		mPlayerLoseSound, mEnemyShootSound, mEnemyHitSound, mButtonMoveSound, mButtonSelectSound,
+			mFragmentPickupSound;
 
 		//GraphicsBuffer tags
 		const BufferTag mPLAYER_ID = "player";
@@ -148,6 +151,12 @@ class Game : EventListener
 		const BufferTag mGAME_ID = "game";
 		const BufferTag mFRAGMENT_ID = "fragmnt";
 		const BufferTag mHIVE_ID = "hive";
+
+		//Sound tags
+		const string PLAYER_HIT = "playerhit", PLAYER_SHOOT = "playershoot", 
+					 ENEMY_HIT= "enemyhit", ENEMY_SHOOT = "enemyshoot", 
+					 BUTTON_MOVE = "buttonmove", BUTTON_SEL = "buttonsel", 
+					 FRAG_PICKUP = "fragmentpick", PLAYER_LOSE = "playerdie";
 
 		//UI tags
 		const string mGEN_TAG = "general";
@@ -178,6 +187,7 @@ class Game : EventListener
 		int _Score, _ComboCount, _TimeSurvived;
 		double _NumFragments, _FragmentsToCollect;
 		bool _CanCombo;
+		SceneManager* _Scene;
 
 		//Static class functions
 		static Game* getInstance()
