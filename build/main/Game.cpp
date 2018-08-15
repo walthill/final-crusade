@@ -5,7 +5,7 @@ Game* Game::mGameInstance = NULL;
 
 //TODO: add in localization code - eng & fr
 
-//TODO(low - bug fixing) - randomized enemy rotations
+//TODO: randomized enemy rotations
 
 //TODO: music
 
@@ -41,6 +41,8 @@ void Game::installListeners()
 	EventSystem::getInstance()->addListener(STOP_UP, this);
 	EventSystem::getInstance()->addListener(SHOOT, this);
 	EventSystem::getInstance()->addListener(SCREENCAP, this);
+	EventSystem::getInstance()->addListener(TOGGLE_CONTROLLER, this);
+//	EventSystem::getInstance()->addListener(RSTICK_ROTATION, this);
 
 	cout << "*******Initialized listeners*******" << endl;
 }
@@ -66,6 +68,7 @@ bool Game::initGame()
 	pPerformanceTracker->startTracking(mINIT_TRACKER_NAME);
 
 	firstPlay = true;
+	controllerInUse = false; 
 
 	loadGameData();
 	loadLocalization();
@@ -295,7 +298,7 @@ void Game::initPlayer()
 	mPlayer.setLoc(450, 200);
 
 	//player bullet init
-	mBulletManager.initBulletData(75, 5, mBulletAnim, _LevelWidth, _LevelHeight, BULLET_COL_TAG);
+	mBulletManager.initBulletData(75, 10, mBulletAnim, _LevelWidth, _LevelHeight, BULLET_COL_TAG);
 
 }
 
@@ -397,18 +400,18 @@ void Game::initUI()
 	mMainQuit.addGuiButton(mButtonBuffer, QUIT, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Quit");
 
 	//IN GAME UI
-	mGameCombo.initGuiElementWithText(550, 5, mUI_SIZE, mFontAsset, mWhiteText, to_string(_ComboCount));
-	mGameScore.initGuiElementWithText(738, 30, mUI_SIZE, mFontAsset, mWhiteText, to_string(_Score));
-	mGameTime.initGuiElementWithText(738, 5, mUI_SIZE, mFontAsset, mWhiteText, to_string(_TimeSurvived));
-	mGameFragmentsCollected.initGuiElementWithText(550, 30, mUI_SIZE, mFontAsset, mWhiteText, "File %: " + to_string(_NumFragments/_FragmentsToCollect));
+	mGameCombo.initGuiElementWithText(_DisplayWidth - 250, 5, mUI_SIZE, mFontAsset, mWhiteText, to_string(_ComboCount));
+	mGameScore.initGuiElementWithText(_DisplayWidth - 62, 30, mUI_SIZE, mFontAsset, mWhiteText, to_string(_Score));
+	mGameTime.initGuiElementWithText(_DisplayWidth - 62, 5, mUI_SIZE, mFontAsset, mWhiteText, to_string(_TimeSurvived));
+	mGameFragmentsCollected.initGuiElementWithText(_DisplayWidth - 250, 30, mUI_SIZE, mFontAsset, mWhiteText, "File %: " + to_string(_NumFragments/_FragmentsToCollect));
 
 	//PAUSE SCREEN UI
-	mPauseText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, "PAUSED");
+	mPauseText.initGuiElementWithText(_DisplayWidth / 2 - 35, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, "PAUSED");
 
-	mPausePlay.initGuiElement(_DisplayWidth / 2 - 75, 155);
+	mPausePlay.initGuiElement(_DisplayWidth / 2 - 65, 155);
 	mPausePlay.addGuiButton(mButtonBuffer, RESUME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Resume");
 	
-	mPauseQuit.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mPauseQuit.initGuiElement(_DisplayWidth / 2 - 65, 195);
 	mPauseQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Return to Main Menu");
 
 	//LOSE SCREEN UI
@@ -864,7 +867,26 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		break;
 	}
-	
+	/*case RSTICK_ROTATION:
+	{
+		const MouseEvent& mouseEvent = static_cast<const MouseEvent&>(theEvent);
+
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			mouseX = mouseEvent.getX();
+			mouseY = mouseEvent.getY();
+
+			if (mouseX != 0 && mouseY != 0)
+			{
+			//	float dx = mPlayer.getX()-camX- mouseX;
+				//float dy = mPlayer.getY() +8-camY- mouseY;
+
+				float angle = (atan2(mouseX, -mouseY) * 180.00000f) / 3.14159f;
+				mPlayer.setRotation(angle);
+			}
+		}
+		break;
+	}*/
 	case MOVE_DOWN:
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
@@ -970,6 +992,15 @@ void Game::handleEvent(const Event& theEvent)
 		{
 			mPlayer.setRight(false);
 		}
+		break;
+	case TOGGLE_CONTROLLER:
+		if (!controllerInUse)
+			controllerInUse = true;
+		else
+			controllerInUse = false;
+
+		mPlayer.setControllerConnected(controllerInUse);
+
 		break;
 
 	case SCREENCAP:

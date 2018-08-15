@@ -12,6 +12,7 @@ class Player : public Entity
 		//rotation math vars
 		float dX, dY, angle;
 		const float PI = 3.1416f, DEGREE_CONVERSION_VAL = 180.0000f;
+		const int ANGLE_OFFSET = 90;
 
 		const int ROT_ALIGNMENT = 8;
 
@@ -21,7 +22,8 @@ class Player : public Entity
 		int mXBound, mYBound;
 
 		//collision vars
-		bool lastLife, hasRecovered = false, collisionDetected = false;
+		bool lastLife, hasRecovered = false, collisionDetected = false,
+			mControllerConnected;
 		Collider b;
 
 		int invulnerableTime;
@@ -60,6 +62,9 @@ class Player : public Entity
 		void setLastLife(bool isLastLife);
 		void setCollisionDetected(bool collisionDetected);
 		bool isCollisionDetected();
+
+		void setControllerConnected(bool controllerConnected);
+		bool isControllerConnected();
 };
 
 #endif //!PLAYER_H

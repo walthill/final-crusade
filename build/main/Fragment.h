@@ -10,6 +10,7 @@ class Fragment : public Entity
 
 		const float PI = 3.1416f, DEGREE_CONVERSION_VALUE = 180.0000f;
 		const int LINE_SIGHT_LENGTH = 48;
+		const float SPEED_TOWARDS_PLAYER = 7.0f;
 		bool collisionDetected, lineOfSightTriggered, addPoints;
 
 		float direction, dx, dy, angle, xDistance, yDistance,

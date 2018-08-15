@@ -36,23 +36,23 @@ void Entity::update(double timeElapsed)
 	}
 }
 
-bool Entity::checkCollision(Collider a, Collider b)
+bool Entity::checkCollision(Collider *a, Collider *b)
 {
 	assert(mHasCollider); //you're checking for collisions w/o a collider
 
-	if (b.getEntity()->isVisible())
+	if (b->getEntity()->isVisible())
 	{
 		//calculate sides of a
-		mLeftA = a.getX();
-		mRightA = mLeftA + a.getW();
-		mTopA = a.getY();
-		mBottomA = mTopA + a.getH();
+		mLeftA = a->getX();
+		mRightA = mLeftA + a->getW();
+		mTopA = a->getY();
+		mBottomA = mTopA + a->getH();
 
 		//calculate sides of b
-		mLeftB = b.getX();
-		mRightB = mLeftB + b.getW();
-		mTopB = b.getY();
-		mBottomB = mTopB + b.getH();
+		mLeftB = b->getX();
+		mRightB = mLeftB + b->getW();
+		mTopB = b->getY();
+		mBottomB = mTopB + b->getH();
 
 		//collision detection
 		if (mBottomA <= mTopB)

@@ -57,7 +57,7 @@ bool Bullet::checkState(vector<Collider*> colliderList, int sizeOfBulletPool)//C
 		{
 			b = *colliderList[i];
 
-			if (checkCollision(mThisCollider, b)) //TODO(low): use pointers for this function?
+			if (checkCollision(&mThisCollider, &b)) //TODO(low): use pointers for this function?
 			{
 				if (mThisCollider.getTag() == PLAYER_BULLET_TAG)
 				{
@@ -65,7 +65,7 @@ bool Bullet::checkState(vector<Collider*> colliderList, int sizeOfBulletPool)//C
 					{
 						freeBullet();
 						b.getEntity()->destroy();
-						break; //TODO:(TESTING) only act on one collision per frame
+						break; //only act on one collision per frame
 					}
 					else if (b.getTag() == "mountain")
 					{
@@ -170,7 +170,7 @@ bool Bullet::checkState(vector<Collider*> colliderList, int sizeOfBulletPool)//C
 	else
 	{
 			b = *colliderList.back(); //NOTE: last index should be player
-			if (checkCollision(mThisCollider, b))
+			if (checkCollision(&mThisCollider, &b))
 			{
 					freeBullet();
 			}

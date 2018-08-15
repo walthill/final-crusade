@@ -179,7 +179,7 @@ class Game : EventListener
 		bool takeScreenshot;
 		
 		double mFPS;
-		bool mIsRunning, firstPlay;
+		bool mIsRunning, firstPlay, controllerInUse;
 	public:
 
 		//gloabl vars

@@ -19,6 +19,12 @@ class InputSystem : public Trackable
 
 		SDL_Event mEvent;
 
+		//Analog joystick dead zone
+		int mLeftStickXDeadZone = 6000, mLeftStickYDeadZone = 6000, 
+			mRightStickXDeadZone = 6000, mRightStickYDeadZone = 6000;
+
+		SDL_Joystick *mGameController; //need Left, Right stick, A, RT
+		Sint16 xAxis, yAxis;
 
 		bool mIsKeyDown; //For getting input
 

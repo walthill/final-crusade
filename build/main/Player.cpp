@@ -33,7 +33,14 @@ void Player::update(double timeElapsed, vector<Collider*> colliderList, int mous
 
 		if (timeElapsed > mPlayerFrameSpeed)
 		{
-			rotate(mouseX, mouseY, camX, camY);
+			
+			if (!mControllerConnected)
+				rotate(mouseX, mouseY, camX, camY);
+			else
+			{
+				angle = (atan2(mouseX, -mouseY)*DEGREE_CONVERSION_VAL) / PI;
+				setRotation(angle+ ANGLE_OFFSET);
+			}
 
 			checkBounds();
 			checkForEnemyCollision(colliderList, timeElapsed);
@@ -63,7 +70,7 @@ void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeE
 	{
 		b = *colliderList[i];
 
-		if (checkCollision(mThisCollider, b) && !collisionDetected)
+		if (checkCollision(&mThisCollider, &b) && !collisionDetected)
 		{
 			if (b.getTag() == "ronin" || b.getTag() == "mountain" || 
 				b.getTag() == "enemyBullet" || b.getTag() == "hive")
@@ -157,7 +164,8 @@ void Player::move(int mouseX, int mouseY, int camX, int camY)
 		mYLoc += mVelocity;
 	}
 
-	rotate(mouseX, mouseY, camX, camY);
+	if(!mControllerConnected)
+		rotate(mouseX, mouseY, camX, camY);
 }
 
 
@@ -223,4 +231,9 @@ void Player::setCollisionDetected(bool colDetected)
 bool Player::isCollisionDetected()
 {
 	return collisionDetected;
+}
+
+void Player::setControllerConnected(bool controllerConnected)
+{
+	mControllerConnected = controllerConnected;
 }

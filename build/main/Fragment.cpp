@@ -32,8 +32,8 @@ void Fragment::update(double timeElapsed, Player *playerObj)
 				rotateToPlayer(playerObj->getX(), playerObj->getY()); //item will move to the player
 			}
 
-			mXLoc += mXVelocity * 4.2f;
-			mYLoc += mYVelocity * 4.2f;
+			mXLoc += mXVelocity *SPEED_TOWARDS_PLAYER;
+			mYLoc += mYVelocity * SPEED_TOWARDS_PLAYER;
 
 			if ((mXLoc > playerObj->getX() - 2 && mXLoc < playerObj->getX() + 2)
 				&& (mYLoc > playerObj->getY() - 2 && mYLoc < playerObj->getY() + 2))
@@ -42,7 +42,7 @@ void Fragment::update(double timeElapsed, Player *playerObj)
 				addPoints = true;
 			}
 		}
-		else if (checkCollision(mThisCollider, *playerObj->getCollider()) && !collisionDetected)
+		else if (checkCollision(&mThisCollider, playerObj->getCollider()) && !collisionDetected)
 		{
 			collisionDetected = true;
 		}

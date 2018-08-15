@@ -4,9 +4,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InputTranslator.cpp">
-      <Filter>Source Files\Managers</Filter>
-    </ClCompile>
     <ClCompile Include="GraphicsBufferManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
@@ -67,15 +64,15 @@
     <ClCompile Include="BulletPool.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="InputTranslator.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUIManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsBufferManager.h">
-      <Filter>Header Files\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="InputTranslator.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="SceneManager.h">
@@ -131,6 +128,9 @@
     </ClInclude>
     <ClInclude Include="HiveManager.h">
       <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="InputTranslator.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

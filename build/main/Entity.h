@@ -40,7 +40,7 @@ class Entity : public Trackable
 		//Call animation update
 		void update(double timeElapsed);
 		
-		bool checkCollision(Collider a, Collider b);
+		bool checkCollision(Collider *a, Collider *b);
 
 		//Draw animated sprite
 		void draw(GraphicsSystem *graphicsSystem, int camX, int camY);

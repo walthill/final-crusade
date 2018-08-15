@@ -31,6 +31,8 @@ void InputTranslator::initInputTranslator()
 	EventSystem::getInstance()->addListener(MOUSE_MOTION, this);
 	EventSystem::getInstance()->addListener(LEFT_MOUSE_DOWN, this);
 	EventSystem::getInstance()->addListener(LCTRL, this);
+	EventSystem::getInstance()->addListener(DEVICE_ADDED_OR_REMOVED, this);
+	//EventSystem::getInstance()->addListener(R_STICK_MOTION, this);
 
 }
 
@@ -66,7 +68,20 @@ void InputTranslator::handleEvent(const Event& theEvent)
   			EventSystem::getInstance()->fireEvent(MouseEvent(ROTATION, mouseEvent.getX(), mouseEvent.getY()));
 			break;
 		}
+	/*	case R_STICK_MOTION:
+		{
+			const MouseEvent& mouseEvent = static_cast<const MouseEvent&>(theEvent);
+			//	mTranslatorMouseEvent = mouseEvent;
+			//mTranslatorEvent.setType(ROTATION);
 
+			//mTranslatorEvent.setType(MOVE_UP);
+			EventSystem::getInstance()->fireEvent(MouseEvent(RSTICK_ROTATION, mouseEvent.getX(), mouseEvent.getY()));
+			break;
+		}*/
+		case DEVICE_ADDED_OR_REMOVED:
+			mTranslatorEvent.setType(TOGGLE_CONTROLLER);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+			break;
 		case LEFT_MOUSE_DOWN:
 			mTranslatorEvent.setType(SHOOT);
 			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
