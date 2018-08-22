@@ -148,7 +148,7 @@ void GraphicsSystem::takeScreenshot(GraphicsBuffer *bufferToSave)
 	SDL_RenderReadPixels(mRenderer, NULL, SDL_GetWindowPixelFormat(mDisplay),
 						 saveSurface->pixels, saveSurface->pitch);
 
-	srand(time(0));
+	srand(unsigned(time(0)));
 	string fn = "";
 
 	for (unsigned int i = 0; i < 3; i++)

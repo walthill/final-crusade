@@ -36,6 +36,7 @@ class Game : EventListener
 		static Game* mGameInstance; 
 		const string mGAME_TITLE = "Final Crusade";
 		
+
 		System mSystem; //Gives access to window and graphics
 		GraphicsBufferManager mBufferManager; 
 		InputTranslator mInputTranslator;
@@ -59,16 +60,19 @@ class Game : EventListener
 		Gui mFpscounter, mLoseRetry, mLoseQuit, mLoseText, mPauseText,
 			mWinTitle, mWinPlayAgain, mWinQuit, mPausePlay,
 			mMainStart, mMainQuit, mMainTitle, mPauseQuit,
-			mGameScore, mGameCombo, mGameTime, mGameFragmentsCollected;
+			mGameScore, mGameCombo, mGameTime, mGameFragmentsCollected,
+			mStatsText, mStatsReturn, mMainStats, mMainCredits, mMainOptions,
+			mOptionsText, mOptionsReturn, mCreditsText, mCreditsReturn;
 
 		//Visual Assets
 		GraphicsBuffer mButtonBuffer; // ui button
 		GraphicsBuffer mMenuBuffer, mLoadingScreen, mGameScreenBuffer, mLoseScreenBuffer, 
-					   mWinScreenBuffer; //backgrounds
+					   mWinScreenBuffer, mStatsScreenBuffer, mCreditsScreenBuffer, mOptionsScreenBuffer; //backgrounds
 		GraphicsBuffer mPlayerBuffer, mBulletBuffer, mEnemyBulletBuffer, mFragmentBuffer,
 					   mRoninBuffer, mMountainBuffer, mHiveBuffer;
 
-		Sprite mMenuSprite, mGameScreenSprite, mLoadingSprite, mLoseScreenSprite, mWinScreenSprite;
+		Sprite mMenuSprite, mGameScreenSprite, mLoadingSprite, mLoseScreenSprite, mWinScreenSprite,
+			   mCreditsScreenSprite, mStatsScreenSprite, mOptionsScreenSprite;
 		Animation mPlayerAnim, mBulletAnim, mEnemyBulletAnim, mFragmentAnim, mHiveAnim, 
 				  mRoninAnim, mMountainAnim;
 
@@ -135,7 +139,7 @@ class Game : EventListener
 		mLoadBgAsset, mFontAsset, mPlayerAsset, mEnemyBulletAsset, mRoninAsset, mBulletAsset,
 		mMountainAsset, mFragmentAsset, mHiveAsset, mPlayerShootSound, mPlayerHitSound, 
 		mPlayerLoseSound, mEnemyShootSound, mEnemyHitSound, mButtonMoveSound, mButtonSelectSound,
-			mFragmentPickupSound;
+		mFragmentPickupSound, mStatsBgAsset, mOptionsBgAsset, mCreditsBgAsset;
 
 		//GraphicsBuffer tags
 		const BufferTag mPLAYER_ID = "player";
@@ -143,6 +147,9 @@ class Game : EventListener
 		const BufferTag mMOUNTAIN_ID = "mountain";
 		const BufferTag mLOSE_SCREEN_ID = "lose";
 		const BufferTag mWIN_SCREEN_ID = "win";
+		const BufferTag mOPTION_SCREEN_ID = "options";
+		const BufferTag mSTATS_SCREEN_ID = "stats";
+		const BufferTag mCREDITS_SCREEN_ID = "creds";
 		const BufferTag mBULLET_ID = "bullet";
 		const BufferTag mENEMY_BULLET_ID = "ebullet";
 		const BufferTag mMAINMENU_BUFFER_ID = "spaceblue";
@@ -246,7 +253,7 @@ class Game : EventListener
 		void installListeners();
 
 		bool saveGame();
-		void loadLastSave();
+		//void loadLastSave();
 
 		//Handles input
 		void handleEvent(const Event& theEvent);

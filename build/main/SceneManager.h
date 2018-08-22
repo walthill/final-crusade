@@ -40,6 +40,7 @@ class SceneManager
 
 		//Take in values for UI info
 		void update(double timeElapsed, int &combo, int &score, int &fragmentsCollectedPercentage, int const &minutes, int const &seconds, double &fps);
+		void update(double timeElapsed, int &combo, int &score, int &fragmentsCollectedPercentage, int const &minutes, int const &seconds);
 
 		void draw(GraphicsSystem *graphicsSystem);
 		void drawGUI(GraphicsSystem *graphicsSystem);

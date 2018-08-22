@@ -1,3 +1,10 @@
+/*****************
+
+RELEASE BUILD NOTES 
+	--> To compile Release build, add GraphicsLib.lib to ../Release
+	--> 
+*****************/
+
 #include "Game.h" 
 
 Game* Game::mGameInstance = NULL;
@@ -42,7 +49,6 @@ void Game::installListeners()
 	EventSystem::getInstance()->addListener(SHOOT, this);
 	EventSystem::getInstance()->addListener(SCREENCAP, this);
 	EventSystem::getInstance()->addListener(TOGGLE_CONTROLLER, this);
-//	EventSystem::getInstance()->addListener(RSTICK_ROTATION, this);
 
 	cout << "*******Initialized listeners*******" << endl;
 }
@@ -129,6 +135,10 @@ void Game::loadGameData()
 	const char * iniLoseBG = ini.GetValue("ASSETS", "losebg", "default");
 	const char * iniWinBG = ini.GetValue("ASSETS", "winbg", "default");
 	const char * iniGameBG = ini.GetValue("ASSETS", "gamebg", "default");
+	const char * iniCreditsBG = ini.GetValue("ASSETS", "creditsbg", "default");
+	const char * iniStatsBG = ini.GetValue("ASSETS", "statsbg", "default");
+	const char * iniOptionsBG = ini.GetValue("ASSETS", "optionsbg", "default");
+
 	const char * iniFontAsset = ini.GetValue("ASSETS", "fnt", "default");
 	const char * iniPlayerAsset = ini.GetValue("ASSETS", "player", "default");
 	const char * iniRoninAsset = ini.GetValue("ASSETS", "ronin", "default");
@@ -175,6 +185,9 @@ void Game::loadGameData()
 	mMainBgAsset = iniMainMenuBG;
 	mGameBgAsset = iniGameBG;
 	mLoseBgAsset = iniLoseBG;
+	mStatsBgAsset = iniStatsBG;
+	mOptionsBgAsset = iniOptionsBG;
+	mCreditsBgAsset = iniCreditsBG;
 	mWinBgAsset = iniWinBG;
 	mLoadBgAsset = iniLoadBG;
 	mFontAsset = iniFontAsset;
@@ -250,6 +263,10 @@ void Game::loadBackgroundsAndBuffers()
 	mMenuBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mMainBgAsset);
 	mLoseScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mLoseBgAsset);
 	mWinScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mWinBgAsset);
+	mStatsScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mStatsBgAsset);
+	mCreditsScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mCreditsBgAsset);
+	mOptionsScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mOptionsBgAsset);
+
 
 	//Add buffers to buffer manager
 	mBufferManager.addGraphicsBuffer(mPLAYER_ID, &mPlayerBuffer);
@@ -264,12 +281,19 @@ void Game::loadBackgroundsAndBuffers()
 	mBufferManager.addGraphicsBuffer(mLOSE_SCREEN_ID, &mLoseScreenBuffer);
 	mBufferManager.addGraphicsBuffer(mWIN_SCREEN_ID, &mWinScreenBuffer);
 	mBufferManager.addGraphicsBuffer(mGAME_ID, &mGameScreenBuffer);
+	mBufferManager.addGraphicsBuffer(mOPTION_SCREEN_ID, &mOptionsScreenBuffer);
+	mBufferManager.addGraphicsBuffer(mCREDITS_SCREEN_ID, &mCreditsScreenBuffer);
+	mBufferManager.addGraphicsBuffer(mSTATS_SCREEN_ID, &mStatsScreenBuffer);
+
 
 	//init Background sprites using initSprite()
 	mGameScreenSprite.initSprite(&mGameScreenBuffer, 0, 0, mGameScreenBuffer.getBitmapWidth(), mGameScreenBuffer.getBitmapHeight());
 	mMenuSprite.initSprite(&mMenuBuffer, 0, 0, mMenuBuffer.getBitmapWidth(), mMenuBuffer.getBitmapHeight());
 	mWinScreenSprite.initSprite(&mWinScreenBuffer, 0, 0, mWinScreenBuffer.getBitmapWidth(), mWinScreenBuffer.getBitmapHeight());
 	mLoseScreenSprite.initSprite(&mLoseScreenBuffer, 0, 0, mLoseScreenBuffer.getBitmapWidth(), mLoseScreenBuffer.getBitmapHeight());
+	mStatsScreenSprite.initSprite(&mStatsScreenBuffer, 0, 0, mStatsScreenBuffer.getBitmapWidth(), mStatsScreenBuffer.getBitmapHeight());
+	mCreditsScreenSprite.initSprite(&mCreditsScreenBuffer, 0, 0, mCreditsScreenBuffer.getBitmapWidth(), mCreditsScreenBuffer.getBitmapHeight());
+	mOptionsScreenSprite.initSprite(&mOptionsScreenBuffer, 0, 0, mOptionsScreenBuffer.getBitmapWidth(), mOptionsScreenBuffer.getBitmapHeight());
 
 	cout << "*******Initialized buffers*******" << endl;
 }
@@ -282,8 +306,7 @@ void Game::initAnimations()
 	mHiveAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mHIVE_ID), 1, 1, mHiveSpriteSize, mHiveSpriteSize);
 	
 	mFragmentAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mFRAGMENT_ID), 1, 4, mFragmentSpriteSize, mFragmentSpriteSize);
-	//mFragmentAnim.setLooping(true);
-
+	
 	//set player bullet sprite
 	mBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mBULLET_ID), 1, 1, mBulletSpriteSize, mBulletSpriteSize);
 	mEnemyBulletAnim.addSpriteSheet(mBufferManager.getGraphicsBuffer(mENEMY_BULLET_ID), 1, 1, mEnemyBulletSpriteSize, mEnemyBulletSpriteSize);
@@ -381,8 +404,6 @@ void Game::initEnemies()
 
 void Game::initUI()
 {
-
-
 	mWhiteText.setColor(255);
 	mButtonBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mButtonAsset);
 
@@ -394,53 +415,90 @@ void Game::initUI()
 	mMainTitle.initGuiElementWithText(_DisplayWidth/2 - 75, _DisplayHeight/8, mFONT_SIZE, mFontAsset, mWhiteText, mGAME_TITLE);
 
 	mMainStart.initGuiElement(_DisplayWidth / 2 - 75, 155);
-	mMainStart.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Play");
+	mMainStart.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("LAUNCH"));
 
-	mMainQuit.initGuiElement(_DisplayWidth / 2 - 75, 195);
-	mMainQuit.addGuiButton(mButtonBuffer, QUIT, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Quit");
+	//stats
+	mMainStats.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mMainStats.addGuiButton(mButtonBuffer, STATS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RECORD"));
+
+	//options
+	mMainOptions.initGuiElement(_DisplayWidth / 2 - 75, 235);
+	mMainOptions.addGuiButton(mButtonBuffer, OPTIONS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("OPTIONS"));
+
+	//credits
+	mMainCredits.initGuiElement(_DisplayWidth / 2 - 75, 280);
+	mMainCredits.addGuiButton(mButtonBuffer, CREDITS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("CREDITS"));
+
+	//quit
+	mMainQuit.initGuiElement(_DisplayWidth / 2 - 75, 325);
+	mMainQuit.addGuiButton(mButtonBuffer, QUIT, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("QUIT"));
 
 	//IN GAME UI
 	mGameCombo.initGuiElementWithText(_DisplayWidth - 250, 5, mUI_SIZE, mFontAsset, mWhiteText, to_string(_ComboCount));
 	mGameScore.initGuiElementWithText(_DisplayWidth - 62, 30, mUI_SIZE, mFontAsset, mWhiteText, to_string(_Score));
 	mGameTime.initGuiElementWithText(_DisplayWidth - 62, 5, mUI_SIZE, mFontAsset, mWhiteText, to_string(_TimeSurvived));
-	mGameFragmentsCollected.initGuiElementWithText(_DisplayWidth - 250, 30, mUI_SIZE, mFontAsset, mWhiteText, "File %: " + to_string(_NumFragments/_FragmentsToCollect));
+	mGameFragmentsCollected.initGuiElementWithText(_DisplayWidth - 250, 30, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("File")+ "%: " + to_string(_NumFragments/_FragmentsToCollect));
 
 	//PAUSE SCREEN UI
-	mPauseText.initGuiElementWithText(_DisplayWidth / 2 - 35, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, "PAUSED");
+	mPauseText.initGuiElementWithText(_DisplayWidth / 2 - 35, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("PAUSED"));
 
 	mPausePlay.initGuiElement(_DisplayWidth / 2 - 65, 155);
-	mPausePlay.addGuiButton(mButtonBuffer, RESUME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Resume");
+	mPausePlay.addGuiButton(mButtonBuffer, RESUME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RESUME"));
 	
 	mPauseQuit.initGuiElement(_DisplayWidth / 2 - 65, 195);
-	mPauseQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Return to Main Menu");
+	mPauseQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
 
 	//LOSE SCREEN UI
-	mLoseText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, "You've Been Caught");
+	mLoseText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("You've Been Caught"));
 
 	mLoseRetry.initGuiElement(_DisplayWidth / 2 - 75, 155);
-	mLoseRetry.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Retry");
+	mLoseRetry.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("REBOOT"));
 
 	mLoseQuit.initGuiElement(_DisplayWidth / 2 - 75, 195);
-	mLoseQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Return to Main Menu");
+	mLoseQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
 
 	//WIN SCREEN UI
-	mWinTitle.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, "Success: Data Stolen!");
+	mWinTitle.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Success: Data Stolen!"));
 
 	mWinPlayAgain.initGuiElement(_DisplayWidth / 2 - 75, 155);
-	mWinPlayAgain.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset,   mWhiteText, "Play Again");
+	mWinPlayAgain.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset,   mWhiteText, mLocalization.getTranslation("RELAUNCH"));
 
 	mWinQuit.initGuiElement(_DisplayWidth / 2 - 75, 195);
-	mWinQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, "Return to Main Menu");
+	mWinQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
 
+	//STATS
+	mStatsText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RECORD"));
+
+	//mLoseRetry.initGuiElement(_DisplayWidth / 2 - 75, 155);
+	//mLoseRetry.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("REBOOT"));
+
+	mStatsReturn.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mStatsReturn.addGuiButton(mButtonBuffer, RETURN_STATS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
+
+	//OPTIONS
+	mOptionsText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("OPTIONS"));
+
+	mOptionsReturn.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mOptionsReturn.addGuiButton(mButtonBuffer, RETURN_OPTIONS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
+
+	//CREDITS
+	mCreditsText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("CREDITS"));
+
+	mCreditsReturn.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mCreditsReturn.addGuiButton(mButtonBuffer, RETURN_CREDITS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
 
 	/*** add ui objects to manager ***/
 	//NOTE: order matters for buttons in the mangers
 
 	//MAIN MENU UI MANAGER
-	mGuiManagerMain.setNumButtons(2);
+	mGuiManagerMain.setNumButtons(5);
 	mGuiManagerMain.addToManager("title", &mMainTitle);
-	mGuiManagerMain.addToManager("play", &mMainStart);
-	mGuiManagerMain.addToManager("quit", &mMainQuit);
+	mGuiManagerMain.addToManager("1", &mMainStart);
+	mGuiManagerMain.addToManager("2", &mMainStats);
+	mGuiManagerMain.addToManager("3", &mMainOptions);
+	mGuiManagerMain.addToManager("4", &mMainCredits);
+	mGuiManagerMain.addToManager("5", &mMainQuit);
+
 	mGuiManagerMain.addToManager("fps", &mFpscounter);
 
 	//GAME UI MANAGER
@@ -471,6 +529,24 @@ void Game::initUI()
 	mGuiManagerWin.addToManager("title", &mWinTitle);
 	mGuiManagerWin.addToManager("fps", &mFpscounter);
 
+	//STATS SCREEN UI MANAGER
+	mGuiManagerStats.setNumButtons(1);
+	mGuiManagerStats.addToManager("1", &mStatsReturn);
+	mGuiManagerStats.addToManager("title", &mStatsText);
+	mGuiManagerStats.addToManager("fps", &mFpscounter);
+
+	//CREDITS SCREEN UI MANAGER
+	mGuiManagerCredits.setNumButtons(1);
+	mGuiManagerCredits.addToManager("1", &mCreditsReturn);
+	mGuiManagerCredits.addToManager("title", &mCreditsText);
+	mGuiManagerCredits.addToManager("fps", &mFpscounter);
+
+	//OPTIONS SCREEN UI MANAGER
+	mGuiManagerOptions.setNumButtons(1);
+	mGuiManagerOptions.addToManager("1", &mOptionsReturn);
+	mGuiManagerOptions.addToManager("title", &mOptionsText);
+	mGuiManagerOptions.addToManager("fps", &mFpscounter);
+
 	cout << "*******Initialized UI*******" << endl;
 }
 
@@ -481,6 +557,9 @@ void Game::loadScenes()
 	mLoseScene.initScene(SC_LOSE, &mGuiManagerLose, &mLoseScreenSprite);
 	mWinScene.initScene(SC_WIN, &mGuiManagerWin, &mWinScreenSprite);
 	mPauseScene.initScene(SC_PAUSE, &mGuiManagerPause, &mGameScreenSprite);
+	mStatsScene.initScene(SC_STATS, &mGuiManagerStats, &mStatsScreenSprite);
+	mCreditScene.initScene(SC_CREDITS, &mGuiManagerCredits, &mCreditsScreenSprite);
+	mOptionsScene.initScene(SC_OPTIONS, &mGuiManagerOptions, &mOptionsScreenSprite);
 
 	//add to manager
 	mSceneManager.addScene("a", &mMainMenuScene);
@@ -488,6 +567,9 @@ void Game::loadScenes()
 	mSceneManager.addScene("c", &mLoseScene);
 	mSceneManager.addScene("d", &mWinScene);
 	mSceneManager.addScene("e", &mPauseScene);
+	mSceneManager.addScene("f", &mStatsScene);
+	mSceneManager.addScene("g", &mCreditScene);
+	mSceneManager.addScene("h", &mOptionsScene);
 
 	mSceneManager.setCurrentScene(SC_MAIN);
 
@@ -519,7 +601,7 @@ void Game::initAudio()
 }
 #pragma endregion
 
-bool Game::saveGame()
+bool Game::saveGame() //TODO: use to save stats after win/lose
 {
 	bool result = false;
 		   
@@ -536,7 +618,8 @@ bool Game::saveGame()
 	return result;
 }
 
-void Game::loadLastSave()
+
+/*void Game::loadLastSave()
 {
 
 	CSimpleIniA ini;
@@ -544,7 +627,7 @@ void Game::loadLastSave()
 
 
 	mSceneManager.setCurrentScene(SC_GAME);
-}
+}*/
 
 void Game::cleanupGame()
 {
@@ -562,7 +645,6 @@ void Game::cleanupGame()
 	mBufferManager.clearManager();
 	mSystem.cleanupSystem();
 	EventSystem::cleanupInstance();
-//	CossinTable::cleanupInstance();
 }
 
 
@@ -589,8 +671,6 @@ bool Game::runGameLoop()
 		cout << "Time to Process Frame:" << pPerformanceTracker->getElapsedTime(mDRAW_TRACKER_NAME) << " ms" << endl << endl;
 	}
 
-	//saveGame();
-
 	delete pPerformanceTracker;
 	delete frameTimer;
 
@@ -605,8 +685,12 @@ void Game::update(double timeElapsed)
 
 	//update displays
 
-	mSceneManager.update(timeElapsed, _ComboCount, _Score, mCollectedPercentage, min, sec, mFPS);
-	
+	#ifdef _DEBUG
+		mSceneManager.update(timeElapsed, _ComboCount, _Score, mCollectedPercentage, min, sec, mFPS);
+	#else //for release
+		mSceneManager.update(timeElapsed, _ComboCount, _Score, mCollectedPercentage, min, sec);
+	#endif
+
 	if (mSceneManager.getCurrentScene() == SC_GAME)
 	{
 		tickSurvivalTimer();
@@ -767,7 +851,6 @@ void Game::handleEvent(const Event& theEvent)
 			mSceneManager.setCurrentScene(SC_PAUSE);
 		else if(mSceneManager.getCurrentScene() == SC_PAUSE)
 			mSceneManager.setCurrentScene(SC_GAME);
-		//mIsRunning = false; //temp
 		break;
 
 	case BUTTON_SELECT:
@@ -787,6 +870,18 @@ void Game::handleEvent(const Event& theEvent)
 
 				mSceneManager.setCurrentScene(SC_GAME);				
 			}
+			else if (mGuiManagerMain.getButtonEventPressed(STATS))
+			{
+				mSceneManager.setCurrentScene(SC_STATS);
+			}
+			else if (mGuiManagerMain.getButtonEventPressed(OPTIONS))
+			{
+				mSceneManager.setCurrentScene(SC_OPTIONS);
+			}
+			else if (mGuiManagerMain.getButtonEventPressed(CREDITS))
+			{
+				mSceneManager.setCurrentScene(SC_CREDITS);
+			}
 			else if (mGuiManagerMain.getButtonEventPressed(QUIT))
 			{
 				mIsRunning = false;
@@ -794,7 +889,10 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
 		{
-
+			if (mGuiManagerOptions.getButtonEventPressed(RETURN_OPTIONS))
+			{
+				mSceneManager.setCurrentScene(SC_MAIN);
+			}
 		}
 		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
 		{
@@ -835,11 +933,17 @@ void Game::handleEvent(const Event& theEvent)
 
 		else if (mSceneManager.getCurrentScene() == SC_CREDITS)
 		{
-
+			if (mGuiManagerCredits.getButtonEventPressed(RETURN_CREDITS))
+			{
+				mSceneManager.setCurrentScene(SC_MAIN);
+			}
 		}
 		else if (mSceneManager.getCurrentScene() == SC_STATS)
 		{
-
+			if (mGuiManagerStats.getButtonEventPressed(RETURN_STATS))
+			{
+				mSceneManager.setCurrentScene(SC_MAIN);
+			}
 		}
 		mSceneManager.playSfx(BUTTON_SEL);
 		break;
@@ -867,26 +971,6 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		break;
 	}
-	/*case RSTICK_ROTATION:
-	{
-		const MouseEvent& mouseEvent = static_cast<const MouseEvent&>(theEvent);
-
-		if (mSceneManager.getCurrentScene() == SC_GAME)
-		{
-			mouseX = mouseEvent.getX();
-			mouseY = mouseEvent.getY();
-
-			if (mouseX != 0 && mouseY != 0)
-			{
-			//	float dx = mPlayer.getX()-camX- mouseX;
-				//float dy = mPlayer.getY() +8-camY- mouseY;
-
-				float angle = (atan2(mouseX, -mouseY) * 180.00000f) / 3.14159f;
-				mPlayer.setRotation(angle);
-			}
-		}
-		break;
-	}*/
 	case MOVE_DOWN:
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
@@ -894,27 +978,31 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_MAIN)
 		{
-			mSceneManager.playSfx(BUTTON_MOVE);
-			mSceneManager.moveCursorDown(SC_MAIN);
+			mSceneManager.moveCursorDown(SC_MAIN, BUTTON_MOVE);
+		}
+		else if (mSceneManager.getCurrentScene() == SC_STATS)
+		{
+			mSceneManager.moveCursorDown(SC_STATS, BUTTON_MOVE);
+		}
+		else if (mSceneManager.getCurrentScene() == SC_CREDITS)
+		{
+			mSceneManager.moveCursorDown(SC_CREDITS, BUTTON_MOVE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
 		{
-			mSceneManager.playSfx(BUTTON_MOVE);
+			mSceneManager.moveCursorDown(SC_OPTIONS, BUTTON_MOVE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
 		{
-			mSceneManager.playSfx(BUTTON_MOVE);
-			mSceneManager.moveCursorDown(SC_PAUSE);
+			mSceneManager.moveCursorDown(SC_PAUSE, BUTTON_MOVE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_LOSE)
 		{			
-			mSceneManager.playSfx(BUTTON_MOVE);
-			mSceneManager.moveCursorDown(SC_LOSE);
+			mSceneManager.moveCursorDown(SC_LOSE, BUTTON_MOVE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_WIN)
 		{
-			mSceneManager.playSfx(BUTTON_MOVE);
-			mSceneManager.moveCursorDown(SC_WIN);
+			mSceneManager.moveCursorDown(SC_WIN, BUTTON_MOVE);
 		}
 
 		break;
@@ -926,27 +1014,31 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_MAIN)
 		{
-			mSceneManager.playSfx(BUTTON_MOVE);
-			mSceneManager.moveCursorUp(SC_MAIN);
+			mSceneManager.moveCursorUp(SC_MAIN, BUTTON_MOVE);
+		}
+		else if (mSceneManager.getCurrentScene() == SC_CREDITS)
+		{
+			mSceneManager.moveCursorUp(SC_CREDITS, BUTTON_MOVE);
+		}
+		else if (mSceneManager.getCurrentScene() == SC_STATS)
+		{
+			mSceneManager.moveCursorUp(SC_STATS, BUTTON_MOVE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
 		{
-			mSceneManager.playSfx(BUTTON_MOVE);
+			mSceneManager.moveCursorUp(SC_OPTIONS, BUTTON_MOVE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
 		{
-			mSceneManager.playSfx(BUTTON_MOVE);
-			mSceneManager.moveCursorUp(SC_PAUSE);
+			mSceneManager.moveCursorUp(SC_PAUSE, BUTTON_MOVE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_LOSE)
 		{
-			mSceneManager.playSfx(BUTTON_MOVE);
-			mSceneManager.moveCursorUp(SC_LOSE);
+			mSceneManager.moveCursorUp(SC_LOSE, BUTTON_MOVE);
 		}
 		else if (mSceneManager.getCurrentScene() == SC_WIN)
 		{
-			mSceneManager.playSfx(BUTTON_MOVE);
-			mSceneManager.moveCursorUp(SC_WIN);
+			mSceneManager.moveCursorUp(SC_WIN, BUTTON_MOVE);
 		}
 		break;
 
@@ -1003,7 +1095,7 @@ void Game::handleEvent(const Event& theEvent)
 
 		break;
 
-	case SCREENCAP:
+	case SCREENCAP: //debug only
 		takeScreenshot = true;
 		cout << "SCREENSHOT CAPTURED!" << endl;
 		break;
