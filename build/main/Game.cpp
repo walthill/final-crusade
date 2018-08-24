@@ -1,7 +1,7 @@
 /*****************
 
-RELEASE BUILD NOTES 
-	--> To compile Release build, add GraphicsLib.lib to ../Release
+RELEASE BUILD NOTES - VS2017
+	--> To compile Release build, add GraphicsLib.lib to ../Release (relative path)
 	--> 
 *****************/
 
@@ -9,14 +9,11 @@ RELEASE BUILD NOTES
 
 Game* Game::mGameInstance = NULL;
 
-
 //TODO: add in localization code - eng & fr
-
-//TODO: randomized enemy rotations
 
 //TODO: music
 
-//TODO(low): stats & options
+//TODO: stats & options
 
 //creating exe
 //https://discourse.libsdl.org/t/creating-an-easily-distributable-executable-file/24413
@@ -75,6 +72,7 @@ bool Game::initGame()
 
 	firstPlay = true;
 	controllerInUse = false; 
+	srand(unsigned(time(NULL)));
 
 	loadGameData();
 	loadLocalization();
@@ -175,10 +173,13 @@ void Game::loadGameData()
 	const char * iniMountainScoreValue = ini.GetValue("STATE", "mtnScoreVal", "default");
 	const char * iniHiveScoreValue = ini.GetValue("STATE", "hiveScoreVal", "default");
 
-	const char * iniNumEnemies = ini.GetValue("LEVELDATA", "numEnemies", "defualt");
-	const char * iniNumMountain = ini.GetValue("LEVELDATA", "numMt", "defualt");
-	const char * iniNumRonin = ini.GetValue("LEVELDATA", "numRonin", "defualt");
-	const char * inimNumHive = ini.GetValue("LEVELDATA", "numHive", "defualt");
+//	const char * iniNumEnemies = ini.GetValue("LEVELDATA", "numEnemies", "defualt");
+	const char * iniNumMountainMin = ini.GetValue("LEVELDATA", "numMtMin", "defualt");
+	const char * iniNumRoninMin = ini.GetValue("LEVELDATA", "numRoninMin", "defualt");
+	const char * inimNumHiveMin = ini.GetValue("LEVELDATA", "numHiveMin", "defualt");
+	const char * iniNumMountainMax = ini.GetValue("LEVELDATA", "numMtMax", "defualt");
+	const char * iniNumRoninMax = ini.GetValue("LEVELDATA", "numRoninMax", "defualt");
+	const char * inimNumHiveMax = ini.GetValue("LEVELDATA", "numHiveMax", "defualt");
 	const char * iniFragmentsToCollect = ini.GetValue("LEVELDATA", "fragmentsToCollect", "default");
 
 	mButtonAsset = iniButtonAsset; 
@@ -227,10 +228,15 @@ void Game::loadGameData()
 	mMountainScoreValue = atoi(iniMountainScoreValue);
 	mHiveScoreValue = atoi(iniHiveScoreValue);
 
-	mNumEnemies = atoi(iniNumEnemies);
-	mNumRonin = atoi(iniNumRonin);
-	mNumMountain = atoi(iniNumMountain);
-	mNumHive = atoi(inimNumHive);
+//	mNumEnemies = atoi(iniNumEnemies);
+	
+	mNumRoninMin = atoi(iniNumRoninMin);
+	mNumMountainMin = atoi(iniNumMountainMin);
+	mNumHiveMin = atoi(inimNumHiveMin);
+	mNumRoninMax = atoi(iniNumRoninMax);
+	mNumMountainMax = atoi(iniNumMountainMax);
+	mNumHiveMax = atoi(inimNumHiveMax);
+
 	_FragmentsToCollect = atoi(iniFragmentsToCollect);
 
 	cout << "*******Loaded game data*******" << endl;
@@ -285,7 +291,6 @@ void Game::loadBackgroundsAndBuffers()
 	mBufferManager.addGraphicsBuffer(mCREDITS_SCREEN_ID, &mCreditsScreenBuffer);
 	mBufferManager.addGraphicsBuffer(mSTATS_SCREEN_ID, &mStatsScreenBuffer);
 
-
 	//init Background sprites using initSprite()
 	mGameScreenSprite.initSprite(&mGameScreenBuffer, 0, 0, mGameScreenBuffer.getBitmapWidth(), mGameScreenBuffer.getBitmapHeight());
 	mMenuSprite.initSprite(&mMenuBuffer, 0, 0, mMenuBuffer.getBitmapWidth(), mMenuBuffer.getBitmapHeight());
@@ -318,11 +323,11 @@ void Game::initPlayer()
 	mPlayer.setAnimation(mPlayerAnim);
 	mPlayer.shouldAnimate(false);
 	mPlayer.setCollider(PLAYER_COL_TAG);
-	mPlayer.setLoc(450, 200);
+
+	mPlayer.setLoc(_LevelWidth/2, _LevelHeight/2);
 
 	//player bullet init
 	mBulletManager.initBulletData(75, 10, mBulletAnim, _LevelWidth, _LevelHeight, BULLET_COL_TAG);
-
 }
 
 void Game::initFragments()
@@ -334,11 +339,72 @@ void Game::initFragments()
 	uniform_int_distribution<int> randGenY(1, _LevelHeight - 100);
 
 	int randX = 0, randY = 0;
+	int spawnRegion = 300;
+
+	/***********************
+		Fragments region spawn. 3 in upper half of Y. Each w/in a 300 pix region
+
+	|  i = 1	i = 2	i = 3 
+	|    
+	|
+	|  i = 4	i = 5	i = 6
+	
+	
+	************************/
 
 	for (int i = 0; i < _FragmentsToCollect; i++)
 	{
 		randX = randGenX(rd1);
 		randY = randGenY(rd2);
+
+		if (i == 0)
+		{
+			while (randX < spawnRegion && randY < _LevelHeight / 2)
+			{
+				randX = randGenX(rd1);
+				randY = randGenY(rd2);
+			}
+		}
+		else if (i == 1)
+		{
+			while (randX > spawnRegion && randX < spawnRegion *2 && randY < _LevelHeight / 2)
+			{
+				randX = randGenX(rd1);
+				randY = randGenY(rd2);
+			}
+		}
+		else if (i == 2)
+		{
+			while (randX > spawnRegion*2 && randX < spawnRegion * 3 && randY < _LevelHeight / 2)
+			{
+				randX = randGenX(rd1);
+				randY = randGenY(rd2);
+			}
+		}
+		else if (i == 3)
+		{
+			while (randX < spawnRegion && randY > _LevelHeight / 2)
+			{
+				randX = randGenX(rd1);
+				randY = randGenY(rd2);
+			}
+		}
+		else if (i == 4)
+		{
+			while (randX > spawnRegion && randY > _LevelHeight / 2)
+			{
+				randX = randGenX(rd1);
+				randY = randGenY(rd2);
+			}
+		}
+		else if (i == 5)
+		{
+			while (randX > spawnRegion * 2 && randX < spawnRegion * 3 && randY > _LevelHeight / 2)
+			{
+				randX = randGenX(rd1);
+				randY = randGenY(rd2);
+			}
+		}
 
 		mFragmentList.createAndAddEntity(mFragmentManTag + to_string(i), randX, randY, mFragmentAnim);
 		mFragmentList.getEntity(i)->init(FRAG_PICKUP);
@@ -354,28 +420,57 @@ void Game::initEnemies()
 	mHiveManager.clearManager();
 
 	mColliderCollection.clear();
+	
 	//initialize enemy values, locations, and colliders
+	random_device rd1, rd2, rd3, rd4, rd5;
+	uniform_int_distribution<int> randGenX(16, _LevelWidth - (32 * 2)); //32 - largest enemy sprite size
+	uniform_int_distribution<int> randGenY(16, _LevelHeight - (32 * 2));
+	uniform_int_distribution<int> randGenRonin(mNumRoninMin, mNumRoninMax);
+	uniform_int_distribution<int> randGenMountain(mNumMountainMin, mNumMountainMax);
+	uniform_int_distribution<int> randGenHive(mNumHiveMin, mNumHiveMax);
 
-	random_device rd1, rd2;
-	uniform_int_distribution<int> randGenX(1, _LevelWidth - 100);
-	uniform_int_distribution<int> randGenY(1, _LevelHeight - 100);
 	int randX, randY;
+	int numRonin, numMountain, numHive;
+	
+	numRonin = randGenRonin(rd3);
+	numMountain = randGenMountain(rd4);
+	numHive = randGenHive(rd5);
 
-	for (int i = 0; i < mNumRonin; i++)
+	for (int i = 0; i < numRonin; i++)
 	{
 		randX = randGenX(rd1);
 		randY = randGenY(rd2);
 
+		while (randX < mPlayer.getX() + mPlayerSpriteSize * 2 && randX > mPlayer.getX() - mPlayerSpriteSize * 2)
+		{
+			randX = randGenX(rd1);
+		}
+
+		while (randY < mPlayer.getY() + mPlayerSpriteSize * 2 && randY > mPlayer.getY() - mPlayerSpriteSize * 2)
+		{
+			randY = randGenY(rd2);
+		}
+		
 		mRoninManager.createAndAddEntity(mRoninManTag + to_string(i), randX, randY, mRoninAnim);
 		mRoninManager.getEntity(i)->init(mRoninScoreValue, ENEMY_HIT);
 
 		mColliderCollection.push_back(mRoninManager.getColliderList().at(i));
 	}
 
-	for (int i = 0; i < mNumMountain; i++)
+	for (int i = 0; i < numMountain; i++)
 	{
 		randX = randGenX(rd1);
 		randY = randGenY(rd2);
+		
+		while (randX < mPlayer.getX() + mPlayerSpriteSize * 2 && randX > mPlayer.getX() - mPlayerSpriteSize * 2)
+		{
+			randX = randGenX(rd1);
+		}
+
+		while (randY < mPlayer.getY() + mPlayerSpriteSize * 2 && randY > mPlayer.getY() - mPlayerSpriteSize * 2)
+		{
+			randY = randGenY(rd2);
+		}
 
 		mMountainManager.createAndAddEntity(mMountainManTag + to_string(i), randX, randY, mMountainAnim);
 		mMountainManager.getEntity(i)->init(mMountainScoreValue, ENEMY_HIT);
@@ -383,10 +478,20 @@ void Game::initEnemies()
 		mColliderCollection.push_back(mMountainManager.getColliderList().at(i));
 	}
 
-	for (int i = 0; i < mNumHive; i++)
+	for (int i = 0; i < numHive; i++)
 	{
 		randX = randGenX(rd1);
 		randY = randGenY(rd2);
+
+		while (randX < mPlayer.getX() + mPlayerSpriteSize * 2 && randX > mPlayer.getX() - mPlayerSpriteSize * 2)
+		{
+			randX = randGenX(rd1);
+		}
+
+		while (randY < mPlayer.getY() + mPlayerSpriteSize * 2 && randY > mPlayer.getY() - mPlayerSpriteSize * 2)
+		{
+			randY = randGenY(rd2);
+		}
 
 		mHiveManager.createAndAddEntity(mHiveManTag + to_string(i), randX, randY, mHiveAnim);
 		mHiveManager.getEntity(i)->init(&mEnemyBulletManager, mHiveScoreValue, ENEMY_HIT, ENEMY_SHOOT);
@@ -789,13 +894,15 @@ void Game::resetGameState()
 
 	//reset player
 	mPlayer.getAnimation()->setSpriteIndex(0);
-	mPlayer.setVisible(true); 
+	mPlayer.getAnimation()->setLooping(false);
 	mPlayer.shouldAnimate(false);
+	mPlayer.setVisible(true);
 	mPlayer.setDown(false);
 	mPlayer.setUp(false);
 	mPlayer.setLeft(false);
 	mPlayer.setRight(false);
-	mPlayer.setLoc(450, 200);
+	mPlayer.setLastLife(false);
+	mPlayer.setLoc(_LevelWidth / 2, _LevelHeight / 2);
 
 	//reset gameplay data
 	_ComboCount = 0;

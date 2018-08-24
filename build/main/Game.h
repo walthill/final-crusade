@@ -103,7 +103,8 @@ class Game : EventListener
 		int mSpriteSize;
 		int mGridW, mGridH;
 
-		int mNumEnemies, mNumRonin, mNumMountain, mNumHive;
+		int mNumEnemies, mNumRoninMin, mNumMountainMin, mNumHiveMin,
+			mNumRoninMax, mNumMountainMax, mNumHiveMax;
 
 		int mouseX, mouseY;
 		int camX, camY;
@@ -191,8 +192,7 @@ class Game : EventListener
 
 		//gloabl vars
 		int _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight;
-		int _Score, _ComboCount, _TimeSurvived;
-		double _NumFragments, _FragmentsToCollect;
+		int _Score, _ComboCount, _TimeSurvived, _NumFragments, _FragmentsToCollect;
 		bool _CanCombo;
 		SceneManager* _Scene;
 

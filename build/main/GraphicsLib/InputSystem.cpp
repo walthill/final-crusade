@@ -2,7 +2,6 @@
 
 InputSystem::InputSystem()
 {
-	mIsKeyDown = false;
 }
 
 
@@ -14,9 +13,6 @@ InputSystem::~InputSystem()
 
 void InputSystem::cleanupInputSystem()
 {
-	//Close game controller
-	//SDL_JoystickClose(mGameController);
-	//mGameController = NULL;
 }
 
 
@@ -70,37 +66,37 @@ void InputSystem::getInputEvents()
 		case SDL_KEYDOWN:
 			if (mEvent.key.keysym.sym == SDLK_ESCAPE)
 			{
-				cout << "InputSystem: ESC" << endl;
+				//cout << "InputSystem: ESC" << endl;
 				mKeyEvent.setType(ESC);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
 			if (mEvent.key.keysym.sym == SDLK_RETURN)
 			{
-				cout << "InputSystem: Space" << endl;
+				//cout << "InputSystem: Space" << endl;
 				mKeyEvent.setType(ENTER);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
 			if (mEvent.key.keysym.sym == SDLK_w)
 			{
-				cout << "InputSystem: Up arrow" << endl;
+				//cout << "InputSystem: Up arrow" << endl;
 				mKeyEvent.setType(UP_ARROW);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
 			if (mEvent.key.keysym.sym == SDLK_s)
 			{
-				cout << "InputSystem: Down arrow" << endl;
+				//cout << "InputSystem: Down arrow" << endl;
 				mKeyEvent.setType(DOWN_ARROW);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
 			if (mEvent.key.keysym.sym == SDLK_a)
 			{
-				cout << "InputSystem: Left arrow" << endl;
+				//cout << "InputSystem: Left arrow" << endl;
 				mKeyEvent.setType(LEFT_ARROW);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
 			if (mEvent.key.keysym.sym == SDLK_d)
 			{
-				cout << "InputSystem: Right arrow" << endl;
+				//cout << "InputSystem: Right arrow" << endl;
 				mKeyEvent.setType(RIGHT_ARROW);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
@@ -108,7 +104,7 @@ void InputSystem::getInputEvents()
 			#ifdef _DEBUG 
 			if (mEvent.key.keysym.sym == SDLK_LCTRL)
 			{
-				cout << "InputSystem: LCTRL" << endl;
+				//cout << "InputSystem: LCTRL" << endl;
 				mKeyEvent.setType(LCTRL);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
@@ -119,25 +115,25 @@ void InputSystem::getInputEvents()
 		case SDL_KEYUP:
 			if (mEvent.key.keysym.sym == SDLK_w)
 			{
-				cout << "InputSystem: Up arrow" << endl;
+				//cout << "InputSystem: Up arrow" << endl;
 				mKeyEvent.setType(UP_ARROW_RELEASED);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
 			if (mEvent.key.keysym.sym == SDLK_s)
 			{
-				cout << "InputSystem: Down arrow" << endl;
+				//cout << "InputSystem: Down arrow" << endl;
 				mKeyEvent.setType(DOWN_ARROW_RELEASED);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
 			if (mEvent.key.keysym.sym == SDLK_a)
 			{
-				cout << "InputSystem: Left arrow" << endl;
+				//cout << "InputSystem: Left arrow" << endl;
 				mKeyEvent.setType(LEFT_ARROW_RELEASED);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
 			if (mEvent.key.keysym.sym == SDLK_d)
 			{
-				cout << "InputSystem: Right arrow" << endl;
+				//cout << "InputSystem: Right arrow" << endl;
 				mKeyEvent.setType(RIGHT_ARROW_RELEASED);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
@@ -146,13 +142,13 @@ void InputSystem::getInputEvents()
 		case SDL_JOYBUTTONDOWN:  /* Handle Joystick Button Presses */
 			if (mEvent.jbutton.button == 0)
 			{
-				cout << "InputSystem: Space" << endl;
+				//cout << "InputSystem: Space" << endl;
 				mKeyEvent.setType(ENTER);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}
 			if (mEvent.jbutton.button == 7)
 			{
-				cout << "InputSystem: ESC" << endl;
+				//cout << "InputSystem: ESC" << endl;
 				mKeyEvent.setType(ESC);
 				EventSystem::getInstance()->fireEvent(mKeyEvent);
 			}

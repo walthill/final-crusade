@@ -24,7 +24,7 @@ class Hive : public Entity
 		int mMapXBound, mMapYBound;
 		
 		const int LINE_SIGHT_LENGTH = 315;
-		int xDistance, yDistance;
+		float xDistance, yDistance;
 
 	public:
 		Hive();

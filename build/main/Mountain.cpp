@@ -7,7 +7,6 @@ Mountain::Mountain()
 	mSpeed = 2.0f;
 	multiplier = 1;
 	//mScoreValue = 350;
-	srand(unsigned(time(NULL)));
 
 	/*	random_device rd;
 	uniform_int_distribution<int> randGen(0, 360);

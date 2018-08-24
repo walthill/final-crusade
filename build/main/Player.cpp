@@ -56,11 +56,11 @@ void Player::checkBounds()
  	if (mXLoc < 0)
 		mXLoc = 1;
 	if (mXLoc > mXBound)
-		mXLoc = mXBound-5;
+		mXLoc = mXBound-5.0f;
 	if (mYLoc < 0)
 		mYLoc = 1;
 	if (mYLoc > mYBound)
-		mYLoc = mYBound-5;
+		mYLoc = mYBound-5.0f;
 }
 
 void Player::checkForEnemyCollision(vector<Collider*> colliderList, double timeElapsed)

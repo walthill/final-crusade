@@ -83,7 +83,7 @@ void MountainManager::draw(GraphicsSystem *system, int camX, int camY)
 }
 
 
-void MountainManager::createAndAddEntity(EntityId key, float x, float y, Animation anim)
+void MountainManager::createAndAddEntity(EntityId key, int x, int y, Animation anim)
 {
 	//pass in the animation, location
 	//	map<EntityId, Mountain*>::iterator iter = mEntityMap.find(key);
@@ -111,7 +111,7 @@ void MountainManager::createAndAddEntity(EntityId key, float x, float y, Animati
 }
 
 
-void MountainManager::createAndAddEntity(EntityId key, float x, float y, Animation anim, int amount)
+void MountainManager::createAndAddEntity(EntityId key, int x, int y, Animation anim, int amount)
 {
 	/*//pass in the animation, location
 	map<EntityId, Mountain*>::iterator iter = mEntityMap.find(key);

@@ -6,7 +6,6 @@ Ronin::Ronin()
 	mSpeed = 2.1f;
 	multiplier = 1;
 	mScoreValue = 250;
-	srand(unsigned(time(NULL)));
 	
 /*	random_device rd;
 	uniform_int_distribution<int> randGen(0, 360);

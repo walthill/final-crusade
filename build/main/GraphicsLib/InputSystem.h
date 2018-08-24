@@ -1,7 +1,6 @@
 #ifndef INPUT_SYS
 #define INPUT_SYS
 
-#include <cassert>
 #include "EventSystem.h"
 #include "Event.h"
 #include "MouseEvent.h"
@@ -19,14 +18,13 @@ class InputSystem : public Trackable
 
 		SDL_Event mEvent;
 
+		//Controller data
 		//Analog joystick dead zone
 		int mLeftStickXDeadZone = 6000, mLeftStickYDeadZone = 6000, 
 			mRightStickXDeadZone = 6000, mRightStickYDeadZone = 6000;
 
 		SDL_Joystick *mGameController; //need Left, Right stick, A, RT
 		Sint16 xAxis, yAxis;
-
-		bool mIsKeyDown; //For getting input
 
 	public:
 
