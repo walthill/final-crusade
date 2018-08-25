@@ -56,6 +56,8 @@ enum EventType
 	RESUME,
 	CREDITS,
 	LANG_CHANGE,
+	CONTROLLER,
+	SHOW_CONTROLS,
 	CHANGE_AUDIO,
 
 	QUIT, //Game events, in game actions based on input

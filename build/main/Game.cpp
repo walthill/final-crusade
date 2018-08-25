@@ -9,11 +9,12 @@ RELEASE BUILD NOTES - VS2017
 
 Game* Game::mGameInstance = NULL;
 
+//TODO(2): controls scene
+//TODO: credits text
 //TODO: add in localization code - eng & fr
-
-//TODO: music
-
-//TODO: stats & options
+//TODO(1): add menu music & game music
+//TODO: generate lifetime stats
+//TODO(3): seperate controller and keyboard events
 
 //creating exe
 //https://discourse.libsdl.org/t/creating-an-easily-distributable-executable-file/24413
@@ -72,6 +73,7 @@ bool Game::initGame()
 
 	firstPlay = true;
 	controllerInUse = false; 
+	musicValue = 1;
 	srand(unsigned(time(NULL)));
 
 	loadGameData();
@@ -157,6 +159,14 @@ void Game::loadGameData()
 	const char * iniButtonSelectSound = ini.GetValue("ASSETS", "buttonselect", "default");
 
 
+	const char * iniLifetimeScore = ini.GetValue("STATS", "lifetimescore", "default");
+	const char * iniTimePlayed = ini.GetValue("STATS", "timeplayed", "default");
+	const char * iniBestTime = ini.GetValue("STATS", "besttime", "default");
+	const char * iniHighScore = ini.GetValue("STATS", "highscore", "default");
+	const char * iniHighCombo = ini.GetValue("STATS", "highcombo", "default");
+	const char * iniFileCaptured= ini.GetValue("STATS", "filescaptured", "default");
+
+
 	const char * iniWidth = ini.GetValue("VIEW", "windowW", "default");
 	const char * iniHeight = ini.GetValue("VIEW", "windowH", "default");
 	const char * iniLevelWidth = ini.GetValue("VIEW", "levelW", "default");
@@ -212,7 +222,8 @@ void Game::loadGameData()
 	_DisplayWidth = atoi(iniWidth);
 	_DisplayHeight = atoi(iniHeight);
 
-	//using higher value than the bg image causes cool stretching
+	//cool note - using higher value than the bg image causes cool stretching
+	
 	_LevelWidth = atoi(iniLevelWidth);//2400; 
 	_LevelHeight = atoi(iniLevelHeight);//1800;
 
@@ -237,6 +248,13 @@ void Game::loadGameData()
 	mNumMountainMax = atoi(iniNumMountainMax);
 	mNumHiveMax = atoi(inimNumHiveMax);
 
+	mHighCombo = atoi(iniHighCombo);
+	mHighScore = atoi(iniHighScore);
+	mFilesCaptured = atoi(iniFileCaptured);
+	mLifetimeScore = atoi(iniLifetimeScore);
+	mBestTime = iniBestTime;
+	mTimePlayed = iniTimePlayed;
+
 	_FragmentsToCollect = atoi(iniFragmentsToCollect);
 
 	cout << "*******Loaded game data*******" << endl;
@@ -247,7 +265,7 @@ void Game::loadLocalization()
 	//load in translations from file, store in memory, and assign to manager
 
 	mLocalization.loadLanguage(ENGLISH);
-
+	mLocalization.loadLanguage(FRENCH);
 
 	mSceneManager.initLanguages(&mLocalization);
 
@@ -572,18 +590,34 @@ void Game::initUI()
 	mWinQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
 
 	//STATS
-	mStatsText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RECORD"));
+	mStatsText.initGuiElementWithText(_DisplayWidth / 2 - 90, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("SERVICE RECORD"));
 
-	//mLoseRetry.initGuiElement(_DisplayWidth / 2 - 75, 155);
-	//mLoseRetry.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("REBOOT"));
-
-	mStatsReturn.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mStatsTimePlayed.initGuiElementWithText(_DisplayWidth / 2 - 180, 150, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Time Played"));
+	mStatsLifetimeScore.initGuiElementWithText(_DisplayWidth / 2 - 180, 200, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Lifetime Score"));
+	mStatsFilesCaptured.initGuiElementWithText(_DisplayWidth / 2 - 180, 250, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Files Captured"));
+	mStatsFastestTime.initGuiElementWithText(_DisplayWidth / 2 - 180, 300, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Fastest Time"));
+	mStatsHighScore.initGuiElementWithText(_DisplayWidth / 2 - 180, 350, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Best Score"));
+	mStatsHighCombo.initGuiElementWithText(_DisplayWidth / 2 - 180, 400, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Best Combo"));
+	
+	mStatsReturn.initGuiElement(_DisplayWidth / 2 - 90, 495);
 	mStatsReturn.addGuiButton(mButtonBuffer, RETURN_STATS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
 
 	//OPTIONS
 	mOptionsText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("OPTIONS"));
 
-	mOptionsReturn.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mOptionsControls.initGuiElement(_DisplayWidth / 2 - 75, 155);
+	mOptionsControls.addGuiButton(mButtonBuffer, SHOW_CONTROLS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Show Controls"));
+
+	mOptionsToggleController.initGuiElement(_DisplayWidth / 2 - 75, 200);
+	mOptionsToggleController.addGuiButton(mButtonBuffer, CONTROLLER, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Gamepad"));
+
+	mOptionsLang.initGuiElement(_DisplayWidth / 2 - 75, 270);
+	mOptionsLang.addGuiButton(mButtonBuffer, LANG_CHANGE, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Language"));
+
+	mOptionsMusic.initGuiElement(_DisplayWidth / 2 - 75, 315);
+	mOptionsMusic.addGuiButton(mButtonBuffer, CHANGE_AUDIO, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Music"));
+
+	mOptionsReturn.initGuiElement(_DisplayWidth / 2 - 75, 380);
 	mOptionsReturn.addGuiButton(mButtonBuffer, RETURN_OPTIONS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
 
 	//CREDITS
@@ -638,7 +672,14 @@ void Game::initUI()
 	mGuiManagerStats.setNumButtons(1);
 	mGuiManagerStats.addToManager("1", &mStatsReturn);
 	mGuiManagerStats.addToManager("title", &mStatsText);
+	mGuiManagerStats.addToManager("besttime", &mStatsFastestTime);
+	mGuiManagerStats.addToManager("files", &mStatsFilesCaptured);
+	mGuiManagerStats.addToManager("highcombo", &mStatsHighCombo);
+	mGuiManagerStats.addToManager("highscore", &mStatsHighScore);
+	mGuiManagerStats.addToManager("lifescore", &mStatsLifetimeScore);
+	mGuiManagerStats.addToManager("lifeplayed", &mStatsTimePlayed);
 	mGuiManagerStats.addToManager("fps", &mFpscounter);
+
 
 	//CREDITS SCREEN UI MANAGER
 	mGuiManagerCredits.setNumButtons(1);
@@ -647,8 +688,12 @@ void Game::initUI()
 	mGuiManagerCredits.addToManager("fps", &mFpscounter);
 
 	//OPTIONS SCREEN UI MANAGER
-	mGuiManagerOptions.setNumButtons(1);
-	mGuiManagerOptions.addToManager("1", &mOptionsReturn);
+	mGuiManagerOptions.setNumButtons(5);
+	mGuiManagerOptions.addToManager("1", &mOptionsControls);
+	mGuiManagerOptions.addToManager("2", &mOptionsToggleController);
+	mGuiManagerOptions.addToManager("3", &mOptionsLang);
+	mGuiManagerOptions.addToManager("4", &mOptionsMusic);
+	mGuiManagerOptions.addToManager("5", &mOptionsReturn);
 	mGuiManagerOptions.addToManager("title", &mOptionsText);
 	mGuiManagerOptions.addToManager("fps", &mFpscounter);
 
@@ -791,9 +836,9 @@ void Game::update(double timeElapsed)
 	//update displays
 
 	#ifdef _DEBUG
-		mSceneManager.update(timeElapsed, _ComboCount, _Score, mCollectedPercentage, min, sec, mFPS);
+			mSceneManager.update(timeElapsed, mHighScore, mHighCombo, mBestTime, mTimePlayed, mLifetimeScore, mFilesCaptured, musicValue, controllerInUse, _ComboCount, _Score, mCollectedPercentage, min, sec, mFPS);
 	#else //for release
-		mSceneManager.update(timeElapsed, _ComboCount, _Score, mCollectedPercentage, min, sec);
+		mSceneManager.update(timeElapsed, mHighScore, mHighCombo, mBestTime, mTimePlayed, mLifetimeScore, mFilesCaptured, _ComboCount, _Score, mCollectedPercentage, min, sec);
 	#endif
 
 	if (mSceneManager.getCurrentScene() == SC_GAME)
@@ -996,7 +1041,41 @@ void Game::handleEvent(const Event& theEvent)
 		}
 		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
 		{
-			if (mGuiManagerOptions.getButtonEventPressed(RETURN_OPTIONS))
+			if (mGuiManagerOptions.getButtonEventPressed(LANG_CHANGE))
+			{
+				/*if(mLocalization.getLanguage() == ENGLISH)
+					mLocalization.setLangauge(FRENCH);
+				else
+					mLocalization.setLangauge(ENGLISH);*/
+			}
+			else if (mGuiManagerOptions.getButtonEventPressed(CHANGE_AUDIO))
+			{
+				//toggle music on/off
+				if (musicValue == 0)
+				{
+					musicValue = 1;
+		//			mSceneManager.stopCurrentMusic();
+				}
+				else
+				{
+					musicValue = 0;
+	//				mSceneManager.playSound(menuMusic);
+				}
+			}
+			else if (mGuiManagerOptions.getButtonEventPressed(SHOW_CONTROLS))
+			{
+				//go to control scene w/ controls in text
+			}
+			else if (mGuiManagerOptions.getButtonEventPressed(CONTROLLER))
+			{
+				if (!controllerInUse)
+					controllerInUse = true;
+				else
+					controllerInUse = false;
+
+				mPlayer.setControllerConnected(controllerInUse);
+			}
+			else if (mGuiManagerOptions.getButtonEventPressed(RETURN_OPTIONS))
 			{
 				mSceneManager.setCurrentScene(SC_MAIN);
 			}

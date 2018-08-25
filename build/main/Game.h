@@ -62,7 +62,10 @@ class Game : EventListener
 			mMainStart, mMainQuit, mMainTitle, mPauseQuit,
 			mGameScore, mGameCombo, mGameTime, mGameFragmentsCollected,
 			mStatsText, mStatsReturn, mMainStats, mMainCredits, mMainOptions,
-			mOptionsText, mOptionsReturn, mCreditsText, mCreditsReturn;
+			mOptionsText, mOptionsReturn, mCreditsText, mCreditsReturn,
+			mOptionsLang, mOptionsControls, mOptionsToggleController,
+			mOptionsMusic, mStatsHighScore, mStatsHighCombo, mStatsTimePlayed, mStatsFastestTime,
+			mStatsFilesCaptured, mStatsLifetimeScore;
 
 		//Visual Assets
 		GraphicsBuffer mButtonBuffer; // ui button
@@ -120,6 +123,16 @@ class Game : EventListener
 		const int mCOMBO_NUM_TO_REGEN = 3;
 		int mCollectedPercentage;
 		bool playerHit;// = true;
+
+		//lifetime stats
+		int mFilesCaptured, mHighCombo, mHighScore, mLifetimeScore;
+		string mBestTime, mTimePlayed;
+
+		//music
+		SoundID menuMusic, gameMusic;
+
+		//text variables to update
+		int musicValue;
 
 		//Enemy Manager Tags
 		string mRoninManTag = "r";

@@ -11,6 +11,7 @@ using namespace std;
 enum LangType
 {
 	ENGLISH,
+	FRENCH,
 	SPANISH,
 	SWAHILI,
 	NUM_LANGS
