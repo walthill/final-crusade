@@ -9,7 +9,6 @@ RELEASE BUILD NOTES - VS2017
 
 Game* Game::mGameInstance = NULL;
 
-//TODO: generate lifetime stats - on round win
 //TODO: tweak player sprite --> bigger and make direction more visible
 
 //creating exe
@@ -79,10 +78,23 @@ bool Game::initGame()
 	firstPlay = true;
 	controllerInUse = false; 
 	shouldPlayMusic = true;
+	bestMin = 0;
+	bestSec = 0;
 	musicValue = 1;
 	srand(unsigned(time(NULL)));
 
 	loadGameData();
+	
+	//set up best time stat
+	if (mBestTime != "")
+	{
+		string secStr = mBestTime.substr(mBestTime.find(":") + 1);
+		bestSec = atoi(secStr.c_str());
+
+		string minStr = mBestTime.substr(0, mBestTime.find(":"));
+		bestMin = atoi(minStr.c_str());
+	}
+	
 	loadLocalization();
 
 	//Initialize graphics, controls, and event system
@@ -171,7 +183,9 @@ void Game::loadGameData()
 
 
 	const char * iniLifetimeScore = ini.GetValue("STATS", "lifetimescore", "default");
-	const char * iniTimePlayed = ini.GetValue("STATS", "timeplayed", "default");
+	const char * iniHoursPlayed = ini.GetValue("STATS", "hoursplayed", "default");
+	const char * iniMinutesPlayed = ini.GetValue("STATS", "minutesplayed", "default");
+	const char * iniSecondsPlayed = ini.GetValue("STATS", "secondsplayed", "default");
 	const char * iniBestTime = ini.GetValue("STATS", "besttime", "default");
 	const char * iniHighScore = ini.GetValue("STATS", "highscore", "default");
 	const char * iniHighCombo = ini.GetValue("STATS", "highcombo", "default");
@@ -267,7 +281,11 @@ void Game::loadGameData()
 	mFilesCaptured = atoi(iniFileCaptured);
 	mLifetimeScore = atoi(iniLifetimeScore);
 	mBestTime = iniBestTime;
-	mTimePlayed = iniTimePlayed;
+	hoursPlayed = atoi(iniHoursPlayed);
+	minutesPlayed = atoi(iniMinutesPlayed);
+	secondsPlayed = atoi(iniSecondsPlayed);
+
+//	bestSec
 
 	_FragmentsToCollect = atoi(iniFragmentsToCollect);
 
@@ -454,8 +472,8 @@ void Game::initEnemies()
 	
 	//initialize enemy values, locations, and colliders
 	random_device rd1, rd2, rd3, rd4, rd5;
-	uniform_int_distribution<int> randGenX(16, _LevelWidth - (32 * 2)); //32 - largest enemy sprite size
-	uniform_int_distribution<int> randGenY(16, _LevelHeight - (32 * 2));
+	uniform_int_distribution<int> randGenX(32, _LevelWidth - 32); //32 - largest enemy sprite size
+	uniform_int_distribution<int> randGenY(32, _LevelHeight - 32);
 	uniform_int_distribution<int> randGenRonin(mNumRoninMin, mNumRoninMax);
 	uniform_int_distribution<int> randGenMountain(mNumMountainMin, mNumMountainMax);
 	uniform_int_distribution<int> randGenHive(mNumHiveMin, mNumHiveMax);
@@ -472,12 +490,12 @@ void Game::initEnemies()
 		randX = randGenX(rd1);
 		randY = randGenY(rd2);
 
-		while (randX < mPlayer.getX() + mPlayerSpriteSize * 2 && randX > mPlayer.getX() - mPlayerSpriteSize * 2)
+		while (randX < mPlayer.getX() + mPlayerSpriteSize + 300 && randX > mPlayer.getX() - mPlayerSpriteSize + 300)
 		{
 			randX = randGenX(rd1);
 		}
 
-		while (randY < mPlayer.getY() + mPlayerSpriteSize * 2 && randY > mPlayer.getY() - mPlayerSpriteSize * 2)
+		while (randY < mPlayer.getY() + mPlayerSpriteSize + 300 && randY > mPlayer.getY() - mPlayerSpriteSize + 300)
 		{
 			randY = randGenY(rd2);
 		}
@@ -493,12 +511,12 @@ void Game::initEnemies()
 		randX = randGenX(rd1);
 		randY = randGenY(rd2);
 		
-		while (randX < mPlayer.getX() + mPlayerSpriteSize * 2 && randX > mPlayer.getX() - mPlayerSpriteSize * 2)
+		while (randX < mPlayer.getX() + mPlayerSpriteSize + 300 && randX > mPlayer.getX() - mPlayerSpriteSize + 300)
 		{
 			randX = randGenX(rd1);
 		}
 
-		while (randY < mPlayer.getY() + mPlayerSpriteSize * 2 && randY > mPlayer.getY() - mPlayerSpriteSize * 2)
+		while (randY < mPlayer.getY() + mPlayerSpriteSize + 300 && randY > mPlayer.getY() - mPlayerSpriteSize + 300)
 		{
 			randY = randGenY(rd2);
 		}
@@ -514,12 +532,12 @@ void Game::initEnemies()
 		randX = randGenX(rd1);
 		randY = randGenY(rd2);
 
-		while (randX < mPlayer.getX() + mPlayerSpriteSize * 2 && randX > mPlayer.getX() - mPlayerSpriteSize * 2)
+		while (randX < mPlayer.getX() + mPlayerSpriteSize + 300 && randX > mPlayer.getX() - mPlayerSpriteSize + 300)
 		{
 			randX = randGenX(rd1);
 		}
 
-		while (randY < mPlayer.getY() + mPlayerSpriteSize * 2 && randY > mPlayer.getY() - mPlayerSpriteSize * 2)
+		while (randY < mPlayer.getY() + mPlayerSpriteSize + 300 && randY > mPlayer.getY() - mPlayerSpriteSize + 300)
 		{
 			randY = randGenY(rd2);
 		}
@@ -837,7 +855,7 @@ void Game::initAudio()
 }
 #pragma endregion
 
-bool Game::saveGame() //TODO: use to save stats after win/lose
+bool Game::saveGame(bool saveAllData) //TODO: use to save stats after win/lose
 {
 	bool result = false;
 		   
@@ -846,6 +864,25 @@ bool Game::saveGame() //TODO: use to save stats after win/lose
 	
 	// overwrite last save - deleting an entire section and all keys in it
 	ini.Delete("GAME", NULL);
+	
+	if (saveAllData)
+	{
+		ini.SetLongValue("STATS", "lifetimescore", mLifetimeScore);
+		ini.SetLongValue("STATS", "hoursplayed", hoursPlayed);
+		ini.SetLongValue("STATS", "minutesplayed", minutesPlayed);
+		ini.SetLongValue("STATS", "secondsplayed", secondsPlayed);
+		ini.SetValue("STATS", "besttime", mBestTime.c_str());
+		ini.SetLongValue("STATS", "highscore", mHighScore);
+		ini.SetLongValue("STATS", "highcombo", mHighCombo);
+		ini.SetLongValue("STATS", "filescaptured", mFilesCaptured);
+	}
+	else 
+	{
+		//just save time play
+		ini.SetLongValue("STATS", "hoursplayed", hoursPlayed);
+		ini.SetLongValue("STATS", "minutesplayed", minutesPlayed);
+		ini.SetLongValue("STATS", "secondsplayed", secondsPlayed);
+	}
 
 	ini.SaveFile(mINI_FILE.c_str());
 
@@ -912,9 +949,9 @@ void Game::update(double timeElapsed)
 	//update displays
 
 	#ifdef _DEBUG
-			mSceneManager.update(timeElapsed, mHighScore, mHighCombo, mBestTime, mTimePlayed, mLifetimeScore, mFilesCaptured, musicValue, controllerInUse, _ComboCount, _Score, mCollectedPercentage, min, sec, mFPS);
+		mSceneManager.update(timeElapsed, mHighScore, mHighCombo, mBestTime, hoursPlayed, minutesPlayed, mLifetimeScore, mFilesCaptured, musicValue, controllerInUse, _ComboCount, _Score, mCollectedPercentage, min, sec, mFPS);
 	#else //for release
-		mSceneManager.update(timeElapsed, mHighScore, mHighCombo, mBestTime, mTimePlayed, mLifetimeScore, mFilesCaptured, _ComboCount, _Score, mCollectedPercentage, min, sec);
+		mSceneManager.update(timeElapsed, mHighScore, mHighCombo, mBestTime, hoursPlayed, minutesPlayed, mLifetimeScore, mFilesCaptured, _ComboCount, _Score, mCollectedPercentage, min, sec);
 	#endif
 
 	if (mSceneManager.getCurrentScene() == SC_GAME)
@@ -936,9 +973,24 @@ void Game::update(double timeElapsed)
 		//check lose condition
 		if (!mPlayer.isVisible())
 		{
+			secondsPlayed += sec;
+			if (secondsPlayed >= 60)
+			{
+				secondsPlayed = secondsPlayed - 60;
+				minutesPlayed++;
+			}
+			if (minutesPlayed >= 60 && minutesPlayed % 60 == 0)
+			{
+				minutesPlayed = 0;
+				hoursPlayed += 1;
+			}
+
 			mSceneManager.stopSound(GAME_MUSIC);
 			mSceneManager.playSfx(PLAYER_LOSE);
 			mSceneManager.setCurrentScene(SC_LOSE);
+			
+			saveGame(false);
+
 		}
 		//check win condition
 		if (_NumFragments == _FragmentsToCollect)
@@ -946,6 +998,40 @@ void Game::update(double timeElapsed)
 			mSceneManager.stopSound(GAME_MUSIC);
 			mSceneManager.playSfx(WIN_MUSIC);
 			mSceneManager.setCurrentScene(SC_WIN);
+			
+			mFilesCaptured++; //total files
+			mLifetimeScore += _Score; //overall score
+
+			if (_Score > mHighScore) //high score
+				mHighScore = _Score;
+			if (_ComboCount > mHighCombo) //high combo
+				mHighCombo = _ComboCount;
+			
+			//best time
+			if (bestMin == 0 && bestSec == 0)
+			{
+				string timeStr = to_string(min) + ":" + to_string(sec);
+				mBestTime = timeStr;
+			}
+			else if (min <= bestMin && sec <= bestSec)
+			{
+				string timeStr = to_string(min) + ":" + to_string(sec);
+				mBestTime = timeStr;
+			}
+
+			secondsPlayed += sec;
+			if (secondsPlayed >= 60)
+			{
+				secondsPlayed = secondsPlayed - 60;
+				minutesPlayed++;
+			}
+			if (minutesPlayed >= 60 && minutesPlayed % 60 == 0)
+			{
+				minutesPlayed = 0;
+				hoursPlayed += 1;
+			}
+			
+			saveGame(true);
 		}
 
 		comboUpdate(timeElapsed);
@@ -958,11 +1044,14 @@ void Game::tickSurvivalTimer()
 	millisec = survivalTimer->getElapsedTime();
 
 	sec = millisec / 1000;
-
+	
 	if (sec >= 60)
 	{
 		sec = 0;
 		min += 1;
+
+		minutesPlayed++;
+		
 		survivalTimer->start();
 	}
 }
@@ -1034,6 +1123,8 @@ void Game::resetGameState()
 	_Score = 0;
 	_NumFragments = 0;
 	dtTime = 0;
+	min = 0;
+	sec = 0;
 
 	delete survivalTimer;
 	survivalTimer = new Timer;

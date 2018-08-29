@@ -39,8 +39,8 @@ class SceneManager
 		void clearManager();
 
 		//Take in values for UI info
-		void update(double timeElapsed, int &highScore, int &highCombo, string &bestTime, string &timePlayed, int &lifetimeScore, int &filesCaptured, int &musicValue, bool &controllerInUse, int &combo, int &score, int &fragmentsCollectedPercentage, int const &minutes, int const &seconds, double &fps);
-		void update(double timeElapsed, int &highScore, int &highCombo, string &bestTime, string &timePlayed, int &lifetimeScore, int &filesCaptured, int &musicValue, bool &controllerInUse, int &combo, int &score, int &fragmentsCollectedPercentage, int const &minutes, int const &seconds);
+		void update(double timeElapsed, int &highScore, int &highCombo, string &bestTime, int &hoursPlayed, int &minutesPlayed, int &lifetimeScore, int &filesCaptured, int &musicValue, bool &controllerInUse, int &combo, int &score, int &fragmentsCollectedPercentage, int const &minutes, int const &seconds, double &fps);
+		void update(double timeElapsed, int &highScore, int &highCombo, string &bestTime, int &hoursPlayed, int &minutesPlayed, int &lifetimeScore, int &filesCaptured, int &musicValue, bool &controllerInUse, int &combo, int &score, int &fragmentsCollectedPercentage, int const &minutes, int const &seconds);
 
 		void draw(GraphicsSystem *graphicsSystem);
 		void drawGUI(GraphicsSystem *graphicsSystem);

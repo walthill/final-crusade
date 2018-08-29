@@ -96,3 +96,7 @@ Best Score
 Best Score
 Fastest Time
 Fastest Time
+Hours
+Hours
+Minutes
+Minutes

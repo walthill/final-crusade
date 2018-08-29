@@ -135,7 +135,8 @@ class Game : EventListener
 
 		//lifetime stats
 		int mFilesCaptured, mHighCombo, mHighScore, mLifetimeScore;
-		string mBestTime, mTimePlayed;
+		int hoursPlayed, minutesPlayed, secondsPlayed, bestMin, bestSec;
+		string mBestTime;
 
 		//text variables to update
 		int musicValue;
@@ -273,7 +274,7 @@ class Game : EventListener
 		void loadGameData();
 		void installListeners();
 
-		bool saveGame();
+		bool saveGame(bool saveAllData);
 		//void loadLastSave();
 
 		//Handles input

@@ -96,3 +96,7 @@ Best Score
 Meilleur Score
 Fastest Time
 Le Temps le Plus Rapide
+Hours
+Heures
+Minutes
+Minutes
