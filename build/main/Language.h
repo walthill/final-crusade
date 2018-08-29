@@ -21,14 +21,12 @@ class Language : public Trackable
 {
 	private:
 		const string mENG = "local\\eng.txt";
-		const string mESP = "local\\esp.txt";
-		const string mSWA = "local\\swa.txt";
+		const string mFRE = "local\\fr.txt";
 
 		LangType mCurrentLanguage;
 
 		map<string, string> mEngLanguageTable;
-		map<string, string> mEspLanguageTable;
-		map<string, string> mSwaLanguageTable;
+		map<string, string> mFrLanguageTable;
 	public:
 //		bool changedLang;
 

@@ -1,0 +1,98 @@
+FINAL CRUSADE
+CROISADE FINALE
+LAUNCH
+LANCEMENT
+RELAUNCH
+RELANCEMENT
+RESUME
+RECOMMENCER
+PAUSED
+EN PAUSE
+REBOOT
+REDEMARRER
+QUIT
+QUITTER
+RETURN TO MAIN
+RETOURNER AU PRINCIPAL
+OPTIONS
+OPTIONS
+RECORD
+RECORD
+SERVICE RECORD
+ENREGISTREMENT DE SERVICE
+CREDITS
+CREDITS
+LANGUAGE
+LA LANGUE
+MUSIC
+LA MUSIQUE
+SHOW CONTROLS
+MONTRER LES CONTROLES
+CONTROLS
+CONTROLES
+KEYBOARD/MOUSE
+CLAVIER/SOURIS
+ESC -- Pause Game
+ESC -- Pause Jeu
+ENTER -- Select
+ENTER -- Selectionner
+W -- Up
+W -- En Haut
+A -- Left
+A -- La Gauche
+S -- Down
+S -- En Bas
+D -- Right
+D -- Droite
+MOVE MOUSE -- Rotate Player
+MOVE MOUSE -- Faire Tourner le Joueur
+LEFT MOUSE-- Shoot
+LEFT MOUSE-- Tirer
+START -- Pause Game
+START -- Jeu de Pause
+A -- Select
+A -- Selectionner
+LEFT STICK -- Up, Left, Right, Down
+LEFT STICK -- En Haut, La Gauche, Droite, En Bas
+RIGHT STICK -- Rotate Player
+RIGHT STICK -- Faire Tourner le Joueur
+RT -- Shoot
+RT -- Tirer
+GAMEPAD
+Manette de Jeu
+Walter Hill -- Programming, Sprites, Design
+Walter Hill -- La Programmation, Les sprites, Conception
+AUDIO
+L'AUDIO
+Cabled_mess -- Clack_Minimal UI Sounds
+Cabled_mess -- Clack_Minimal UI Sounds
+Cabled_mess -- Boom_C_03
+Cabled_mess -- Boom_C_03
+Gravity Sound -- Cloudy
+Gravity Sound -- Cloudy
+Josepharaoh99 -- button pressed
+Josepharaoh99 -- button pressed
+Xythe -- Fight for your life loop
+Xythe -- Fight for your life loop
+Xtrgamr -- music game, win or high score
+Xtrgamr -- music game, win or high score
+Combo
+Combo
+File
+Fichier
+Success: Data Stolen!
+Succes: Donnees Volees!
+You've Been Caught
+Vous Avez Eté Attrapé
+Lifetime Score
+Score a vie
+Time Played
+Temps Joue
+Files Captured
+Fichiers Captures
+Best Combo
+Meilleur Combo
+Best Score
+Meilleur Score
+Fastest Time
+Le Temps le Plus Rapide

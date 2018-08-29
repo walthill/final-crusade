@@ -31,9 +31,9 @@ void Language::loadLanguage(LangType lang)
 			}
 		}
 	}
-	else if (lang == SPANISH)
+	else if (lang == FRENCH)
 	{
-		ifstream fileStream(mESP);
+		ifstream fileStream(mFRE);
 		if (fileStream.good())
 		{
 			while (!fileStream.eof())
@@ -44,30 +44,11 @@ void Language::loadLanguage(LangType lang)
 				getline(fileStream, value);
 				if (key != "")
 				{
-					mEspLanguageTable[key] = value;
+					mFrLanguageTable[key] = value;
 				}
 			}
 		}
-	}
-	else if (lang == SWAHILI)
-	{
-		ifstream fileStream(mSWA);
-		if (fileStream.good())
-		{
-			while (!fileStream.eof())
-			{
-				string key;
-				string value;
-				getline(fileStream, key);
-				getline(fileStream, value);
-				if (key != "")
-				{
-					mSwaLanguageTable[key] = value;
-				}
-			}
-		}
-	}
-	
+	}	
 }
 
 string Language::getTranslation(string key)
@@ -78,23 +59,16 @@ string Language::getTranslation(string key)
 	{
 		result = mEngLanguageTable[key];
 	}
-	else if (mCurrentLanguage == SPANISH)
+	else if (mCurrentLanguage == FRENCH)
 	{
-
-		result = mEspLanguageTable[key];
+		result =mFrLanguageTable[key];
 	}
-	else if (mCurrentLanguage == SWAHILI)
-	{
-		result = mSwaLanguageTable[key];
-	}
-
 	return result;
 }
 
 void Language::setLangauge(LangType lang)
 {
 	mCurrentLanguage = lang;
-	//changedLang = true;
 }
 
 LangType Language::getLanguage()
@@ -108,13 +82,9 @@ string Language::printLanguage()
 	{
 		return "English";
 	}
-	else if (mCurrentLanguage == SPANISH)
+	else if(mCurrentLanguage==FRENCH)
 	{
-		return "Spanish";
-	}
-	else if (mCurrentLanguage == SWAHILI)
-	{
-		return "Swahili";
+		return "French";
 	}
 
 	return "null";

@@ -9,9 +9,6 @@ RELEASE BUILD NOTES - VS2017
 
 Game* Game::mGameInstance = NULL;
 
-//TODO: add in localization code - eng & fr
-// --> add text to scenemanager.update()
-
 //TODO: generate lifetime stats - on round win
 //TODO: tweak player sprite --> bigger and make direction more visible
 
@@ -551,7 +548,7 @@ void Game::initUI()
 	mFpscounter.addGuiText(12, mFontAsset, mWhiteText, to_string(mFPS));
 
 	//MAIN MENU UI
-	mMainTitle.initGuiElementWithText(_DisplayWidth/2 - 105, _DisplayHeight/8, mTITLE_SIZE, mFontAsset, mWhiteText, mGAME_TITLE);
+	mMainTitle.initGuiElementWithText(_DisplayWidth/2 - 120, _DisplayHeight/8, mTITLE_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("FINAL CRUSADE"));
 
 	mMainStart.initGuiElement(_DisplayWidth / 2 - 75, 155);
 	mMainStart.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("LAUNCH"));
@@ -597,7 +594,7 @@ void Game::initUI()
 	mLoseQuit.addGuiButton(mButtonBuffer, RETURN_MAIN, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
 
 	//WIN SCREEN UI
-	mWinTitle.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Success: Data Stolen!"));
+	mWinTitle.initGuiElementWithText(_DisplayWidth / 2 - 90, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Success: Data Stolen!"));
 	mWinScore.initGuiElementWithText(_DisplayWidth / 2 - 150, _DisplayHeight / 4 + 110, mUI_SIZE, mFontAsset, mWhiteText, to_string(_Score));
 	mWinTime.initGuiElementWithText(_DisplayWidth / 2 + 85, _DisplayHeight / 4 + 110, mUI_SIZE, mFontAsset, mWhiteText, to_string(_TimeSurvived));
 
@@ -621,7 +618,7 @@ void Game::initUI()
 	mStatsReturn.addGuiButton(mButtonBuffer, RETURN_STATS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
 
 	//OPTIONS
-	mOptionsText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("OPTIONS"));
+	mOptionsText.initGuiElementWithText(_DisplayWidth / 2 - 50, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("OPTIONS"));
 
 	mOptionsControls.initGuiElement(_DisplayWidth / 2 - 75, 155);
 	mOptionsControls.addGuiButton(mButtonBuffer, SHOW_CONTROLS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Show Controls"));
@@ -776,7 +773,6 @@ void Game::initUI()
 	mGuiManagerControls.addToManager("esc", &mControlsEsc);
 	mGuiManagerControls.addToManager("lmb", &mControlsLMB);
 	mGuiManagerControls.addToManager("move", &mControlsMouseMove);
-
 	mGuiManagerControls.addToManager("fps", &mFpscounter);
 
 	cout << "*******Initialized UI*******" << endl;
@@ -805,7 +801,7 @@ void Game::loadScenes()
 	mSceneManager.addScene("h", &mOptionsScene);
 	mSceneManager.addScene("i", &mControlsScene);
 
-	mSceneManager.setCurrentScene(SC_WIN);
+	mSceneManager.setCurrentScene(SC_MAIN);
 
 	_Scene = &mSceneManager;
 
@@ -1141,10 +1137,10 @@ void Game::handleEvent(const Event& theEvent)
 		{
 			if (mGuiManagerOptions.getButtonEventPressed(LANG_CHANGE))
 			{
-				/*if(mLocalization.getLanguage() == ENGLISH)
+				if(mLocalization.getLanguage() == ENGLISH)
 					mLocalization.setLangauge(FRENCH);
 				else
-					mLocalization.setLangauge(ENGLISH);*/
+					mLocalization.setLangauge(ENGLISH);
 			}
 			else if (mGuiManagerOptions.getButtonEventPressed(CHANGE_AUDIO))
 			{
