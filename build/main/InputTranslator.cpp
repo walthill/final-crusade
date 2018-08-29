@@ -28,6 +28,16 @@ void InputTranslator::initInputTranslator()
 	EventSystem::getInstance()->addListener(LEFT_ARROW_RELEASED, this);
 	EventSystem::getInstance()->addListener(RIGHT_ARROW_RELEASED, this);
 	EventSystem::getInstance()->addListener(UP_ARROW_RELEASED, this);
+
+	EventSystem::getInstance()->addListener(UP_ARROW_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(DOWN_ARROW_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(LEFT_ARROW_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(RIGHT_ARROW_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(ENTER_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(DOWN_ARROW_RELEASED_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(LEFT_ARROW_RELEASED_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(RIGHT_ARROW_RELEASED_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(UP_ARROW_RELEASED_CONTROLLER, this);
 	EventSystem::getInstance()->addListener(MOUSE_MOTION, this);
 	EventSystem::getInstance()->addListener(LEFT_MOUSE_DOWN, this);
 	EventSystem::getInstance()->addListener(LCTRL, this);
@@ -129,6 +139,49 @@ void InputTranslator::handleEvent(const Event& theEvent)
 
 		case RIGHT_ARROW_RELEASED:
 			mTranslatorEvent.setType(STOP_RIGHT);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+			break;
+			case UP_ARROW_CONTROLLER:
+			mTranslatorEvent.setType(MOVE_UP_CONTROLLER);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+
+			break;
+
+		case DOWN_ARROW_CONTROLLER:
+			mTranslatorEvent.setType(MOVE_DOWN_CONTROLLER);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+
+			break;
+
+		case LEFT_ARROW_CONTROLLER:
+			mTranslatorEvent.setType(MOVE_LEFT_CONTROLLER);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+			break;
+
+		case RIGHT_ARROW_CONTROLLER:
+			mTranslatorEvent.setType(MOVE_RIGHT_CONTROLLER);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+			break;
+
+		case UP_ARROW_RELEASED_CONTROLLER:
+			mTranslatorEvent.setType(STOP_UP_CONTROLLER);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+
+			break;
+
+		case DOWN_ARROW_RELEASED_CONTROLLER:
+			mTranslatorEvent.setType(STOP_DOWN_CONTROLLER);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+
+			break;
+
+		case LEFT_ARROW_RELEASED_CONTROLLER:
+			mTranslatorEvent.setType(STOP_LEFT_CONTROLLER);
+			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
+			break;
+
+		case RIGHT_ARROW_RELEASED_CONTROLLER:
+			mTranslatorEvent.setType(STOP_RIGHT_CONTROLLER);
 			EventSystem::getInstance()->fireEvent(mTranslatorEvent);
 			break;
 

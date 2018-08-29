@@ -111,7 +111,6 @@ void InputSystem::getInputEvents()
 			#endif
 			
 			break;
-
 		case SDL_KEYUP:
 			if (mEvent.key.keysym.sym == SDLK_w)
 			{
@@ -163,24 +162,24 @@ void InputSystem::getInputEvents()
 					{
 						//a
 					//	cout << "InputSystem: Left arrow" << endl;
-						mKeyEvent.setType(LEFT_ARROW);
+						mKeyEvent.setType(LEFT_ARROW_CONTROLLER);
 						EventSystem::getInstance()->fireEvent(mKeyEvent);
 					}
 					else if (mEvent.jaxis.value > mLeftStickXDeadZone)
 					{
 						//d
 					//	cout << "InputSystem: Right arrow" << endl;
-						mKeyEvent.setType(RIGHT_ARROW);
+						mKeyEvent.setType(RIGHT_ARROW_CONTROLLER);
 						EventSystem::getInstance()->fireEvent(mKeyEvent);
 					}
 					else
 					{
 					//	cout << "InputSystem: Left arrow" << endl;
-						mKeyEvent.setType(LEFT_ARROW_RELEASED);
+						mKeyEvent.setType(LEFT_ARROW_RELEASED_CONTROLLER);
 						EventSystem::getInstance()->fireEvent(mKeyEvent);
 
 					//	cout << "InputSystem: Right arrow" << endl;
-						mKeyEvent.setType(RIGHT_ARROW_RELEASED);
+						mKeyEvent.setType(RIGHT_ARROW_RELEASED_CONTROLLER);
 						EventSystem::getInstance()->fireEvent(mKeyEvent);
 					}
 				}
@@ -191,31 +190,31 @@ void InputSystem::getInputEvents()
 					{
 						//w
 					//	cout << "InputSystem: Up arrow" << endl;
-						mKeyEvent.setType(UP_ARROW);
+						mKeyEvent.setType(UP_ARROW_CONTROLLER);
 						EventSystem::getInstance()->fireEvent(mKeyEvent);
 					}
 					else if (mEvent.jaxis.value > mLeftStickYDeadZone)
 					{
 						//s
 					//	cout << "InputSystem: Down arrow" << endl;
-						mKeyEvent.setType(DOWN_ARROW);
+						mKeyEvent.setType(DOWN_ARROW_CONTROLLER);
 						EventSystem::getInstance()->fireEvent(mKeyEvent);
 					}
 					else
 					{
 					//	cout << "InputSystem: Up arrow" << endl;
-						mKeyEvent.setType(UP_ARROW_RELEASED);
+						mKeyEvent.setType(UP_ARROW_RELEASED_CONTROLLER);
 						EventSystem::getInstance()->fireEvent(mKeyEvent);
 
 					//	cout << "InputSystem: Down arrow" << endl;
-						mKeyEvent.setType(DOWN_ARROW_RELEASED);
+						mKeyEvent.setType(DOWN_ARROW_RELEASED_CONTROLLER);
 						EventSystem::getInstance()->fireEvent(mKeyEvent);
 					}
 				}
 				if (mEvent.jaxis.axis == 3) //right stick x
 				{
 					xAxis = SDL_JoystickGetAxis(mGameController, mEvent.jaxis.axis);
-					yAxis = SDL_JoystickGetAxis(mGameController, 4);
+					yAxis = SDL_JoystickGetAxis(mGameController, 4);//RS y axis
 
 					if (mEvent.jaxis.value < -mRightStickXDeadZone || mEvent.jaxis.value > mRightStickXDeadZone)
 					{

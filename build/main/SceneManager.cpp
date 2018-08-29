@@ -102,7 +102,11 @@ void SceneManager::clearManager()
 }
 
 
-void SceneManager::update(double timeElapsed, int &highScore, int &highCombo, string &bestTime, string &timePlayed, int &lifetimeScore, int &filesCaptured, int &musicValue, bool &controllerInUse, int &combo, int &score, int &fragmentsCollectedPercentage, int const &minutes, int const &seconds, double &fps)
+void SceneManager::update(double timeElapsed, int &highScore, int &highCombo, string &bestTime, 
+						  string &timePlayed, int &lifetimeScore, int &filesCaptured, 
+						  int &musicValue, bool &controllerInUse, int &combo, int &score, 
+						  int &fragmentsCollectedPercentage, int const &minutes, int const &seconds, 
+						  double &fps)
 {
 	map<SceneID, Scene*>::iterator iter;
 
@@ -131,17 +135,24 @@ void SceneManager::update(double timeElapsed, int &highScore, int &highCombo, st
 			}
 			else if (iter->second->getSceneType() == SC_OPTIONS)
 			{
-				string controllerStr = "null";
+				string controllerStr = "null",
+					   musicStr = "null";
+				
 				if (controllerInUse)
 					controllerStr = ": On";
 				else
 					controllerStr = ": Off";
+				
+				if (musicValue == 1)
+					musicStr = ": On";
+				else
+					musicStr = ": Off";
 
 				iter->second->getGuiManager()->getGuiObject("title")->updateText(timeElapsed, mLocalization->getTranslation("OPTIONS"));
 				iter->second->getGuiManager()->getGuiObject("1")->updateText(timeElapsed, mLocalization->getTranslation("SHOW CONTROLS"));
 				iter->second->getGuiManager()->getGuiObject("2")->updateText(timeElapsed, mLocalization->getTranslation("GAMEPAD") + controllerStr);
 				iter->second->getGuiManager()->getGuiObject("3")->updateText(timeElapsed, mLocalization->getTranslation("LANGUAGE"));
-				iter->second->getGuiManager()->getGuiObject("4")->updateText(timeElapsed, mLocalization->getTranslation("MUSIC") +": " + to_string(musicValue));
+				iter->second->getGuiManager()->getGuiObject("4")->updateText(timeElapsed, mLocalization->getTranslation("MUSIC") + musicStr);
 				iter->second->getGuiManager()->getGuiObject("5")->updateText(timeElapsed, mLocalization->getTranslation("RETURN TO MAIN"));
 
 				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
@@ -159,6 +170,8 @@ void SceneManager::update(double timeElapsed, int &highScore, int &highCombo, st
 			}
 			else if (iter->second->getSceneType() == SC_WIN)
 			{
+				iter->second->getGuiManager()->getGuiObject("time")->updateText(timeElapsed, "TIME: " + to_string(minutes) + timeStr + to_string(seconds));
+				iter->second->getGuiManager()->getGuiObject("score")->updateText(timeElapsed, "SCORE: "+to_string(score));
 
 				iter->second->getGuiManager()->getGuiObject("fps")->updateText(timeElapsed, to_string(fps));
 			}

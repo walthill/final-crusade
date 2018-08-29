@@ -30,8 +30,52 @@ SHOW CONTROLS
 SHOW CONTROLS
 CONTROLS
 CONTROLS
+KEYBOARD/MOUSE
+KEYBOARD/MOUSE
+ESC -- Pause Game
+ESC -- Pause Game
+ENTER -- Select
+ENTER -- Select
+W -- Up
+W -- Up
+A -- Left
+A -- Left
+S -- Down
+S -- Down
+D -- Right
+D -- Right
+MOVE MOUSE -- Rotate Player
+MOVE MOUSE -- Rotate Player
+LEFT MOUSE-- Shoot
+LEFT MOUSE-- Shoot
+START -- Pause Game
+START -- Pause Game
+A -- Select
+A -- Select
+LEFT STICK -- Up, Left, Right, Down
+LEFT STICK -- Up, Left, Right, Down
+RIGHT STICK -- Rotate Player
+RIGHT STICK -- Rotate Player
+RT -- Shoot
+RT -- Shoot
 GAMEPAD
 GAMEPAD
+Walter Hill -- Programming, Sprites, Design
+Walter Hill -- Programming, Sprites, Design
+AUDIO
+AUDIO
+Cabled_mess -- Clack_Minimal UI Sounds
+Cabled_mess -- Clack_Minimal UI Sounds
+Cabled_mess -- Boom_C_03
+Cabled_mess -- Boom_C_03
+Gravity Sound -- Cloudy
+Gravity Sound -- Cloudy
+Josepharaoh99 -- button pressed
+Josepharaoh99 -- button pressed
+Xythe -- Fight for your life loop
+Xythe -- Fight for your life loop
+Xtrgamr -- music game, win or high score
+Xtrgamr -- music game, win or high score
 Combo
 Combo
 File

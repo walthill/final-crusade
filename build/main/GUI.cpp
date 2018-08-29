@@ -67,7 +67,7 @@ void Gui::addGuiButton(GraphicsBuffer buttonBuffer, EventType type, int sheetRow
 										 spriteW, spriteH);
 
 	if (mButtonUI.mButtonType == NEW_GAME || mButtonUI.mButtonType == RETURN_STATS || mButtonUI.mButtonType == RETURN_CREDITS || 
-		mButtonUI.mButtonType == SHOW_CONTROLS || mButtonUI.mButtonType == RESUME)
+		mButtonUI.mButtonType == SHOW_CONTROLS || mButtonUI.mButtonType == RESUME || mButtonUI.mButtonType == RETURN_TO_OPTIONS)
 		
 		mButtonUI.mButtonAnim.setSpriteIndex(1);
 }

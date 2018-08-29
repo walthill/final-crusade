@@ -36,6 +36,7 @@ void Scene::draw(GraphicsSystem *graphicsSystem)
 		case SC_OPTIONS:
 		case SC_PAUSE:
 		case SC_CREDITS:
+		case SC_CONTROLS:
 		case SC_STATS:
 		case SC_WIN:
 		case SC_LOSE:

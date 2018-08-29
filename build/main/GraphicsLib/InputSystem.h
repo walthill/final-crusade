@@ -20,8 +20,8 @@ class InputSystem : public Trackable
 
 		//Controller data
 		//Analog joystick dead zone
-		int mLeftStickXDeadZone = 6000, mLeftStickYDeadZone = 6000, 
-			mRightStickXDeadZone = 6000, mRightStickYDeadZone = 6000;
+		int mLeftStickXDeadZone = 8000, mLeftStickYDeadZone = 8000, 
+			mRightStickXDeadZone = 8000, mRightStickYDeadZone = 8000;
 
 		SDL_Joystick *mGameController; //need Left, Right stick, A, RT
 		Sint16 xAxis, yAxis;

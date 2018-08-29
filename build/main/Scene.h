@@ -14,6 +14,7 @@ enum SceneType
 	SC_LOSE,
 	SC_WIN,
 	SC_OPTIONS,
+	SC_CONTROLS,
 	SC_CREDITS,
 	SC_STATS
 };

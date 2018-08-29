@@ -46,16 +46,18 @@ class Game : EventListener
 		
 		//each scene has a manager
 		GUIManager mGuiManagerMain, mGuiManagerGame, mGuiManagerOptions, mGuiManagerStats,
-				   mGuiManagerPause, mGuiManagerLose, mGuiManagerWin, mGuiManagerCredits;
+				   mGuiManagerPause, mGuiManagerLose, mGuiManagerWin, mGuiManagerCredits,
+				   mGuiManagerControls;
 
 		Scene mMainMenuScene, mGameScene, mOptionsScene, mPauseScene, 
-			  mLoseScene, mWinScene, mStatsScene, mCreditScene;
+			  mLoseScene, mWinScene, mStatsScene, mCreditScene, mControlsScene;
 		
 		SceneManager mSceneManager;
-		
+
 		Sound mButtonMove, mButtonSelect, mPlayerLose, mPlayerShoot, mEnemyShoot, 
-			  mPlayerHit, mEnemyHit, mMountainBlock,
+			  mPlayerHit, mEnemyHit, mMountainBlock, mWinMusic,
 			  mMenuMusic, mGameMusic, mFragmentPickup;
+		bool shouldPlayMusic;
 
 		Gui mFpscounter, mLoseRetry, mLoseQuit, mLoseText, mPauseText,
 			mWinTitle, mWinPlayAgain, mWinQuit, mPausePlay,
@@ -65,12 +67,18 @@ class Game : EventListener
 			mOptionsText, mOptionsReturn, mCreditsText, mCreditsReturn,
 			mOptionsLang, mOptionsControls, mOptionsToggleController,
 			mOptionsMusic, mStatsHighScore, mStatsHighCombo, mStatsTimePlayed, mStatsFastestTime,
-			mStatsFilesCaptured, mStatsLifetimeScore;
+			mStatsFilesCaptured, mStatsLifetimeScore, mControlsReturn, mControlsText,
+			mControlsGamepad, mControlsKeyboard, mControlsW, mControlsA, mControlsS, mControlsD,
+			mControlsLMB, mControlsMouseMove, mControlsEnter, mControlsEsc, mControlsStart, mControlsAButton, 
+			mControlsLS, mControlsRS, mControlsRT, mCreditsWalter, mCreditsAudio, mCreditsMusic1,
+			mCreditsMusic2, mCreditsMusic3, mCreditsMusic4, mCreditsMusic5, mCreditsMusic6,
+			mWinTime, mWinScore;
 
 		//Visual Assets
 		GraphicsBuffer mButtonBuffer; // ui button
 		GraphicsBuffer mMenuBuffer, mLoadingScreen, mGameScreenBuffer, mLoseScreenBuffer, 
-					   mWinScreenBuffer, mStatsScreenBuffer, mCreditsScreenBuffer, mOptionsScreenBuffer; //backgrounds
+					   mWinScreenBuffer, mStatsScreenBuffer, mCreditsScreenBuffer, 
+					   mOptionsScreenBuffer; //backgrounds
 		GraphicsBuffer mPlayerBuffer, mBulletBuffer, mEnemyBulletBuffer, mFragmentBuffer,
 					   mRoninBuffer, mMountainBuffer, mHiveBuffer;
 
@@ -79,6 +87,7 @@ class Game : EventListener
 		Animation mPlayerAnim, mBulletAnim, mEnemyBulletAnim, mFragmentAnim, mHiveAnim, 
 				  mRoninAnim, mMountainAnim;
 
+		const int mTITLE_SIZE = 35;
 		const int mFONT_SIZE = 25;
 		const int mUI_SIZE = 18;
 		const int mUI_TXT_SIZE = 12;
@@ -101,7 +110,7 @@ class Game : EventListener
 		Player mPlayer;
 
 		unsigned int mEventType;
-		bool mStartGame;
+		bool mStartGame, menuButtonMoved;
 
 		int mSpriteSize;
 		int mGridW, mGridH;
@@ -128,9 +137,6 @@ class Game : EventListener
 		int mFilesCaptured, mHighCombo, mHighScore, mLifetimeScore;
 		string mBestTime, mTimePlayed;
 
-		//music
-		SoundID menuMusic, gameMusic;
-
 		//text variables to update
 		int musicValue;
 
@@ -153,7 +159,7 @@ class Game : EventListener
 		mLoadBgAsset, mFontAsset, mPlayerAsset, mEnemyBulletAsset, mRoninAsset, mBulletAsset,
 		mMountainAsset, mFragmentAsset, mHiveAsset, mPlayerShootSound, mPlayerHitSound, 
 		mPlayerLoseSound, mEnemyShootSound, mEnemyHitSound, mButtonMoveSound, mButtonSelectSound,
-		mFragmentPickupSound, mStatsBgAsset, mOptionsBgAsset, mCreditsBgAsset;
+		mFragmentPickupSound, mStatsBgAsset, mOptionsBgAsset, mCreditsBgAsset, mWinSound, mMenuSound, mGameSound;
 
 		//GraphicsBuffer tags
 		const BufferTag mPLAYER_ID = "player";
@@ -177,7 +183,8 @@ class Game : EventListener
 		const string PLAYER_HIT = "playerhit", PLAYER_SHOOT = "playershoot", 
 					 ENEMY_HIT= "enemyhit", ENEMY_SHOOT = "enemyshoot", 
 					 BUTTON_MOVE = "buttonmove", BUTTON_SEL = "buttonsel", 
-					 FRAG_PICKUP = "fragmentpick", PLAYER_LOSE = "playerdie";
+					 FRAG_PICKUP = "fragmentpick", PLAYER_LOSE = "playerdie",
+					 MENU_MUSIC = "menumusic", GAME_MUSIC = "gamemusic", WIN_MUSIC = "winmusic";
 
 		//UI tags
 		const string mGEN_TAG = "general";
@@ -205,7 +212,8 @@ class Game : EventListener
 
 		//gloabl vars
 		int _DisplayWidth, _DisplayHeight, _LevelWidth, _LevelHeight;
-		int _Score, _ComboCount, _TimeSurvived, _NumFragments, _FragmentsToCollect;
+		int _Score, _ComboCount, _TimeSurvived;
+		float _NumFragments, _FragmentsToCollect;
 		bool _CanCombo;
 		SceneManager* _Scene;
 

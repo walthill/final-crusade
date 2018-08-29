@@ -9,12 +9,11 @@ RELEASE BUILD NOTES - VS2017
 
 Game* Game::mGameInstance = NULL;
 
-//TODO(2): controls scene
-//TODO: credits text
 //TODO: add in localization code - eng & fr
-//TODO(1): add menu music & game music
-//TODO: generate lifetime stats
-//TODO(3): seperate controller and keyboard events
+// --> add text to scenemanager.update()
+
+//TODO: generate lifetime stats - on round win
+//TODO: tweak player sprite --> bigger and make direction more visible
 
 //creating exe
 //https://discourse.libsdl.org/t/creating-an-easily-distributable-executable-file/24413
@@ -39,11 +38,20 @@ void Game::installListeners()
 	EventSystem::getInstance()->addListener(MOVE_RIGHT, this);
 	EventSystem::getInstance()->addListener(MOVE_DOWN, this);
 	EventSystem::getInstance()->addListener(MOVE_UP, this);
+	EventSystem::getInstance()->addListener(MOVE_LEFT_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(MOVE_RIGHT_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(MOVE_DOWN_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(MOVE_UP_CONTROLLER, this);
+
 	EventSystem::getInstance()->addListener(ROTATION, this);
 	EventSystem::getInstance()->addListener(STOP_LEFT, this);
 	EventSystem::getInstance()->addListener(STOP_RIGHT, this);
 	EventSystem::getInstance()->addListener(STOP_DOWN, this);
 	EventSystem::getInstance()->addListener(STOP_UP, this);
+	EventSystem::getInstance()->addListener(STOP_LEFT_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(STOP_RIGHT_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(STOP_DOWN_CONTROLLER, this);
+	EventSystem::getInstance()->addListener(STOP_UP_CONTROLLER, this);
 	EventSystem::getInstance()->addListener(SHOOT, this);
 	EventSystem::getInstance()->addListener(SCREENCAP, this);
 	EventSystem::getInstance()->addListener(TOGGLE_CONTROLLER, this);
@@ -73,6 +81,7 @@ bool Game::initGame()
 
 	firstPlay = true;
 	controllerInUse = false; 
+	shouldPlayMusic = true;
 	musicValue = 1;
 	srand(unsigned(time(NULL)));
 
@@ -117,6 +126,8 @@ bool Game::initGame()
 
 	delete pPerformanceTracker;
 
+	mSceneManager.playSound(MENU_MUSIC);
+
 	return true;
 }
 
@@ -157,6 +168,9 @@ void Game::loadGameData()
 	const char * iniFragmentPickupSound = ini.GetValue("ASSETS", "fragmentpickup", "default");
 	const char * iniButtonMoveSound = ini.GetValue("ASSETS", "buttonmove", "default");
 	const char * iniButtonSelectSound = ini.GetValue("ASSETS", "buttonselect", "default");
+	const char * iniMenuMusic= ini.GetValue("ASSETS", "menumusic", "default");
+	const char * iniGameMusic = ini.GetValue("ASSETS", "gamemusic", "default");
+	const char * iniWinMusic = ini.GetValue("ASSETS", "winmusic", "default");
 
 
 	const char * iniLifetimeScore = ini.GetValue("STATS", "lifetimescore", "default");
@@ -218,6 +232,9 @@ void Game::loadGameData()
 	mButtonSelectSound = iniButtonSelectSound;
 	mButtonMoveSound = iniButtonMoveSound;
 	mFragmentPickupSound = iniFragmentPickupSound;
+	mMenuSound = iniMenuMusic;
+	mGameSound = iniGameMusic;
+	mWinSound = iniWinMusic;
 
 	_DisplayWidth = atoi(iniWidth);
 	_DisplayHeight = atoi(iniHeight);
@@ -290,8 +307,7 @@ void Game::loadBackgroundsAndBuffers()
 	mStatsScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mStatsBgAsset);
 	mCreditsScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mCreditsBgAsset);
 	mOptionsScreenBuffer.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mOptionsBgAsset);
-
-
+	
 	//Add buffers to buffer manager
 	mBufferManager.addGraphicsBuffer(mPLAYER_ID, &mPlayerBuffer);
 	mBufferManager.addGraphicsBuffer(mBULLET_ID, &mBulletBuffer);
@@ -535,7 +551,7 @@ void Game::initUI()
 	mFpscounter.addGuiText(12, mFontAsset, mWhiteText, to_string(mFPS));
 
 	//MAIN MENU UI
-	mMainTitle.initGuiElementWithText(_DisplayWidth/2 - 75, _DisplayHeight/8, mFONT_SIZE, mFontAsset, mWhiteText, mGAME_TITLE);
+	mMainTitle.initGuiElementWithText(_DisplayWidth/2 - 105, _DisplayHeight/8, mTITLE_SIZE, mFontAsset, mWhiteText, mGAME_TITLE);
 
 	mMainStart.initGuiElement(_DisplayWidth / 2 - 75, 155);
 	mMainStart.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("LAUNCH"));
@@ -582,6 +598,8 @@ void Game::initUI()
 
 	//WIN SCREEN UI
 	mWinTitle.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Success: Data Stolen!"));
+	mWinScore.initGuiElementWithText(_DisplayWidth / 2 - 150, _DisplayHeight / 4 + 110, mUI_SIZE, mFontAsset, mWhiteText, to_string(_Score));
+	mWinTime.initGuiElementWithText(_DisplayWidth / 2 + 85, _DisplayHeight / 4 + 110, mUI_SIZE, mFontAsset, mWhiteText, to_string(_TimeSurvived));
 
 	mWinPlayAgain.initGuiElement(_DisplayWidth / 2 - 75, 155);
 	mWinPlayAgain.addGuiButton(mButtonBuffer, NEW_GAME, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset,   mWhiteText, mLocalization.getTranslation("RELAUNCH"));
@@ -620,10 +638,42 @@ void Game::initUI()
 	mOptionsReturn.initGuiElement(_DisplayWidth / 2 - 75, 380);
 	mOptionsReturn.addGuiButton(mButtonBuffer, RETURN_OPTIONS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
 
-	//CREDITS
-	mCreditsText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("CREDITS"));
+	//CONTROLS
+	mControlsText.initGuiElementWithText(_DisplayWidth / 2 - 75, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("CONTROLS"));
+	
+	mControlsKeyboard.initGuiElementWithText(_DisplayWidth / 4 - 75, _DisplayHeight / 2 - 200, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("KEYBOARD/MOUSE"));
+	mControlsEsc.initGuiElementWithText(_DisplayWidth / 4 - 75, _DisplayHeight / 2 - 150, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("ESC -- Pause Game"));
+	mControlsEnter.initGuiElementWithText(_DisplayWidth / 4 - 75, _DisplayHeight / 2 - 100, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("ENTER -- Select"));
+	mControlsW.initGuiElementWithText(_DisplayWidth / 4 - 75, _DisplayHeight / 2 - 50, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("W -- Up"));
+	mControlsA.initGuiElementWithText(_DisplayWidth / 4 - 75, _DisplayHeight / 2 - 25, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("A -- Left"));
+	mControlsS.initGuiElementWithText(_DisplayWidth / 4 - 75, _DisplayHeight / 2, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("S -- Down"));
+	mControlsD.initGuiElementWithText(_DisplayWidth / 4 - 75, _DisplayHeight / 2 + 25, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("D -- Right"));
+	mControlsLMB.initGuiElementWithText(_DisplayWidth / 4 - 75, _DisplayHeight  /2 + 75, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("MOVE MOUSE -- Rotate Player"));
+	mControlsMouseMove.initGuiElementWithText(_DisplayWidth / 4 - 75, _DisplayHeight /2 +125, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("LEFT MOUSE-- Shoot"));
+	
+	mControlsGamepad.initGuiElementWithText(_DisplayWidth / 2 + 75, _DisplayHeight / 2 - 200, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("GAMEPAD"));
+	mControlsStart.initGuiElementWithText(_DisplayWidth / 2 + 75, _DisplayHeight / 2 - 150, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("START -- Pause Game"));
+	mControlsAButton.initGuiElementWithText(_DisplayWidth / 2 + 75, _DisplayHeight / 2 - 100, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("A -- Select"));
+	mControlsLS.initGuiElementWithText(_DisplayWidth / 2 + 75, _DisplayHeight / 2 - 55, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("LEFT STICK -- Up, Left, Right, Down"));
+	mControlsRS.initGuiElementWithText(_DisplayWidth / 2 + 75, _DisplayHeight / 2, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RIGHT STICK -- Rotate Player"));
+	mControlsRT.initGuiElementWithText(_DisplayWidth / 2 + 75, _DisplayHeight / 2 + 50, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RT -- Shoot"));
 
-	mCreditsReturn.initGuiElement(_DisplayWidth / 2 - 75, 195);
+	mControlsReturn.initGuiElement(_DisplayWidth / 2 - 75, 595);
+	mControlsReturn.addGuiButton(mButtonBuffer, RETURN_TO_OPTIONS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
+
+	//CREDITS
+	mCreditsText.initGuiElementWithText(_DisplayWidth / 2 - 90, _DisplayHeight / 8, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("CREDITS"));
+
+	mCreditsWalter.initGuiElementWithText(_DisplayWidth / 2 - 180, 150, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Walter Hill -- Programming, Sprites, Design"));
+	mCreditsAudio.initGuiElementWithText(_DisplayWidth / 2 - 90, 200, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("AUDIO"));
+	mCreditsMusic1.initGuiElementWithText(_DisplayWidth / 2 - 180, 250, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Cabled_mess -- Clack_Minimal UI Sounds"));
+	mCreditsMusic2.initGuiElementWithText(_DisplayWidth / 2 - 180, 300, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Cabled_mess -- Boom_C_03"));
+	mCreditsMusic3.initGuiElementWithText(_DisplayWidth / 2 - 180, 350, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Gravity Sound -- Cloudy"));
+	mCreditsMusic4.initGuiElementWithText(_DisplayWidth / 2 - 180, 400, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Josepharaoh99 -- button pressed"));
+	mCreditsMusic5.initGuiElementWithText(_DisplayWidth / 2 - 180, 450, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Xythe -- Fight for your life loop"));
+	mCreditsMusic6.initGuiElementWithText(_DisplayWidth / 2 - 180, 500, mUI_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("Xtrgamr -- music game, win or high score"));
+
+	mCreditsReturn.initGuiElement(_DisplayWidth / 2 - 75, 595);
 	mCreditsReturn.addGuiButton(mButtonBuffer, RETURN_CREDITS, mBUTTON_SPRSHEET_ROWS, mBUTTON_SPRSHEET_COLS, 160, 32, mUI_TXT_SIZE, mFontAsset, mWhiteText, mLocalization.getTranslation("RETURN TO MAIN"));
 
 	/*** add ui objects to manager ***/
@@ -666,6 +716,8 @@ void Game::initUI()
 	mGuiManagerWin.addToManager("1", &mWinPlayAgain);
 	mGuiManagerWin.addToManager("2", &mWinQuit);
 	mGuiManagerWin.addToManager("title", &mWinTitle);
+	mGuiManagerWin.addToManager("score", &mWinScore);
+	mGuiManagerWin.addToManager("time", &mWinTime);
 	mGuiManagerWin.addToManager("fps", &mFpscounter);
 
 	//STATS SCREEN UI MANAGER
@@ -685,6 +737,14 @@ void Game::initUI()
 	mGuiManagerCredits.setNumButtons(1);
 	mGuiManagerCredits.addToManager("1", &mCreditsReturn);
 	mGuiManagerCredits.addToManager("title", &mCreditsText);
+	mGuiManagerCredits.addToManager("walter", &mCreditsWalter);
+	mGuiManagerCredits.addToManager("audio", &mCreditsAudio);
+	mGuiManagerCredits.addToManager("m1", &mCreditsMusic1);
+	mGuiManagerCredits.addToManager("m2", &mCreditsMusic2);
+	mGuiManagerCredits.addToManager("m3", &mCreditsMusic3);
+	mGuiManagerCredits.addToManager("m4", &mCreditsMusic4);
+	mGuiManagerCredits.addToManager("m5", &mCreditsMusic5);
+	mGuiManagerCredits.addToManager("m6", &mCreditsMusic6);
 	mGuiManagerCredits.addToManager("fps", &mFpscounter);
 
 	//OPTIONS SCREEN UI MANAGER
@@ -696,6 +756,28 @@ void Game::initUI()
 	mGuiManagerOptions.addToManager("5", &mOptionsReturn);
 	mGuiManagerOptions.addToManager("title", &mOptionsText);
 	mGuiManagerOptions.addToManager("fps", &mFpscounter);
+
+	//CONTROLS SCREEN UI MANAGER
+	mGuiManagerControls.setNumButtons(1);
+	mGuiManagerControls.addToManager("1", &mControlsReturn);
+	mGuiManagerControls.addToManager("title", &mControlsText);
+	mGuiManagerControls.addToManager("gamepad", &mControlsGamepad);
+	mGuiManagerControls.addToManager("start", &mControlsStart);
+	mGuiManagerControls.addToManager("abutton", &mControlsAButton);
+	mGuiManagerControls.addToManager("rs", &mControlsRS);
+	mGuiManagerControls.addToManager("ls", &mControlsLS);
+	mGuiManagerControls.addToManager("rt", &mControlsRT);
+	mGuiManagerControls.addToManager("keys", &mControlsKeyboard);
+	mGuiManagerControls.addToManager("w", &mControlsW);
+	mGuiManagerControls.addToManager("a", &mControlsA);
+	mGuiManagerControls.addToManager("s", &mControlsS);
+	mGuiManagerControls.addToManager("d", &mControlsD);
+	mGuiManagerControls.addToManager("enter", &mControlsEnter);
+	mGuiManagerControls.addToManager("esc", &mControlsEsc);
+	mGuiManagerControls.addToManager("lmb", &mControlsLMB);
+	mGuiManagerControls.addToManager("move", &mControlsMouseMove);
+
+	mGuiManagerControls.addToManager("fps", &mFpscounter);
 
 	cout << "*******Initialized UI*******" << endl;
 }
@@ -710,6 +792,7 @@ void Game::loadScenes()
 	mStatsScene.initScene(SC_STATS, &mGuiManagerStats, &mStatsScreenSprite);
 	mCreditScene.initScene(SC_CREDITS, &mGuiManagerCredits, &mCreditsScreenSprite);
 	mOptionsScene.initScene(SC_OPTIONS, &mGuiManagerOptions, &mOptionsScreenSprite);
+	mControlsScene.initScene(SC_CONTROLS, &mGuiManagerControls, &mOptionsScreenSprite);
 
 	//add to manager
 	mSceneManager.addScene("a", &mMainMenuScene);
@@ -720,8 +803,9 @@ void Game::loadScenes()
 	mSceneManager.addScene("f", &mStatsScene);
 	mSceneManager.addScene("g", &mCreditScene);
 	mSceneManager.addScene("h", &mOptionsScene);
+	mSceneManager.addScene("i", &mControlsScene);
 
-	mSceneManager.setCurrentScene(SC_MAIN);
+	mSceneManager.setCurrentScene(SC_WIN);
 
 	_Scene = &mSceneManager;
 
@@ -739,6 +823,9 @@ void Game::initAudio()
 	mButtonSelect.initSound(true, mLOCAL_ASSET_PATH + mButtonSelectSound, false);
 	mFragmentPickup.initSound(true, mLOCAL_ASSET_PATH + mFragmentPickupSound, false);
 	mPlayerLose.initSound(true, mLOCAL_ASSET_PATH + mPlayerLoseSound, false);
+	mMenuMusic.initSound(false, mLOCAL_ASSET_PATH + mMenuSound, true);
+	mGameMusic.initSound(false, mLOCAL_ASSET_PATH + mGameSound, true);
+	mWinMusic.initSound(true, mLOCAL_ASSET_PATH + mWinSound, false);
 
 	mSceneManager.addAudio(PLAYER_HIT, &mPlayerHit);
 	mSceneManager.addAudio(PLAYER_SHOOT, &mPlayerShoot);
@@ -748,6 +835,9 @@ void Game::initAudio()
 	mSceneManager.addAudio(BUTTON_SEL, &mButtonSelect);
 	mSceneManager.addAudio(FRAG_PICKUP, &mFragmentPickup);
 	mSceneManager.addAudio(PLAYER_LOSE, &mPlayerLose);
+	mSceneManager.addAudio(MENU_MUSIC, &mMenuMusic);
+	mSceneManager.addAudio(GAME_MUSIC, &mGameMusic);
+	mSceneManager.addAudio(WIN_MUSIC, &mWinMusic);
 }
 #pragma endregion
 
@@ -768,16 +858,6 @@ bool Game::saveGame() //TODO: use to save stats after win/lose
 	return result;
 }
 
-
-/*void Game::loadLastSave()
-{
-
-	CSimpleIniA ini;
-	ini.LoadFile(mINI_FILE.c_str());
-
-
-	mSceneManager.setCurrentScene(SC_GAME);
-}*/
 
 void Game::cleanupGame()
 {
@@ -860,15 +940,19 @@ void Game::update(double timeElapsed)
 		//check lose condition
 		if (!mPlayer.isVisible())
 		{
+			mSceneManager.stopSound(GAME_MUSIC);
 			mSceneManager.playSfx(PLAYER_LOSE);
 			mSceneManager.setCurrentScene(SC_LOSE);
 		}
 		//check win condition
 		if (_NumFragments == _FragmentsToCollect)
+		{
+			mSceneManager.stopSound(GAME_MUSIC);
+			mSceneManager.playSfx(WIN_MUSIC);
 			mSceneManager.setCurrentScene(SC_WIN);
+		}
 
 		comboUpdate(timeElapsed);
-		
 		mGameView.update(timeElapsed);
 	}
 }
@@ -1011,10 +1095,17 @@ void Game::handleEvent(const Event& theEvent)
 		{
 			if (mGuiManagerMain.getButtonEventPressed(NEW_GAME))
 			{
-				if(!firstPlay)
+				if (!firstPlay)
+				{
+					if(musicValue == 1)
+						mSceneManager.setCurrentMusic(GAME_MUSIC);	
 					resetGameState();
+				}
 				else
 				{
+					mSceneManager.stopCurrentMusic();
+					mSceneManager.playSound(GAME_MUSIC);
+					
 					firstPlay = false;
 					survivalTimer = new Timer;
 					survivalTimer->start();
@@ -1039,6 +1130,13 @@ void Game::handleEvent(const Event& theEvent)
 				mIsRunning = false;
 			}
 		}
+		else if (mSceneManager.getCurrentScene() == SC_CONTROLS)
+		{
+			if (mGuiManagerControls.getButtonEventPressed(RETURN_TO_OPTIONS))
+			{
+				mSceneManager.setCurrentScene(SC_OPTIONS);
+			}
+		}
 		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
 		{
 			if (mGuiManagerOptions.getButtonEventPressed(LANG_CHANGE))
@@ -1051,20 +1149,21 @@ void Game::handleEvent(const Event& theEvent)
 			else if (mGuiManagerOptions.getButtonEventPressed(CHANGE_AUDIO))
 			{
 				//toggle music on/off
-				if (musicValue == 0)
+				if (musicValue == 0) //turn on
 				{
 					musicValue = 1;
-		//			mSceneManager.stopCurrentMusic();
+					mSceneManager.playSound(MENU_MUSIC);
 				}
-				else
+				else //turn off
 				{
 					musicValue = 0;
-	//				mSceneManager.playSound(menuMusic);
+					mSceneManager.stopSound(MENU_MUSIC);
 				}
 			}
 			else if (mGuiManagerOptions.getButtonEventPressed(SHOW_CONTROLS))
 			{
 				//go to control scene w/ controls in text
+				mSceneManager.setCurrentScene(SC_CONTROLS);
 			}
 			else if (mGuiManagerOptions.getButtonEventPressed(CONTROLLER))
 			{
@@ -1088,6 +1187,10 @@ void Game::handleEvent(const Event& theEvent)
 			}
 			else if (mGuiManagerPause.getButtonEventPressed(RETURN_MAIN))
 			{
+				mSceneManager.stopCurrentMusic();
+				if (musicValue == 1)
+					mSceneManager.playSound(MENU_MUSIC);
+
 				mSceneManager.setCurrentScene(SC_MAIN);
 			}
 		}
@@ -1096,10 +1199,16 @@ void Game::handleEvent(const Event& theEvent)
 			if (mGuiManagerLose.getButtonEventPressed(NEW_GAME))
 			{
 				resetGameState();
+				mSceneManager.stopCurrentMusic();
+				if (musicValue == 1)
+					mSceneManager.playSound(GAME_MUSIC);
 				mSceneManager.setCurrentScene(SC_GAME);
 			}
 			else if (mGuiManagerLose.getButtonEventPressed(RETURN_MAIN))
 			{
+				mSceneManager.stopCurrentMusic();
+				if (musicValue == 1)
+					mSceneManager.playSound(MENU_MUSIC);
 				mSceneManager.setCurrentScene(SC_MAIN);
 			}
 		}
@@ -1109,10 +1218,16 @@ void Game::handleEvent(const Event& theEvent)
 			{
 				//restart game & set scene to game
 				resetGameState();
+				mSceneManager.stopCurrentMusic();
+				if (musicValue == 1)
+					mSceneManager.playSound(GAME_MUSIC);
 				mSceneManager.setCurrentScene(SC_GAME);
 			}
 			else if (mGuiManagerWin.getButtonEventPressed(RETURN_MAIN))
 			{
+				mSceneManager.stopSound(WIN_MUSIC);
+				if (musicValue == 1)
+					mSceneManager.playSound(MENU_MUSIC);
 				mSceneManager.setCurrentScene(SC_MAIN);
 			}
 		}
@@ -1134,16 +1249,18 @@ void Game::handleEvent(const Event& theEvent)
 		mSceneManager.playSfx(BUTTON_SEL);
 		break;
 	case SHOOT:
-		
-		if (mPlayer.isVisible())
+		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			bulletSpawnX = mPlayer.getX();
-			bulletSpawnY = mPlayer.getY();
+			if (mPlayer.isVisible())
+			{
+				bulletSpawnX = mPlayer.getX();
+				bulletSpawnY = mPlayer.getY();
 
-			mBulletManager.fireProjectile(mFRAME_TIME_60FPS, bulletSpawnX, bulletSpawnY, mPlayer.getRotation());
-			mSceneManager.playSfx(PLAYER_SHOOT);
+				mBulletManager.fireProjectile(mFRAME_TIME_60FPS, bulletSpawnX, bulletSpawnY, mPlayer.getRotation());
+				mSceneManager.playSfx(PLAYER_SHOOT);
 
-			mGameView.toggleScreenShake(true);
+				mGameView.toggleScreenShake(true);
+			}
 		}
 		break;
 	case ROTATION:
@@ -1158,94 +1275,102 @@ void Game::handleEvent(const Event& theEvent)
 		break;
 	}
 	case MOVE_DOWN:
-		if (mSceneManager.getCurrentScene() == SC_GAME)
+		if (!controllerInUse)
 		{
-			mPlayer.setDown(true);
+			if (mSceneManager.getCurrentScene() == SC_GAME)
+			{
+				mPlayer.setDown(true);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_MAIN)
+			{
+				mSceneManager.moveCursorDown(SC_MAIN, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_STATS)
+			{
+				mSceneManager.moveCursorDown(SC_STATS, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_CREDITS)
+			{
+				mSceneManager.moveCursorDown(SC_CREDITS, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
+			{
+				mSceneManager.moveCursorDown(SC_OPTIONS, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_PAUSE)
+			{
+				mSceneManager.moveCursorDown(SC_PAUSE, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_LOSE)
+			{
+				mSceneManager.moveCursorDown(SC_LOSE, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_WIN)
+			{
+				mSceneManager.moveCursorDown(SC_WIN, BUTTON_MOVE);
+			}
 		}
-		else if (mSceneManager.getCurrentScene() == SC_MAIN)
-		{
-			mSceneManager.moveCursorDown(SC_MAIN, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_STATS)
-		{
-			mSceneManager.moveCursorDown(SC_STATS, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_CREDITS)
-		{
-			mSceneManager.moveCursorDown(SC_CREDITS, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
-		{
-			mSceneManager.moveCursorDown(SC_OPTIONS, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
-		{
-			mSceneManager.moveCursorDown(SC_PAUSE, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_LOSE)
-		{			
-			mSceneManager.moveCursorDown(SC_LOSE, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_WIN)
-		{
-			mSceneManager.moveCursorDown(SC_WIN, BUTTON_MOVE);
-		}
-
 		break;
 
 	case MOVE_UP:
-		if (mSceneManager.getCurrentScene() == SC_GAME)
+		if (!controllerInUse)
 		{
-			mPlayer.setUp(true);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_MAIN)
-		{
-			mSceneManager.moveCursorUp(SC_MAIN, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_CREDITS)
-		{
-			mSceneManager.moveCursorUp(SC_CREDITS, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_STATS)
-		{
-			mSceneManager.moveCursorUp(SC_STATS, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
-		{
-			mSceneManager.moveCursorUp(SC_OPTIONS, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
-		{
-			mSceneManager.moveCursorUp(SC_PAUSE, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_LOSE)
-		{
-			mSceneManager.moveCursorUp(SC_LOSE, BUTTON_MOVE);
-		}
-		else if (mSceneManager.getCurrentScene() == SC_WIN)
-		{
-			mSceneManager.moveCursorUp(SC_WIN, BUTTON_MOVE);
+			if (mSceneManager.getCurrentScene() == SC_GAME)
+			{
+				mPlayer.setUp(true);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_MAIN)
+			{
+				mSceneManager.moveCursorUp(SC_MAIN, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_CREDITS)
+			{
+				mSceneManager.moveCursorUp(SC_CREDITS, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_STATS)
+			{
+				mSceneManager.moveCursorUp(SC_STATS, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
+			{
+				mSceneManager.moveCursorUp(SC_OPTIONS, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_PAUSE)
+			{
+				mSceneManager.moveCursorUp(SC_PAUSE, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_LOSE)
+			{
+				mSceneManager.moveCursorUp(SC_LOSE, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_WIN)
+			{
+				mSceneManager.moveCursorUp(SC_WIN, BUTTON_MOVE);
+			}
 		}
 		break;
 
 	case MOVE_LEFT:
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			mPlayer.setLeft(true);		
+			if (!controllerInUse)
+				mPlayer.setLeft(true);
 		}
 		break;
 
 	case MOVE_RIGHT:
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			mPlayer.setRight(true);
+			if (!controllerInUse)
+				mPlayer.setRight(true);
 		}
 		break;
 
 	case STOP_DOWN:
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			mPlayer.setDown(false);
+			if (!controllerInUse)
+				mPlayer.setDown(false);
 		}
 
 		break;
@@ -1253,7 +1378,8 @@ void Game::handleEvent(const Event& theEvent)
 	case STOP_UP:
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			mPlayer.setUp(false);
+			if (!controllerInUse)
+				mPlayer.setUp(false);
 		}
 		break;
 
@@ -1261,14 +1387,233 @@ void Game::handleEvent(const Event& theEvent)
 	case STOP_LEFT: 
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			mPlayer.setLeft(false);		
+				if(!controllerInUse)
+					mPlayer.setLeft(false);		
 		}
 		break;
 
 	case STOP_RIGHT:
 		if (mSceneManager.getCurrentScene() == SC_GAME)
 		{
-			mPlayer.setRight(false);
+			if(!controllerInUse)
+				mPlayer.setRight(false);
+		}
+		break;
+
+	case MOVE_DOWN_CONTROLLER:
+		if (controllerInUse)
+		{
+			if (mSceneManager.getCurrentScene() == SC_GAME)
+			{
+				mPlayer.setDown(true);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_MAIN)
+			{
+				if (!menuButtonMoved)
+				{
+					menuButtonMoved = true;
+					mSceneManager.moveCursorDown(SC_MAIN, BUTTON_MOVE);
+				}
+			}
+			else if (mSceneManager.getCurrentScene() == SC_STATS)
+			{
+				mSceneManager.moveCursorDown(SC_STATS, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_CREDITS)
+			{
+				mSceneManager.moveCursorDown(SC_CREDITS, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
+			{
+				if (!menuButtonMoved)
+				{
+					menuButtonMoved = true;
+
+					mSceneManager.moveCursorDown(SC_OPTIONS, BUTTON_MOVE);
+				}
+			}
+			else if (mSceneManager.getCurrentScene() == SC_PAUSE)
+			{
+				if (!menuButtonMoved)
+				{
+					menuButtonMoved = true;
+					mSceneManager.moveCursorDown(SC_PAUSE, BUTTON_MOVE);
+				}
+			}
+			else if (mSceneManager.getCurrentScene() == SC_LOSE)
+			{
+				if (!menuButtonMoved)
+				{
+					menuButtonMoved = true; 
+					mSceneManager.moveCursorDown(SC_LOSE, BUTTON_MOVE);
+				}
+			}
+			else if (mSceneManager.getCurrentScene() == SC_WIN)
+			{
+				if (!menuButtonMoved)
+				{
+					menuButtonMoved = true;
+					mSceneManager.moveCursorDown(SC_WIN, BUTTON_MOVE);
+				}
+			}
+		}
+		break;
+
+	case MOVE_UP_CONTROLLER:
+		if (controllerInUse)
+		{
+			if (mSceneManager.getCurrentScene() == SC_GAME)
+			{
+				mPlayer.setUp(true);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_MAIN)
+			{
+				if (!menuButtonMoved)
+				{
+					menuButtonMoved = true;
+					mSceneManager.moveCursorUp(SC_MAIN, BUTTON_MOVE);
+				}
+			}
+			else if (mSceneManager.getCurrentScene() == SC_CREDITS)
+			{
+				mSceneManager.moveCursorUp(SC_CREDITS, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_STATS)
+			{
+				mSceneManager.moveCursorUp(SC_STATS, BUTTON_MOVE);
+			}
+			else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
+			{
+				if (!menuButtonMoved)
+				{
+					menuButtonMoved = true;
+					mSceneManager.moveCursorUp(SC_OPTIONS, BUTTON_MOVE);
+				}
+			}
+			else if (mSceneManager.getCurrentScene() == SC_PAUSE)
+			{
+				if (!menuButtonMoved)
+				{
+					menuButtonMoved = true;
+					mSceneManager.moveCursorUp(SC_PAUSE, BUTTON_MOVE);
+				}
+			}
+			else if (mSceneManager.getCurrentScene() == SC_LOSE)
+			{
+				if (!menuButtonMoved)
+				{
+					menuButtonMoved = true;
+					mSceneManager.moveCursorUp(SC_LOSE, BUTTON_MOVE);
+				}
+			}
+			else if (mSceneManager.getCurrentScene() == SC_WIN)
+			{
+				if (!menuButtonMoved)
+				{
+					menuButtonMoved = true;	
+					mSceneManager.moveCursorUp(SC_WIN, BUTTON_MOVE);
+				}
+			}
+		}
+		break;
+
+	case MOVE_LEFT_CONTROLLER:
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			if (controllerInUse)
+				mPlayer.setLeft(true);
+		}
+		break;
+
+	case MOVE_RIGHT_CONTROLLER:
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			if (controllerInUse)
+				mPlayer.setRight(true);
+		}
+		break;
+
+	case STOP_DOWN_CONTROLLER:
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			if (controllerInUse)
+				mPlayer.setDown(false);
+		}
+		else if (mSceneManager.getCurrentScene() == SC_MAIN)
+		{
+			if (menuButtonMoved)
+				menuButtonMoved = false;
+		}
+		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
+		{
+			if (menuButtonMoved)
+				menuButtonMoved = false;
+		}
+		else if (mSceneManager.getCurrentScene() == SC_WIN)
+		{
+			if (menuButtonMoved)
+				menuButtonMoved = false;
+		}
+		else if (mSceneManager.getCurrentScene() == SC_LOSE)
+		{
+			if (menuButtonMoved)
+				menuButtonMoved = false;
+		}
+		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
+		{
+			if (menuButtonMoved)
+				menuButtonMoved = false;
+		}
+
+		break;
+
+	case STOP_UP_CONTROLLER:
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			if (controllerInUse)
+				mPlayer.setUp(false);
+		}
+		else if (mSceneManager.getCurrentScene() == SC_MAIN)
+		{
+			if (menuButtonMoved)
+				menuButtonMoved = false;
+		}
+		else if (mSceneManager.getCurrentScene() == SC_OPTIONS)
+		{
+			if (menuButtonMoved)
+				menuButtonMoved = false;
+		}
+		else if (mSceneManager.getCurrentScene() == SC_WIN)
+		{
+			if (menuButtonMoved)
+				menuButtonMoved = false;
+		}
+		else if (mSceneManager.getCurrentScene() == SC_LOSE)
+		{
+			if (menuButtonMoved)
+				menuButtonMoved = false;
+		}
+		else if (mSceneManager.getCurrentScene() == SC_PAUSE)
+		{
+			if (menuButtonMoved)
+				menuButtonMoved = false;
+		}
+
+		break;
+
+	case STOP_LEFT_CONTROLLER:
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			if (controllerInUse)
+				mPlayer.setLeft(false);
+		}
+		break;
+
+	case STOP_RIGHT_CONTROLLER:
+		if (mSceneManager.getCurrentScene() == SC_GAME)
+		{
+			if (controllerInUse)
+				mPlayer.setRight(false);
 		}
 		break;
 	case TOGGLE_CONTROLLER:
