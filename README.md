@@ -2,10 +2,10 @@
 
 *Final Crusade is a top down shooter that tasks you with capturing 6 file fragments in order to hack the system. Be sure to avoid the security system, they won't be happy that you're snooping around.*
 
-This project was built with SDL2 as a backend. The SDL code is encapsulated within my own custom wrapper that was built during my Game Architecture class in Spring 2018. The architecture of the project makes use of the Singleton, Object Pool, and Observer patterns among others. All game code was written, compiled, and debugged in Visual Studio 2017.
+This project was built with SDL2 as a backend with a couple of complementary libraries. The SDL code is encapsulated within my own custom wrapper that was built during my Game Architecture class in Spring 2018. The current rchitecture of the project makes use of the Singleton, Object Pool, and Observer patterns among others. All game code was written, compiled, and debugged in Visual Studio 2017.
 
 ## Building Source Code
-SDL2 is required to compile the project.
+[SDL2](https://www.libsdl.org/), DeanLib, & [SimpleIni](https://github.com/brofield/simpleini) are required to compile the project.
 
 <strong>NOTE:</strong> This repo does not contain the required lib files. The lib files for the four SDL folders can be found using the links below. 
 
