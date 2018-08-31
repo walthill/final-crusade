@@ -9,10 +9,8 @@ RELEASE BUILD NOTES - VS2017
 
 Game* Game::mGameInstance = NULL;
 
-//TODO: tweak player sprite --> bigger and make direction more visible
-
 //creating exe
-//https://discourse.libsdl.org/t/creating-an-easily-distributable-executable-file/24413
+//Brackeys tut @ https://www.youtube.com/watch?v=7nxKAtxGSn8&t=685s
 
 Game::Game()
 	:EventListener(nullptr) //Null because Event System is static
@@ -58,7 +56,7 @@ void Game::installListeners()
 void Game::displayLoadingScreen()
 {
 	//show image while game data & assets load in
-	mLoadingScreen.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mLoadBgAsset);
+	mLoadingScreen.initGraphicsBuffer(mSystem.getGraphicsSystem()->getBackbuffer(), mLOCAL_ASSET_PATH + mMainBgAsset);
 	mBufferManager.addGraphicsBuffer(mLOAD_ID, &mLoadingScreen);
 
 	mLoadingSprite.initSprite(&mLoadingScreen, 0, 0, mLoadingScreen.getBitmapWidth(),
@@ -67,7 +65,7 @@ void Game::displayLoadingScreen()
 	mSystem.getGraphicsSystem()->draw(0, 0, mLoadingSprite, 1.0f, 1.0f);
 	mSystem.getGraphicsSystem()->flip();
 
-	Sleep(2000);
+//	Sleep(2000);
 }
 
 bool Game::initGame()
@@ -103,7 +101,7 @@ bool Game::initGame()
 
 	cout << "*******Initialized system*******" << endl;
 
-	//displayLoadingScreen();
+	displayLoadingScreen();
 	
 	//Initialize game-side input translation from event system
 	mInputTranslator.initInputTranslator();
@@ -287,7 +285,7 @@ void Game::loadGameData()
 
 //	bestSec
 
-	_FragmentsToCollect = atoi(iniFragmentsToCollect);
+	_FragmentsToCollect = atof(iniFragmentsToCollect);
 
 	cout << "*******Loaded game data*******" << endl;
 }
@@ -702,29 +700,37 @@ void Game::initUI()
 	mGuiManagerMain.addToManager("3", &mMainOptions);
 	mGuiManagerMain.addToManager("4", &mMainCredits);
 	mGuiManagerMain.addToManager("5", &mMainQuit);
-
-	mGuiManagerMain.addToManager("fps", &mFpscounter);
-
+	
+	#ifdef _DEBUG
+		mGuiManagerMain.addToManager("fps", &mFpscounter);
+	#endif
+	
 	//GAME UI MANAGER
 	mGuiManagerGame.addToManager("combo", &mGameCombo);
 	mGuiManagerGame.addToManager("score", &mGameScore);
 	mGuiManagerGame.addToManager("time", &mGameTime);
 	mGuiManagerGame.addToManager("fragments", &mGameFragmentsCollected);
-	mGuiManagerGame.addToManager("fps", &mFpscounter);
+	#ifdef _DEBUG
+		mGuiManagerGame.addToManager("fps", &mFpscounter);
+	#endif
 
 	//PAUSE UI MANAGER
 	mGuiManagerPause.setNumButtons(2);
 	mGuiManagerPause.addToManager("1", &mPausePlay);
 	mGuiManagerPause.addToManager("2", &mPauseQuit);
 	mGuiManagerPause.addToManager("text", &mPauseText);
-	mGuiManagerPause.addToManager("fps", &mFpscounter);
+	#ifdef _DEBUG
+		mGuiManagerPause.addToManager("fps", &mFpscounter);
+	#endif
 
 	//LOSE SCREEN UI MANAGER
 	mGuiManagerLose.setNumButtons(2);
 	mGuiManagerLose.addToManager("1", &mLoseRetry);
 	mGuiManagerLose.addToManager("2", &mLoseQuit);
 	mGuiManagerLose.addToManager("text", &mLoseText);
-	mGuiManagerLose.addToManager("fps", &mFpscounter);
+	#ifdef _DEBUG
+		mGuiManagerLose.addToManager("fps", &mFpscounter);
+	#endif
 
 	//WIN SCREEN UI MANAGER
 	mGuiManagerWin.setNumButtons(2);
@@ -733,7 +739,9 @@ void Game::initUI()
 	mGuiManagerWin.addToManager("title", &mWinTitle);
 	mGuiManagerWin.addToManager("score", &mWinScore);
 	mGuiManagerWin.addToManager("time", &mWinTime);
-	mGuiManagerWin.addToManager("fps", &mFpscounter);
+	#ifdef _DEBUG
+		mGuiManagerWin.addToManager("fps", &mFpscounter);
+	#endif
 
 	//STATS SCREEN UI MANAGER
 	mGuiManagerStats.setNumButtons(1);
@@ -745,8 +753,9 @@ void Game::initUI()
 	mGuiManagerStats.addToManager("highscore", &mStatsHighScore);
 	mGuiManagerStats.addToManager("lifescore", &mStatsLifetimeScore);
 	mGuiManagerStats.addToManager("lifeplayed", &mStatsTimePlayed);
-	mGuiManagerStats.addToManager("fps", &mFpscounter);
-
+	#ifdef _DEBUG
+		mGuiManagerStats.addToManager("fps", &mFpscounter);
+	#endif
 
 	//CREDITS SCREEN UI MANAGER
 	mGuiManagerCredits.setNumButtons(1);
@@ -760,7 +769,9 @@ void Game::initUI()
 	mGuiManagerCredits.addToManager("m4", &mCreditsMusic4);
 	mGuiManagerCredits.addToManager("m5", &mCreditsMusic5);
 	mGuiManagerCredits.addToManager("m6", &mCreditsMusic6);
-	mGuiManagerCredits.addToManager("fps", &mFpscounter);
+	#ifdef _DEBUG
+		mGuiManagerCredits.addToManager("fps", &mFpscounter);
+	#endif
 
 	//OPTIONS SCREEN UI MANAGER
 	mGuiManagerOptions.setNumButtons(5);
@@ -770,7 +781,9 @@ void Game::initUI()
 	mGuiManagerOptions.addToManager("4", &mOptionsMusic);
 	mGuiManagerOptions.addToManager("5", &mOptionsReturn);
 	mGuiManagerOptions.addToManager("title", &mOptionsText);
-	mGuiManagerOptions.addToManager("fps", &mFpscounter);
+	#ifdef _DEBUG
+		mGuiManagerOptions.addToManager("fps", &mFpscounter);
+	#endif
 
 	//CONTROLS SCREEN UI MANAGER
 	mGuiManagerControls.setNumButtons(1);
@@ -791,7 +804,9 @@ void Game::initUI()
 	mGuiManagerControls.addToManager("esc", &mControlsEsc);
 	mGuiManagerControls.addToManager("lmb", &mControlsLMB);
 	mGuiManagerControls.addToManager("move", &mControlsMouseMove);
-	mGuiManagerControls.addToManager("fps", &mFpscounter);
+	#ifdef _DEBUG
+		mGuiManagerControls.addToManager("fps", &mFpscounter);
+	#endif
 
 	cout << "*******Initialized UI*******" << endl;
 }
@@ -951,7 +966,7 @@ void Game::update(double timeElapsed)
 	#ifdef _DEBUG
 		mSceneManager.update(timeElapsed, mHighScore, mHighCombo, mBestTime, hoursPlayed, minutesPlayed, mLifetimeScore, mFilesCaptured, musicValue, controllerInUse, _ComboCount, _Score, mCollectedPercentage, min, sec, mFPS);
 	#else //for release
-		mSceneManager.update(timeElapsed, mHighScore, mHighCombo, mBestTime, hoursPlayed, minutesPlayed, mLifetimeScore, mFilesCaptured, _ComboCount, _Score, mCollectedPercentage, min, sec);
+		mSceneManager.update(timeElapsed, mHighScore, mHighCombo, mBestTime, hoursPlayed, minutesPlayed, mLifetimeScore, mFilesCaptured, musicValue, controllerInUse, _ComboCount, _Score, mCollectedPercentage, min, sec);
 	#endif
 
 	if (mSceneManager.getCurrentScene() == SC_GAME)

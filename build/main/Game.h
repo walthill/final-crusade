@@ -129,7 +129,7 @@ class Game : EventListener
 		Timer *survivalTimer;
 		double dtTime;	int sec = 0, millisec, min = 0;
 		const int mCOMBO_WINDOW = 2500;
-		const int mCOMBO_NUM_TO_REGEN = 3;
+		const int mCOMBO_NUM_TO_REGEN = 5;
 		int mCollectedPercentage;
 		bool playerHit;// = true;
 

@@ -264,7 +264,16 @@ void SceneManager::update(double timeElapsed, int &highScore, int &highCombo, st
 		if (iter->second->isSceneActive())
 		{
 			//Updating UI - allows for language change, scoring, frame data
-			if (iter->second->getSceneType() == SC_GAME)
+			if (iter->second->getSceneType() == SC_MAIN)
+			{
+				iter->second->getGuiManager()->getGuiObject("title")->updateText(timeElapsed, mLocalization->getTranslation("FINAL CRUSADE"));
+				iter->second->getGuiManager()->getGuiObject("1")->updateText(timeElapsed, mLocalization->getTranslation("LAUNCH"));
+				iter->second->getGuiManager()->getGuiObject("2")->updateText(timeElapsed, mLocalization->getTranslation("RECORD"));
+				iter->second->getGuiManager()->getGuiObject("3")->updateText(timeElapsed, mLocalization->getTranslation("OPTIONS"));
+				iter->second->getGuiManager()->getGuiObject("4")->updateText(timeElapsed, mLocalization->getTranslation("CREDITS"));
+				iter->second->getGuiManager()->getGuiObject("5")->updateText(timeElapsed, mLocalization->getTranslation("QUIT"));
+			}
+			else if (iter->second->getSceneType() == SC_GAME)
 			{
 				if (seconds < 10)
 					timeStr = ":0";
@@ -278,31 +287,99 @@ void SceneManager::update(double timeElapsed, int &highScore, int &highCombo, st
 			}
 			else if (iter->second->getSceneType() == SC_OPTIONS)
 			{
+				string controllerStr = "null",
+					musicStr = "null";
 
+				if (controllerInUse)
+					controllerStr = ": On";
+				else
+					controllerStr = ": Off";
+
+				if (musicValue == 1)
+					musicStr = ": On";
+				else
+					musicStr = ": Off";
+
+				iter->second->getGuiManager()->getGuiObject("title")->updateText(timeElapsed, mLocalization->getTranslation("OPTIONS"));
+				iter->second->getGuiManager()->getGuiObject("1")->updateText(timeElapsed, mLocalization->getTranslation("SHOW CONTROLS"));
+				iter->second->getGuiManager()->getGuiObject("2")->updateText(timeElapsed, mLocalization->getTranslation("GAMEPAD") + controllerStr);
+				iter->second->getGuiManager()->getGuiObject("3")->updateText(timeElapsed, mLocalization->getTranslation("LANGUAGE"));
+				iter->second->getGuiManager()->getGuiObject("4")->updateText(timeElapsed, mLocalization->getTranslation("MUSIC") + musicStr);
+				iter->second->getGuiManager()->getGuiObject("5")->updateText(timeElapsed, mLocalization->getTranslation("RETURN TO MAIN"));
 			}
 			else if (iter->second->getSceneType() == SC_PAUSE)
 			{
-
+				iter->second->getGuiManager()->getGuiObject("text")->updateText(timeElapsed, mLocalization->getTranslation("PAUSED"));
+				iter->second->getGuiManager()->getGuiObject("1")->updateText(timeElapsed, mLocalization->getTranslation("RESUME"));
+				iter->second->getGuiManager()->getGuiObject("2")->updateText(timeElapsed, mLocalization->getTranslation("RETURN TO MAIN"));
 			}
 			else if (iter->second->getSceneType() == SC_LOSE)
 			{
-
+				iter->second->getGuiManager()->getGuiObject("text")->updateText(timeElapsed, mLocalization->getTranslation("You've Been Caught"));
+				iter->second->getGuiManager()->getGuiObject("1")->updateText(timeElapsed, mLocalization->getTranslation("REBOOT"));
+				iter->second->getGuiManager()->getGuiObject("2")->updateText(timeElapsed, mLocalization->getTranslation("RETURN TO MAIN"));
 			}
 			else if (iter->second->getSceneType() == SC_WIN)
 			{
-
+				iter->second->getGuiManager()->getGuiObject("title")->updateText(timeElapsed, mLocalization->getTranslation("Success: Data Stolen!"));
+				iter->second->getGuiManager()->getGuiObject("1")->updateText(timeElapsed, mLocalization->getTranslation("RELAUNCH"));
+				iter->second->getGuiManager()->getGuiObject("2")->updateText(timeElapsed, mLocalization->getTranslation("RETURN TO MAIN"));
+				iter->second->getGuiManager()->getGuiObject("time")->updateText(timeElapsed, "TIME: " + to_string(minutes) + timeStr + to_string(seconds));
+				iter->second->getGuiManager()->getGuiObject("score")->updateText(timeElapsed, "SCORE: " + to_string(score));
 			}
 			else if (iter->second->getSceneType() == SC_CREDITS)
 			{
 
+				iter->second->getGuiManager()->getGuiObject("title")->updateText(timeElapsed, mLocalization->getTranslation("CREDITS"));
+				iter->second->getGuiManager()->getGuiObject("1")->updateText(timeElapsed, mLocalization->getTranslation("RETURN TO MAIN"));
+				iter->second->getGuiManager()->getGuiObject("walter")->updateText(timeElapsed, mLocalization->getTranslation("Walter Hill -- Programming, Sprites, Design"));
+				iter->second->getGuiManager()->getGuiObject("audio")->updateText(timeElapsed, mLocalization->getTranslation("AUDIO"));
+				iter->second->getGuiManager()->getGuiObject("m1")->updateText(timeElapsed, mLocalization->getTranslation("Cabled_mess -- Clack_Minimal UI Sounds"));
+				iter->second->getGuiManager()->getGuiObject("m2")->updateText(timeElapsed, mLocalization->getTranslation("Cabled_mess -- Boom_C_03"));
+				iter->second->getGuiManager()->getGuiObject("m3")->updateText(timeElapsed, mLocalization->getTranslation("Gravity Sound -- Cloudy"));
+				iter->second->getGuiManager()->getGuiObject("m4")->updateText(timeElapsed, mLocalization->getTranslation("Josepharaoh99 -- button pressed"));
+				iter->second->getGuiManager()->getGuiObject("m5")->updateText(timeElapsed, mLocalization->getTranslation("Xythe -- Fight for your life loop"));
+				iter->second->getGuiManager()->getGuiObject("m6")->updateText(timeElapsed, mLocalization->getTranslation("Xtrgamr -- music game, win or high score"));
 			}
 			else if (iter->second->getSceneType() == SC_STATS)
 			{
+				//				string timePlayedTemp, bestTimeTemp;
+				//	if (timePlayed == "")
+				//		timePlayed = "0 Hours, 0 Minutes";
 
+				if (bestTime == "")
+					bestTime = "0:00";
+
+				iter->second->getGuiManager()->getGuiObject("title")->updateText(timeElapsed, mLocalization->getTranslation("SERVICE RECORD"));
+				iter->second->getGuiManager()->getGuiObject("1")->updateText(timeElapsed, mLocalization->getTranslation("RETURN TO MAIN"));
+
+				iter->second->getGuiManager()->getGuiObject("besttime")->updateText(timeElapsed, mLocalization->getTranslation("Fastest Time") + " -- " + bestTime);
+				iter->second->getGuiManager()->getGuiObject("files")->updateText(timeElapsed, mLocalization->getTranslation("Files Captured") + " -- " + to_string(filesCaptured));
+				iter->second->getGuiManager()->getGuiObject("highcombo")->updateText(timeElapsed, mLocalization->getTranslation("Best Combo") + " -- " + to_string(highCombo));
+				iter->second->getGuiManager()->getGuiObject("highscore")->updateText(timeElapsed, mLocalization->getTranslation("Best Score") + " -- " + to_string(highScore));
+				iter->second->getGuiManager()->getGuiObject("lifescore")->updateText(timeElapsed, mLocalization->getTranslation("Lifetime Score") + " -- " + to_string(lifetimeScore));
+				iter->second->getGuiManager()->getGuiObject("lifeplayed")->updateText(timeElapsed, mLocalization->getTranslation("Time Played") + " -- " + mLocalization->getTranslation("Hours") + " " + to_string(hoursPlayed) + ", " + mLocalization->getTranslation("Minutes") + " " + to_string(minutesPlayed));
 			}
-			else if (iter->second->getSceneType() == SC_OPTIONS)
+			else if (iter->second->getSceneType() == SC_CONTROLS)
 			{
+				iter->second->getGuiManager()->getGuiObject("title")->updateText(timeElapsed, mLocalization->getTranslation("CONTROLS"));
+				iter->second->getGuiManager()->getGuiObject("1")->updateText(timeElapsed, mLocalization->getTranslation("RETURN TO MAIN"));
 
+				iter->second->getGuiManager()->getGuiObject("gamepad")->updateText(timeElapsed, mLocalization->getTranslation("GAMEPAD"));
+				iter->second->getGuiManager()->getGuiObject("start")->updateText(timeElapsed, mLocalization->getTranslation("START -- Pause Game"));
+				iter->second->getGuiManager()->getGuiObject("abutton")->updateText(timeElapsed, mLocalization->getTranslation("A -- Select"));
+				iter->second->getGuiManager()->getGuiObject("rs")->updateText(timeElapsed, mLocalization->getTranslation("RIGHT STICK -- Rotate Player"));
+				iter->second->getGuiManager()->getGuiObject("ls")->updateText(timeElapsed, mLocalization->getTranslation("LEFT STICK -- Up, Left, Right, Down"));
+				iter->second->getGuiManager()->getGuiObject("rt")->updateText(timeElapsed, mLocalization->getTranslation("RT -- Shoot"));
+				iter->second->getGuiManager()->getGuiObject("keys")->updateText(timeElapsed, mLocalization->getTranslation("KEYBOARD/MOUSE"));
+				iter->second->getGuiManager()->getGuiObject("w")->updateText(timeElapsed, mLocalization->getTranslation("W -- Up"));
+				iter->second->getGuiManager()->getGuiObject("a")->updateText(timeElapsed, mLocalization->getTranslation("A -- Left"));
+				iter->second->getGuiManager()->getGuiObject("s")->updateText(timeElapsed, mLocalization->getTranslation("S -- Down"));
+				iter->second->getGuiManager()->getGuiObject("d")->updateText(timeElapsed, mLocalization->getTranslation("D -- Right"));
+				iter->second->getGuiManager()->getGuiObject("enter")->updateText(timeElapsed, mLocalization->getTranslation("ENTER -- Select"));
+				iter->second->getGuiManager()->getGuiObject("esc")->updateText(timeElapsed, mLocalization->getTranslation("ESC -- Pause Game"));
+				iter->second->getGuiManager()->getGuiObject("lmb")->updateText(timeElapsed, mLocalization->getTranslation("LEFT MOUSE-- Shoot"));
+				iter->second->getGuiManager()->getGuiObject("move")->updateText(timeElapsed, mLocalization->getTranslation("MOVE MOUSE -- Rotate Player"));
 			}
 			iter->second->update(timeElapsed);
 		}
