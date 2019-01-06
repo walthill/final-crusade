@@ -1,5 +1,7 @@
 # Final Crusade
 
+Download game <strong>[here](https://github.com/walthill/final-crusade/releases)</strong>
+
 *Final Crusade is a top down shooter that tasks you with capturing 6 file fragments in order to hack the system. Be sure to avoid the security system, they won't be happy that you're snooping around.*
 
 This project was built with SDL2 as a backend with a couple of complementary libraries. The SDL code is encapsulated within my own custom wrapper that was built during my Game Architecture class in Spring 2018. The current rchitecture of the project makes use of the Singleton, Object Pool, and Observer patterns among others. All game code was written, compiled, and debugged in Visual Studio 2017.
